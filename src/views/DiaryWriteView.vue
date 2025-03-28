@@ -20,7 +20,7 @@ const handleCancel = () => {
 
 <template>
   <div>
-    <h1 class="text-3xl font-bold mb-6">오늘의 댕댕이 관찰일기</h1>
+    <h1 class="title-1 mb-6">오늘의 댕댕이 관찰일기</h1>
 
     <DiaryForm @submit="saveDiary" @cancel="handleCancel" />
   </div>

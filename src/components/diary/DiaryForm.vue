@@ -15,11 +15,11 @@ defineEmits<{
     class="bg-white rounded-lg shadow-md p-6"
   >
     <div class="mb-4">
-      <label class="block text-gray-700 font-medium mb-2">날짜</label>
+      <label class="block text-_black font-medium mb-2">날짜</label>
       <input
         type="date"
         v-model="diaryStore.newDiary.date"
-        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+        class="w-full px-3 py-2 border border-_gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
         :max="diaryStore.today"
         required
       />
@@ -27,10 +27,10 @@ defineEmits<{
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div>
-        <label class="block text-gray-700 font-medium mb-2">댕댕이 기분</label>
+        <label class="block text-_black font-medium mb-2">댕댕이 기분</label>
         <select
           v-model="diaryStore.newDiary.mood"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+          class="w-full px-3 py-2 border border-_gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
           required
         >
           <option value="" disabled>기분을 선택하세요</option>
@@ -44,10 +44,10 @@ defineEmits<{
       </div>
 
       <div>
-        <label class="block text-gray-700 font-medium mb-2">날씨</label>
+        <label class="block text-_black font-medium mb-2">날씨</label>
         <select
           v-model="diaryStore.newDiary.weather"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+          class="w-full px-3 py-2 border border-_gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
           required
         >
           <option value="" disabled>날씨를 선택하세요</option>
@@ -61,11 +61,11 @@ defineEmits<{
     </div>
 
     <div class="mb-4">
-      <label class="block text-gray-700 font-medium mb-2">관찰 내용</label>
+      <label class="block text-_black font-medium mb-2">관찰 내용</label>
       <textarea
         v-model="diaryStore.newDiary.content"
         rows="5"
-        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+        class="w-full px-3 py-2 border border-_gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary body-text"
         placeholder="오늘 댕댕이는 어땠나요? 특별한 행동이나 변화가 있었나요?"
         required
       ></textarea>
@@ -73,26 +73,26 @@ defineEmits<{
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div>
-        <label class="block text-gray-700 font-medium mb-2"
+        <label class="block text-_black font-medium mb-2"
           >오늘의 산책 시간 (분)</label
         >
         <input
           type="number"
           v-model="diaryStore.newDiary.walkTime"
           min="0"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+          class="w-full px-3 py-2 border border-_gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
           placeholder="예: 30"
         />
       </div>
 
       <div>
-        <label class="block text-gray-700 font-medium mb-2"
+        <label class="block text-_black font-medium mb-2"
           >오늘의 식사 시간</label
         >
         <input
           type="text"
           v-model="diaryStore.newDiary.mealTime"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+          class="w-full px-3 py-2 border border-_gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
           placeholder="예: 아침 8시, 저녁 6시"
         />
       </div>
@@ -102,13 +102,13 @@ defineEmits<{
       <button
         type="button"
         @click="$emit('cancel')"
-        class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100"
+        class="px-4 py-2 border border-_gray-200 rounded-md hover:bg-_gray-100 button-text"
       >
         취소
       </button>
       <button
         type="submit"
-        class="px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500"
+        class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-primary button-text"
       >
         일기 저장하기
       </button>

@@ -20,13 +20,13 @@ const viewDiary = (id: string) => {
 
 <template>
   <div>
-    <h1 class="text-3xl font-bold mb-6">나의 댕댕이 관찰일기</h1>
+    <h1 class="title-1 mb-6">나의 댕댕이 관찰일기</h1>
 
     <div v-if="diaryStore.diaries.length === 0" class="text-center py-10">
       <p class="text-xl text-gray-500">아직 작성된 일기가 없어요!</p>
       <router-link
         to="/write"
-        class="mt-4 inline-block bg-amber-500 text-white px-6 py-2 rounded-lg hover:bg-amber-600 transition-colors"
+        class="mt-4 inline-block bg-primary text-white px-6 py-2 rounded-lg hover:opacity-80 transition-colors button-text"
       >
         첫 일기 작성하기
       </router-link>

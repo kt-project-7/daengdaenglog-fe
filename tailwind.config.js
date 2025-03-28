@@ -8,7 +8,7 @@ export default {
         body: ['Pretendard', 'sans-serif'],
       },
       colors: {
-        primary: '#0046FF',
+        primary: '#CCB392',
         _black: '#313131',
         _red: '#EA4141',
         '_gray-100': '#F4F4F4',

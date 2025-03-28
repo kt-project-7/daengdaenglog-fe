@@ -26,25 +26,26 @@ defineEmits<{
 
     <div class="p-4">
       <div class="flex justify-between items-center mb-2">
-        <span class="text-lg font-semibold">{{ formatDate(diary.date) }}</span>
+        <span class="title-2">{{ formatDate(diary.date) }}</span>
         <div class="flex space-x-2">
-          <span class="text-sm px-2 py-1 bg-amber-100 rounded-full">{{
-            getMoodEmoji(diary.mood)
-          }}</span>
+          <span
+            class="text-sm px-2 py-1 bg-primary bg-opacity-10 rounded-full"
+            >{{ getMoodEmoji(diary.mood) }}</span
+          >
           <span class="text-sm px-2 py-1 bg-blue-100 rounded-full">{{
             getWeatherEmoji(diary.weather)
           }}</span>
         </div>
       </div>
 
-      <p class="text-gray-700 line-clamp-3">{{ diary.content }}</p>
+      <p class="body-text text-_black line-clamp-3">{{ diary.content }}</p>
 
-      <div class="mt-3 flex justify-between text-sm text-gray-500">
+      <div class="mt-3 flex justify-between text-sm text-_gray-300">
         <span v-if="diary.walkTime">산책: {{ diary.walkTime }}분</span>
         <span v-if="diary.mealTime">식사: {{ diary.mealTime }}</span>
       </div>
 
-      <div v-if="diary.hasMemory" class="mt-2 text-amber-600 text-sm">
+      <div v-if="diary.hasMemory" class="mt-2 text-primary text-sm">
         <span class="flex items-center">
           <span class="mr-1">✨</span>
           추억이 생성되었어요

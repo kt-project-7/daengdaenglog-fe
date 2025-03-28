@@ -10,7 +10,7 @@ defineProps<{
   <div class="bg-white rounded-lg shadow-md p-6 md:col-span-1">
     <div class="flex flex-col items-center">
       <div
-        class="w-32 h-32 rounded-full overflow-hidden mb-4 border-4 border-amber-300"
+        class="w-32 h-32 rounded-full overflow-hidden mb-4 border-4 border-primary"
       >
         <img
           :src="profile.imageUrl || 'https://via.placeholder.com/128'"
@@ -19,27 +19,27 @@ defineProps<{
         />
       </div>
 
-      <h2 class="text-2xl font-bold mb-1">{{ profile.name }}</h2>
-      <p class="text-gray-600 mb-4">{{ profile.breed }}</p>
+      <h2 class="title-1 mb-1">{{ profile.name }}</h2>
+      <p class="body-sub mb-4">{{ profile.breed }}</p>
 
       <div class="w-full mt-4">
         <div class="flex justify-between mb-2">
-          <span class="text-gray-600">나이</span>
-          <span class="font-medium">{{ profile.age }}살</span>
+          <span class="text-_gray-300">나이</span>
+          <span class="body-text">{{ profile.age }}살</span>
         </div>
         <div class="flex justify-between mb-2">
-          <span class="text-gray-600">성별</span>
-          <span class="font-medium">{{
+          <span class="text-_gray-300">성별</span>
+          <span class="body-text">{{
             profile.gender === 'male' ? '남아' : '여아'
           }}</span>
         </div>
         <div class="flex justify-between mb-2">
-          <span class="text-gray-600">몸무게</span>
-          <span class="font-medium">{{ profile.weight }}kg</span>
+          <span class="text-_gray-300">몸무게</span>
+          <span class="body-text">{{ profile.weight }}kg</span>
         </div>
         <div class="flex justify-between mb-2">
-          <span class="text-gray-600">중성화</span>
-          <span class="font-medium">{{
+          <span class="text-_gray-300">중성화</span>
+          <span class="body-text">{{
             profile.neutered ? '완료' : '미완료'
           }}</span>
         </div>

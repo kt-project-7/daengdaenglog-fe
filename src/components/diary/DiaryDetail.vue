@@ -25,7 +25,9 @@ defineEmits<{
 
     <div class="p-6">
       <div class="flex flex-wrap gap-2 mb-4">
-        <span class="px-3 py-1 bg-amber-100 text-amber-800 rounded-full">
+        <span
+          class="px-3 py-1 bg-primary bg-opacity-10 text-primary rounded-full"
+        >
           {{ getMoodEmoji(diary.mood) }}
         </span>
         <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full">
@@ -46,7 +48,9 @@ defineEmits<{
       </div>
 
       <div class="prose max-w-none">
-        <p class="whitespace-pre-line">{{ diary.content }}</p>
+        <p class="whitespace-pre-line body-text text-_black">
+          {{ diary.content }}
+        </p>
       </div>
 
       <MemorySection
