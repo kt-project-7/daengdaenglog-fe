@@ -1,3 +1,65 @@
+/* Pretendard 폰트 등록 */
+@font-face {
+  font-family: 'Pretendard';
+  src: url('@/assets/fonts/Pretendard-Light.woff2') format('woff2');
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('@/assets/fonts/Pretendard-Regular.woff2') format('woff2');
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('@/assets/fonts/Pretendard-Medium.woff2') format('woff2');
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('@/assets/fonts/Pretendard-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('@/assets/fonts/Pretendard-Bold.woff2') format('woff2');
+  font-weight: 700;
+}
+
+/* Tailwind 기본 구성 */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* 전역 폰트 적용 */
+@layer base {
+  body {
+    @apply font-body;
+  }
+}
+
+/* 자주 쓰는 텍스트 스타일 */
+@layer components {
+  .title-1 {
+    @apply font-title text-3xl font-bold;
+  }
+
+  .title-2 {
+    @apply font-title text-xl font-semibold;
+  }
+
+  .body-text {
+    @apply font-body text-base;
+  }
+
+  .body-sub {
+    @apply font-body text-sm font-light text-gray-500;
+  }
+
+  .button-text {
+    @apply font-body text-sm font-medium;
+  }
+}
