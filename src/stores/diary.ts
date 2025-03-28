@@ -18,18 +18,23 @@ export const useDiaryStore = defineStore('diary', () => {
         'https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?q=80&w=2376&auto=format&fit=crop',
       hasMemory: true,
       memory: {
-        type: 'image',
-        content:
-          'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=2369&auto=format&fit=crop',
+        image: {
+          content:
+            'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=2369&auto=format&fit=crop',
+        },
+        letter: {
+          content:
+            '사랑하는 주인님께,\n\n오늘은 정말 즐거운 하루였어요! 아침부터 기분이 너무 좋았어요. 공원에서 산책을 하면서 다른 강아지 친구들을 만나니 정말 행복했답니다. 특히 작은 푸들이랑 제가 친해질 수 있었던 건 정말 좋은 경험이었어요. 앞으로도 이렇게 함께 즐거운 시간 보내요!\n\n항상 사랑하는 마음으로, 멍멍이 올림',
+        },
       },
     },
     {
       id: '2',
       date: '2025-03-24',
-      mood: 'tired',
+      mood: 'sad',
       weather: 'rainy',
       content:
-        '비가 와서 산책을 못 갔어요. 멍멍이가 집 안에서 계속 창밖을 바라보며 무기력해 보였습니다. 장난감을 가지고 놀아주려 했지만 별로 관심을 보이지 않았어요.',
+        '비가 와서 산책을 못 갔어요. 멍멍이가 집 안에서 계속 창밖을 바라보며 슬퍼 보였습니다. 장난감을 가지고 놀아주려 했지만 별로 관심을 보이지 않았어요.',
       walkTime: 0,
       mealTime: '아침 8시, 저녁 6시',
       imageUrl: null,
@@ -39,7 +44,7 @@ export const useDiaryStore = defineStore('diary', () => {
     {
       id: '3',
       date: '2025-03-23',
-      mood: 'energetic',
+      mood: 'happy',
       weather: 'sunny',
       content:
         '오늘은 멍멍이가 정말 활발했어요. 아침부터 저녁까지 계속 뛰어다니고 장난감을 물어오며 놀자고 했습니다. 오후에는 강아지 카페에 가서 다른 강아지들과 놀았는데, 정말 즐거워 보였어요.',
@@ -49,9 +54,10 @@ export const useDiaryStore = defineStore('diary', () => {
         'https://images.unsplash.com/photo-1477884213360-7e9d7dcc1e48?q=80&w=2370&auto=format&fit=crop',
       hasMemory: true,
       memory: {
-        type: 'letter',
-        content:
-          '사랑하는 주인님께,\n\n오늘은 정말 즐거운 하루였어요! 아침부터 기분이 너무 좋아서 계속 뛰어다녔답니다. 주인님이 가져온 새 장난감도 정말 마음에 들었어요. 강아지 카페에서 만난 친구들도 너무 좋았어요. 특히 갈색 푸들이랑 정말 잘 놀았답니다. 주인님이 저를 위해 이런 즐거운 시간을 만들어주셔서 정말 감사해요. 앞으로도 이렇게 함께 즐거운 시간 보내요!\n\n항상 사랑하는 마음으로,',
+        letter: {
+          content:
+            '사랑하는 주인님께,\n\n오늘은 정말 즐거운 하루였어요! 아침부터 기분이 너무 좋아서 계속 뛰어다녔답니다. 주인님이 가져온 새 장난감도 정말 마음에 들었어요. 강아지 카페에서 만난 친구들도 너무 좋았어요. 특히 갈색 푸들이랑 정말 잘 놀았답니다. 주인님이 저를 위해 이런 즐거운 시간을 만들어주셔서 정말 감사해요. 앞으로도 이렇게 함께 즐거운 시간 보내요!\n\n항상 사랑하는 마음으로,',
+        },
       },
     },
   ])
@@ -120,23 +126,25 @@ export const useDiaryStore = defineStore('diary', () => {
     )
 
     if (diaryIndex !== -1) {
-      let memory: Memory
+      // diary에 memory가 없으면 새로 생성
+      if (!diaries.value[diaryIndex].memory) {
+        diaries.value[diaryIndex].memory = {}
+      }
 
+      // 타입에 따라 memory에 추가
       if (type === 'image') {
-        memory = {
-          type: 'image',
+        diaries.value[diaryIndex].memory!.image = {
           content:
             'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=2369&auto=format&fit=crop',
         }
       } else {
-        memory = {
-          type: 'letter',
+        diaries.value[diaryIndex].memory!.letter = {
           content:
             '사랑하는 주인님께,\n\n오늘 하루는 정말 특별했어요. 주인님과 함께한 모든 순간이 행복했답니다. 산책할 때 만난 다른 강아지들도 좋았지만, 역시 주인님과 함께 있는 시간이 가장 소중했어요. 맛있는 간식도 주시고, 머리도 쓰다듬어 주셔서 정말 행복했답니다. 앞으로도 이렇게 함께 행복한 추억을 많이 만들어요!\n\n항상 사랑하는 마음으로,',
         }
       }
 
-      diaries.value[diaryIndex].memory = memory
+      // 추억 있음으로 표시
       diaries.value[diaryIndex].hasMemory = true
     }
   }

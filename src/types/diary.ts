@@ -1,12 +1,20 @@
-export type Mood = 'happy' | 'sad' | 'energetic' | 'tired' | 'angry' | 'calm'
+export type Mood = 'happy' | 'sad' | 'angry' | 'surprised' | 'hungry' | 'hurt' | 'love' | 'sleepy'
 
-export type Weather = 'sunny' | 'cloudy' | 'rainy' | 'snowy' | 'windy'
+export type Weather = 'sunny' | 'cloudy' | 'rainy' | 'snowy' | 'thunderstorm' | 'hail' | 'foggy' | 'yellowdust'
 
 export type MemoryType = 'image' | 'letter'
 
-export interface Memory {
-  type: MemoryType
+export interface ImageMemory {
   content: string
+}
+
+export interface LetterMemory {
+  content: string
+}
+
+export interface Memory {
+  image?: ImageMemory
+  letter?: LetterMemory
 }
 
 export interface Diary {

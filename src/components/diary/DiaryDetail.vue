@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { formatDate, getMoodEmoji, getWeatherEmoji } from '@/utils/formatters'
-import type { Diary } from '@/types/diary'
+import type { Diary, MemoryType } from '@/types/diary'
 import MemorySection from './MemorySection.vue'
 
 defineProps<{
@@ -9,7 +9,7 @@ defineProps<{
 }>()
 
 defineEmits<{
-  (e: 'generateMemory', type: 'image' | 'letter'): void
+  (e: 'generateMemory', type: MemoryType): void
 }>()
 </script>
 

@@ -25,17 +25,15 @@ defineEmits<{
     </div>
 
     <div class="p-4">
-      <div class="flex justify-between items-center mb-2">
-        <span class="title-2">{{ formatDate(diary.date) }}</span>
-        <div class="flex space-x-2">
-          <span
-            class="text-sm px-2 py-1 bg-primary bg-opacity-10 rounded-full"
-            >{{ getMoodEmoji(diary.mood) }}</span
-          >
-          <span class="text-sm px-2 py-1 bg-blue-100 rounded-full">{{
-            getWeatherEmoji(diary.weather)
-          }}</span>
-        </div>
+      <h3 class="title-2 mb-3">{{ formatDate(diary.date) }}</h3>
+
+      <div class="flex flex-wrap gap-2 mb-3">
+        <span class="text-sm px-2 py-1 bg-primary bg-opacity-10 rounded-full">{{
+          getMoodEmoji(diary.mood)
+        }}</span>
+        <span class="text-sm px-2 py-1 bg-blue-100 rounded-full">{{
+          getWeatherEmoji(diary.weather)
+        }}</span>
       </div>
 
       <p class="body-text text-_black line-clamp-3">{{ diary.content }}</p>

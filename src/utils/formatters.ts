@@ -25,10 +25,12 @@ export const getMoodEmoji = (mood: Mood): string => {
   const moodMap: Record<Mood, string> = {
     happy: '😊 기쁨',
     sad: '😢 슬픔',
-    energetic: '🤩 활발',
-    tired: '😴 피곤',
-    angry: '😠 화남',
-    calm: '😌 평온',
+    angry: '😡 분노',
+    surprised: '😲 놀람',
+    hungry: '🍴 배고픔',
+    hurt: '🤕 상처',
+    love: '💖 사랑',
+    sleepy: '😴 졸림',
   }
 
   return moodMap[mood] || mood
@@ -45,7 +47,10 @@ export const getWeatherEmoji = (weather: Weather): string => {
     cloudy: '☁️ 흐림',
     rainy: '🌧️ 비',
     snowy: '❄️ 눈',
-    windy: '💨 바람',
+    thunderstorm: '⚡️ 번개',
+    hail: '🌨️ 우박',
+    foggy: '🌫️ 안개',
+    yellowdust: '💨 황사',
   }
 
   return weatherMap[weather] || weather

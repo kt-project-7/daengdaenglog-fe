@@ -34,12 +34,14 @@ defineEmits<{
           required
         >
           <option value="" disabled>기분을 선택하세요</option>
-          <option value="happy">😊 기쁨</option>
+          <option value="happy">😊 행복</option>
           <option value="sad">😢 슬픔</option>
-          <option value="energetic">🤩 활발</option>
-          <option value="tired">😴 피곤</option>
           <option value="angry">😠 화남</option>
-          <option value="calm">😌 평온</option>
+          <option value="surprised">😲 놀람</option>
+          <option value="hungry">🍴 배고픔</option>
+          <option value="hurt">🤕 상처</option>
+          <option value="love">💖 사랑</option>
+          <option value="sleepy">😴 졸림</option>
         </select>
       </div>
 
@@ -55,7 +57,10 @@ defineEmits<{
           <option value="cloudy">☁️ 흐림</option>
           <option value="rainy">🌧️ 비</option>
           <option value="snowy">❄️ 눈</option>
-          <option value="windy">💨 바람</option>
+          <option value="thunderstorm">⚡️ 번개</option>
+          <option value="hail">🌨️ 우박</option>
+          <option value="foggy">🌫️ 안개</option>
+          <option value="yellowdust">💨 황사</option>
         </select>
       </div>
     </div>
