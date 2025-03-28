@@ -1,17 +1,32 @@
-// import { createRouter, createWebHistory } from 'vue-router';
-// import HomeView from '@/views/HomeView.vue';
+import { createRouter, createWebHistory } from 'vue-router'
 
-// const routes = [
-//   {
-//     path: '/',
-//     name: 'home',
-//     component: HomeView,
-//   },
-// ];
+const routes = [
+  {
+    path: '/',
+    name: 'home',
+    component: () => import('@/views/DiaryListView.vue'),
+  },
+  {
+    path: '/write',
+    name: 'diary-write',
+    component: () => import('@/views/DiaryWriteView.vue'),
+  },
+  {
+    path: '/diary/:id',
+    name: 'diary-detail',
+    component: () => import('@/views/DiaryDetailView.vue'),
+    props: true,
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: () => import('@/views/ProfileView.vue'),
+  },
+]
 
-// const router = createRouter({
-//   history: createWebHistory(),
-//   routes,
-// });
+const router = createRouter({
+  history: createWebHistory(),
+  routes,
+})
 
-// export default router;
+export default router
