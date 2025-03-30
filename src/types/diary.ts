@@ -1,33 +1,37 @@
-export type Mood = 'happy' | 'sad' | 'angry' | 'surprised' | 'hungry' | 'hurt' | 'love' | 'sleepy'
+export type Mood =
+  | 'happy'
+  | 'sad'
+  | 'angry'
+  | 'surprised'
+  | 'hungry'
+  | 'hurt'
+  | 'love'
+  | 'sleepy'
 
-export type Weather = 'sunny' | 'cloudy' | 'rainy' | 'snowy' | 'thunderstorm' | 'hail' | 'foggy' | 'yellowdust'
-
-export type MemoryType = 'image' | 'letter'
-
-export interface ImageMemory {
-  content: string
-}
-
-export interface LetterMemory {
-  content: string
-}
-
-export interface Memory {
-  image?: ImageMemory
-  letter?: LetterMemory
-}
+export type Weather =
+  | 'sunny'
+  | 'cloudy'
+  | 'rainy'
+  | 'snowy'
+  | 'thunderstorm'
+  | 'hail'
+  | 'foggy'
+  | 'yellowdust'
 
 export interface Diary {
   id: string
   date: string
-  mood: Mood
-  weather: Weather
   content: string
-  walkTime: number | null
-  mealTime: string
-  imageUrl: string | null
-  hasMemory: boolean
-  memory: Memory | null
+  mood: string
+  weather: string
+  walkTime?: number
+  mealTime?: string
+  imageUrl?: string
+  memory?: {
+    image: {
+      content: string
+    }
+  }
 }
 
 export interface NewDiary {

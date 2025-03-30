@@ -26,21 +26,25 @@
           class="h-20 w-auto mx-auto mb-4"
         />
         <p class="text-xl md:text-2xl text-_black mb-8">
-          소중한 반려견의 일상을 기록하세요
-        </p>
-        <router-link to="/diary-list">
-          <button
-            class="bg-primary text-white border-none py-4 px-8 rounded-full text-lg font-bold cursor-pointer transition-all duration-300 hover:bg-primary/80 hover:-translate-y-1 shadow-md hover:shadow-lg"
+          <span class="typing-text">{{ displayText }}</span>
+          <span
+            class="typing-cursor"
+            :class="{ 'typing-cursor-blink': cursorBlink }"
+            >|</span
           >
-            시작하기
-          </button>
+        </p>
+        <router-link
+          to="/diary-list"
+          class="inline-block bg-primary text-white py-4 px-8 rounded-full text-lg font-bold transition-all hover:bg-primary/80 hover:-translate-y-1 shadow-md hover:shadow-lg"
+        >
+          시작하기
         </router-link>
       </div>
     </div>
 
     <!-- Dog layer -->
     <div
-      class="absolute w-full h-full top-0 left-0 z-10"
+      class="absolute w-full h-full top-0 left-0 z-20"
       :style="{
         transform: `translateY(${scrollY * -0.15}px) translateX(${scrollY * 0.05}px)`,
       }"
@@ -61,7 +65,7 @@
         <img
           src="@/assets/svgs/paw1.svg"
           alt="발자국"
-          class="absolute w-[100px] h-auto transition-transform"
+          class="absolute w-[80px] h-auto transition-transform opacity-70"
           :class="[
             paw.class,
             { [`bounce-animation-delay-${index}`]: isAnimating },
@@ -83,6 +87,8 @@ import { ref, onMounted } from 'vue'
 
 defineProps<{
   scrollY: number
+  displayText: string
+  cursorBlink: boolean
 }>()
 
 const isAnimating = ref(true)
@@ -90,39 +96,32 @@ const isAnimating = ref(true)
 // Define paw positions and transformations
 const paws = [
   {
-    top: '30%',
-    left: '20%',
+    top: '20%',
+    left: '10%',
     transform: (scrollY: number) =>
-      `translateY(${scrollY * -0.3}px) rotate(${scrollY * 0.05}deg)`,
-    class: 'rotate-[-15deg]',
+      `translateY(${scrollY * -0.2}px) rotate(${scrollY * 0.03}deg)`,
+    class: 'rotate-[-10deg]',
   },
   {
     bottom: '25%',
     left: '15%',
     transform: (scrollY: number) =>
-      `translateY(${scrollY * -0.25}px) translateX(${scrollY * -0.1}px) rotate(${scrollY * -0.03}deg)`,
-    class: 'rotate-[20deg]',
+      `translateY(${scrollY * -0.15}px) rotate(${scrollY * -0.02}deg)`,
+    class: 'rotate-[15deg]',
   },
   {
-    top: '20%',
-    right: '25%',
+    top: '30%',
+    right: '15%',
     transform: (scrollY: number) =>
       `translateY(${scrollY * -0.18}px) rotate(${scrollY * 0.02}deg)`,
-    class: 'rotate-[15deg] w-[120px]',
+    class: 'rotate-[-15deg]',
   },
   {
-    top: '40%',
-    right: '30%',
+    bottom: '20%',
+    right: '10%',
     transform: (scrollY: number) =>
-      `translateY(${scrollY * -0.22}px) translateX(${scrollY * 0.12}px) rotate(${scrollY * 0.04}deg)`,
-    class: 'rotate-[25deg]',
-  },
-  {
-    bottom: '35%',
-    right: '20%',
-    transform: (scrollY: number) =>
-      `translateY(${scrollY * -0.28}px) translateX(${scrollY * -0.15}px) rotate(${scrollY * -0.05}deg)`,
-    class: 'rotate-[-10deg]',
+      `translateY(${scrollY * -0.15}px) rotate(${scrollY * -0.03}deg)`,
+    class: 'rotate-[10deg]',
   },
 ]
 
@@ -175,5 +174,31 @@ onMounted(() => {
 
 .bounce-animation-delay-4 {
   animation: bounce 1s ease 0.8s infinite;
+}
+
+.typing-text {
+  display: inline-block;
+}
+
+.typing-cursor {
+  display: inline-block;
+  color: #ccb392;
+  font-weight: bold;
+  margin-left: 2px;
+}
+
+.typing-cursor-blink {
+  opacity: 1;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  from,
+  to {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 </style>

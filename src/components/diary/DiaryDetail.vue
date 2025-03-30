@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { formatDate, getMoodEmoji, getWeatherEmoji } from '@/utils/formatters'
-import type { Diary, MemoryType } from '@/types/diary'
+import type { Diary, Mood, Weather } from '@/types/diary'
 import MemorySection from './MemorySection.vue'
 
 defineProps<{
@@ -24,10 +24,10 @@ defineProps<{
         <span
           class="px-3 py-1 bg-primary bg-opacity-10 text-primary rounded-full"
         >
-          {{ getMoodEmoji(diary.mood) }}
+          {{ getMoodEmoji(diary.mood as Mood) }}
         </span>
         <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full">
-          {{ getWeatherEmoji(diary.weather) }}
+          {{ getWeatherEmoji(diary.weather as Weather) }}
         </span>
         <span
           v-if="diary.walkTime"
@@ -50,7 +50,7 @@ defineProps<{
       </div>
 
       <MemorySection
-        :memory="diary.memory"
+        :memory-image="diary.memory?.image?.content"
         :pet-name="petName"
         :diary-id="diary.id"
       />

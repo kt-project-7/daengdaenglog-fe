@@ -1,24 +1,23 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Memory, MemoryType } from '@/types/diary'
 
 const props = defineProps<{
-  memory: Memory | null
+  memoryImage?: string
   petName: string
   diaryId: string
 }>()
 
 const emit = defineEmits<{
-  (e: 'generate', type: MemoryType): void
+  (e: 'generate', type: string): void
 }>()
 
-const hasMemory = computed(() => !!props.memory)
-const hasImageMemory = computed(() => !!props.memory?.image)
-const hasLetterMemory = computed(() => !!props.memory?.letter)
+const hasMemory = computed(() => !!props.memoryImage)
+const hasImageMemory = computed(() => !!props.memoryImage)
+const hasLetterMemory = computed(() => !!props.memoryImage)
 
 // 추억 생성
-const generateMemory = (type: MemoryType) => {
-  emit('generate', type)
+const generateMemory = () => {
+  emit('generate', props.diaryId)
 }
 </script>
 
@@ -38,7 +37,7 @@ const generateMemory = (type: MemoryType) => {
       <div v-if="hasImageMemory">
         <h3 class="body-text font-medium mb-2 text-primary">그림 추억</h3>
         <img
-          :src="memory?.image?.content"
+          :src="memoryImage"
           alt="AI가 생성한 추억 이미지"
           class="w-full max-h-80 object-contain rounded-lg shadow-md"
         />
@@ -51,7 +50,7 @@ const generateMemory = (type: MemoryType) => {
           class="bg-primary bg-opacity-10 p-4 rounded-lg border border-primary border-opacity-20"
         >
           <p class="whitespace-pre-line italic text-_black body-text">
-            {{ memory?.letter?.content }}
+            {{ memoryImage }}
           </p>
           <p class="text-right mt-2 text-primary font-medium">
             - {{ petName }} 올림
@@ -70,25 +69,13 @@ const generateMemory = (type: MemoryType) => {
 
     <!-- 추억 생성 버튼 섹션 -->
     <div class="mt-6">
-      <div class="flex flex-col sm:flex-row gap-4">
-        <!-- 이미지 추억이 없으면 이미지 생성 버튼 표시 -->
-        <button
-          v-if="!hasImageMemory"
-          @click="generateMemory('image')"
-          class="flex-1 bg-gradient-to-r from-primary to-primary text-white py-3 px-4 rounded-lg shadow hover:opacity-80 flex items-center justify-center button-text"
-        >
-          {{ hasMemory ? '그림 추억도 만들기' : '그림으로 추억 만들기' }}
-        </button>
-
-        <!-- 편지 추억이 없으면 편지 생성 버튼 표시 -->
-        <button
-          v-if="!hasLetterMemory"
-          @click="generateMemory('letter')"
-          class="flex-1 bg-primary text-white py-3 px-4 rounded-lg shadow hover:opacity-80 flex items-center justify-center button-text"
-        >
-          {{ hasMemory ? '편지 추억도 만들기' : '편지로 추억 만들기' }}
-        </button>
-      </div>
+      <button
+        v-if="!memoryImage"
+        @click="generateMemory"
+        class="w-full bg-gradient-to-r from-primary to-primary text-white py-3 px-4 rounded-lg shadow hover:opacity-80 flex items-center justify-center button-text"
+      >
+        AI로 추억 만들기
+      </button>
     </div>
   </div>
 </template>

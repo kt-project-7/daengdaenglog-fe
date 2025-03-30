@@ -1,10 +1,8 @@
 <template>
   <section class="relative py-24 px-8 bg-white z-30">
-    <div class="text-center mb-16">
-      <h2 class="text-3xl md:text-4xl text-primary font-bold">
-        댕댕로그와 함께하는 반려견 일상
-      </h2>
-    </div>
+    <h2 class="text-3xl md:text-4xl text-primary font-bold text-center mb-16">
+      댕댕로그와 함께하는 반려견 일상
+    </h2>
 
     <div
       class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto"
@@ -25,7 +23,7 @@
   </section>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 defineProps<{
   scrollY: number
 }>()

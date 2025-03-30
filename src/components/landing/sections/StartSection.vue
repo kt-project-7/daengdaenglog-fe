@@ -62,27 +62,18 @@
           </div>
         </div>
 
-        <!-- 발바닥 장식 -->
-        <div
-          class="absolute w-[60px] h-[60px] bottom-5 left-5 opacity-20 bg-[url('../../../assets/paw1.svg')] bg-contain bg-no-repeat transform -rotate-15"
-        ></div>
-        <div
-          class="absolute w-[60px] h-[60px] bottom-5 right-5 opacity-20 bg-[url('../../../assets/paw1.svg')] bg-contain bg-no-repeat transform rotate-15"
-        ></div>
-
-        <router-link to="/diary-write">
-          <button
-            class="block mx-auto bg-primary text-white border-[3px] border-yellow-600 py-4 px-8 rounded-full text-lg font-bold cursor-pointer transition-all duration-300 hover:bg-primary/80 hover:-translate-y-1 hover:rotate-1 shadow-md hover:shadow-lg z-10 relative"
-          >
-            첫 일기 작성하기
-          </button>
+        <router-link
+          to="/diary-write"
+          class="block w-fit mx-auto bg-primary text-white border-[3px] border-yellow-600 py-4 px-8 rounded-full text-lg font-bold transition-all hover:bg-primary/80 hover:-translate-y-1 hover:rotate-1 shadow-md hover:shadow-lg"
+        >
+          첫 일기 작성하기
         </router-link>
       </div>
     </div>
   </section>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { CalendarDays, CloudSun, PenLine, ImagePlus } from 'lucide-vue-next'
 
 const steps = [
