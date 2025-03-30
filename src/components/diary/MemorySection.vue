@@ -5,6 +5,7 @@ import type { Memory, MemoryType } from '@/types/diary'
 const props = defineProps<{
   memory: Memory | null
   petName: string
+  diaryId: string
 }>()
 
 const emit = defineEmits<{

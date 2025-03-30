@@ -7,10 +7,6 @@ defineProps<{
   diary: Diary
   petName: string
 }>()
-
-defineEmits<{
-  (e: 'generateMemory', type: MemoryType): void
-}>()
 </script>
 
 <template>
@@ -56,7 +52,7 @@ defineEmits<{
       <MemorySection
         :memory="diary.memory"
         :pet-name="petName"
-        @generate="$emit('generateMemory', $event)"
+        :diary-id="diary.id"
       />
     </div>
   </div>

@@ -1,20 +1,23 @@
 <script setup lang="ts">
 import { formatDate, getMoodEmoji, getWeatherEmoji } from '@/utils/formatters'
 import type { Diary } from '@/types/diary'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 defineProps<{
   diary: Diary
 }>()
 
-defineEmits<{
-  (e: 'click', id: string): void
-}>()
+const handleClick = (id: string) => {
+  router.push(`/diary/${id}`)
+}
 </script>
 
 <template>
   <div
     class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-    @click="$emit('click', diary.id)"
+    @click="handleClick(diary.id)"
   >
     <div v-if="diary.imageUrl" class="h-48 overflow-hidden">
       <img

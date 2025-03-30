@@ -4,10 +4,15 @@ const routes = [
   {
     path: '/',
     name: 'home',
+    component: () => import('@/views/HomeView.vue'),
+  },
+  {
+    path: '/diary-list',
+    name: 'diary-list',
     component: () => import('@/views/DiaryListView.vue'),
   },
   {
-    path: '/write',
+    path: '/diary-write',
     name: 'diary-write',
     component: () => import('@/views/DiaryWriteView.vue'),
   },
