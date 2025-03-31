@@ -4,19 +4,19 @@
       <h2 class="text-4xl text-dang-primary font-bold">보험 청구 내역</h2>
     </div>
 
-    <div class="flex max-w-[1200px] w-full mx-auto bg-transparent relative z-5">
+    <div class="flex max-w-[75rem] w-full mx-auto bg-transparent relative z-5">
       <div
-        class="w-[30px] bg-[#e0a458] rounded-l-[10px] flex flex-col justify-around items-center py-5"
+        class="w-12 bg-dang-claim-background rounded-l-xl flex flex-col justify-around items-center py-5"
       >
         <div
           v-for="n in 8"
           :key="n"
-          class="w-[15px] h-[15px] bg-dang-light rounded-full my-[5px] shadow-inner"
+          class="w-3 h-3 bg-dang-light rounded-full my-1 shadow-inner"
         ></div>
       </div>
 
       <div
-        class="flex-1 bg-dang-background rounded-r-[10px] p-8 shadow-dang-md relative bg-grid"
+        class="flex-1 bg-dang-background rounded-r-xl p-8 shadow-dang-md relative bg-grid"
       >
         <ClaimsFilter />
         <ClaimsTable

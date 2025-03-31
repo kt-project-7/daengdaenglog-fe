@@ -8,7 +8,7 @@
       :style="{ transform: `translateY(${scrollY * 0.1}px)` }"
     >
       <div
-        class="absolute w-[600px] h-[600px] rounded-full bg-primary/20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+        class="absolute w-[37.5rem] h-[37.5rem] rounded-full bg-primary/20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
       ></div>
     </div>
 
@@ -18,7 +18,7 @@
       :style="{ transform: `translateY(${scrollY * -0.2}px)` }"
     >
       <div
-        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 text-center p-8 max-w-[600px]"
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 text-center p-8 max-w-[37.5rem]"
       >
         <img
           src="@/assets/svgs/title.svg"
@@ -52,7 +52,7 @@
       <img
         src="@/assets/svgs/dog1.svg"
         alt="강아지 일러스트"
-        class="absolute w-[200px] h-auto bottom-[10%] right-[10%] transition-transform duration-500"
+        class="absolute w-[12.5rem] h-auto bottom-[10%] right-[10%] transition-transform duration-500"
       />
     </div>
 
@@ -65,7 +65,7 @@
         <img
           src="@/assets/svgs/paw1.svg"
           alt="발자국"
-          class="absolute w-[80px] h-auto transition-transform opacity-70"
+          class="absolute w-[5rem] h-auto transition-transform opacity-70"
           :class="[
             paw.class,
             { [`bounce-animation-delay-${index}`]: isAnimating },

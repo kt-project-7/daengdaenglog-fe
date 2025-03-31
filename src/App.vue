@@ -43,7 +43,7 @@ const handleNavigation = (
       @toggleMenu="toggleMenu"
     />
 
-    <main class="flex-1 mt-[64px]">
+    <main class="flex-1 mt-16">
       <RouterView />
     </main>
 

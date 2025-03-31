@@ -7,7 +7,7 @@
       <select
         id="status-filter"
         v-model="store.statusFilter"
-        class="py-2 px-4 border border-_gray-200 rounded-lg bg-white min-w-[120px]"
+        class="py-2 px-4 border border-_gray-200 rounded-lg bg-white min-w-[7.5rem]"
       >
         <option value="all">전체</option>
         <option value="pending">처리중</option>
@@ -23,7 +23,7 @@
       <select
         id="date-filter"
         v-model="store.dateFilter"
-        class="py-2 px-4 border border-_gray-200 rounded-lg bg-white min-w-[120px]"
+        class="py-2 px-4 border border-_gray-200 rounded-lg bg-white min-w-[7.5rem]"
       >
         <option value="all">전체</option>
         <option value="1month">1개월</option>
