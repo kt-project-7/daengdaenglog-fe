@@ -36,7 +36,7 @@ defineEmits<{
       </div>
 
       <!-- 내용 -->
-      <div class="flex-1 overflow-y-auto p-6">
+      <div id="pdf-target" class="flex-1 overflow-y-auto p-6">
         <slot></slot>
       </div>
 

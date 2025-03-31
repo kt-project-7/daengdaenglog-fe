@@ -11,6 +11,7 @@ import PetSelector from '@/components/profile/PetSelector.vue'
 import FeatureCard from '@/components/profile/FeatureCard.vue'
 import type { Profile } from '@/types/profile'
 import defaultProfileImage from '@/assets/svgs/profile.svg'
+import html2pdf from 'html2pdf.js'
 
 const profileStore = useProfileStore()
 
@@ -110,8 +111,18 @@ const showPetsitterGuide = () => {
 }
 
 const handleSavePdf = () => {
-  // PDF 저장 로직 구현 예정
-  alert('PDF 저장 기능 구현 예정입니다.')
+  const el = document.getElementById('pdf-target')
+  if (!el) return
+
+  html2pdf()
+    .set({
+      margin: 10,
+      filename: '댕댕로그-분석결과.pdf',
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    })
+    .from(el)
+    .save()
 }
 
 const handleShareKakao = () => {
@@ -180,7 +191,7 @@ const handleCopyLink = () => {
           </div>
         </div>
 
-        <!-- 발자국 장식 (컴포넌트로 분리하지 않음) -->
+        <!-- 발자국 장식 -->
         <div
           class="absolute bottom-5 left-5 w-[3.75rem] h-[3.75rem] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-20 -rotate-15"
         ></div>
