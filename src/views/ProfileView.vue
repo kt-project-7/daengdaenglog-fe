@@ -128,7 +128,9 @@ const handleCopyLink = () => {
 <template>
   <div class="min-h-screen bg-_gray-100 py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="max-w-7xl w-full bg-white rounded-2xl p-8 shadow-lg relative">
+      <div
+        class="max-w-7xl w-full bg-white rounded-2xl p-8 shadow-dang-lg relative"
+      >
         <div class="flex flex-col gap-8">
           <!-- 반려동물 선택 컴포넌트 -->
           <PetSelector
@@ -140,12 +142,12 @@ const handleCopyLink = () => {
 
           <!-- 기능 카드 -->
           <div class="overflow-x-auto">
-            <div class="grid grid-cols-3 gap-6 min-w-[900px]">
+            <div class="grid grid-cols-3 gap-6 min-w-[56.25rem]">
               <!-- 프로필 정보 -->
               <FeatureCard
                 :icon="UserCircle"
                 title="반려동물 정보"
-                color="[#f59e0b]"
+                color="dang-primary"
               >
                 <ProfileInfo
                   :profile="pets[currentPetIndex]"
@@ -154,7 +156,7 @@ const handleCopyLink = () => {
               </FeatureCard>
 
               <!-- DBTI 분석 카드 -->
-              <FeatureCard :icon="Brain" title="DBTI 분석" color="blue-400">
+              <FeatureCard :icon="Brain" title="DBTI 분석" color="_blue-400">
                 <DBTICard
                   :profile="pets[currentPetIndex]"
                   @analyze="analyzeDogPersonality"
@@ -166,7 +168,7 @@ const handleCopyLink = () => {
               <FeatureCard
                 :icon="Pencil"
                 title="펫시터 가이드"
-                color="green-500"
+                color="_green-500"
               >
                 <PetsitterGuideCard
                   :profile="pets[currentPetIndex]"
@@ -180,10 +182,10 @@ const handleCopyLink = () => {
 
         <!-- 발자국 장식 (컴포넌트로 분리하지 않음) -->
         <div
-          class="absolute bottom-5 left-5 w-[60px] h-[60px] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-20 -rotate-15"
+          class="absolute bottom-5 left-5 w-[3.75rem] h-[3.75rem] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-20 -rotate-15"
         ></div>
         <div
-          class="absolute bottom-5 right-5 w-[60px] h-[60px] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-20 rotate-15"
+          class="absolute bottom-5 right-5 w-[3.75rem] h-[3.75rem] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-20 rotate-15"
         ></div>
       </div>
     </div>
@@ -207,10 +209,10 @@ const handleCopyLink = () => {
     >
       <div class="space-y-6" v-if="pets[currentPetIndex].dbtiResult">
         <div class="text-center mb-6">
-          <div class="inline-block p-4 bg-blue-100 rounded-full mb-4">
-            <Brain class="w-12 h-12 text-blue-500" />
+          <div class="inline-block p-4 bg-_blue-100 rounded-full mb-4">
+            <Brain class="w-12 h-12 text-_blue-500" />
           </div>
-          <h3 class="text-2xl font-bold text-blue-500">
+          <h3 class="text-2xl font-bold text-_blue-500">
             {{ pets[currentPetIndex].dbtiResult?.type }}
           </h3>
           <p class="text-lg text-_gray-500 mt-2">
@@ -218,8 +220,8 @@ const handleCopyLink = () => {
           </p>
         </div>
 
-        <div class="bg-blue-50 rounded-xl p-6 border border-blue-100">
-          <h4 class="text-xl font-bold text-blue-700 mb-4">성격 분석</h4>
+        <div class="bg-_blue-50 rounded-xl p-6 border border-_blue-100">
+          <h4 class="text-xl font-bold text-_blue-700 mb-4">성격 분석</h4>
           <p class="text-_gray-700 leading-relaxed text-lg">
             {{ pets[currentPetIndex].dbtiResult?.description }}
           </p>
@@ -231,19 +233,19 @@ const handleCopyLink = () => {
             <ul class="space-y-2 text-_gray-600">
               <li class="flex items-start gap-2">
                 <span
-                  class="inline-block w-2 h-2 rounded-full bg-blue-500 mt-2"
+                  class="inline-block w-2 h-2 rounded-full bg-_blue-500 mt-2"
                 ></span>
                 활발하고 사교적인 성격
               </li>
               <li class="flex items-start gap-2">
                 <span
-                  class="inline-block w-2 h-2 rounded-full bg-blue-500 mt-2"
+                  class="inline-block w-2 h-2 rounded-full bg-_blue-500 mt-2"
                 ></span>
                 새로운 환경과 사람에 호기심이 많음
               </li>
               <li class="flex items-start gap-2">
                 <span
-                  class="inline-block w-2 h-2 rounded-full bg-blue-500 mt-2"
+                  class="inline-block w-2 h-2 rounded-full bg-_blue-500 mt-2"
                 ></span>
                 놀이와 활동에 대한 열정이 넘침
               </li>
@@ -255,19 +257,19 @@ const handleCopyLink = () => {
             <ul class="space-y-2 text-_gray-600">
               <li class="flex items-start gap-2">
                 <span
-                  class="inline-block w-2 h-2 rounded-full bg-green-500 mt-2"
+                  class="inline-block w-2 h-2 rounded-full bg-_green-500 mt-2"
                 ></span>
                 충분한 운동과 놀이 시간 제공
               </li>
               <li class="flex items-start gap-2">
                 <span
-                  class="inline-block w-2 h-2 rounded-full bg-green-500 mt-2"
+                  class="inline-block w-2 h-2 rounded-full bg-_green-500 mt-2"
                 ></span>
                 다양한 사회화 경험 제공
               </li>
               <li class="flex items-start gap-2">
                 <span
-                  class="inline-block w-2 h-2 rounded-full bg-green-500 mt-2"
+                  class="inline-block w-2 h-2 rounded-full bg-_green-500 mt-2"
                 ></span>
                 일관된 규칙과 훈련 제공
               </li>
@@ -288,10 +290,10 @@ const handleCopyLink = () => {
     >
       <div class="space-y-6" v-if="pets[currentPetIndex].petsitterGuide">
         <div class="text-center mb-6">
-          <div class="inline-block p-4 bg-green-100 rounded-full mb-4">
-            <Pencil class="w-12 h-12 text-green-500" />
+          <div class="inline-block p-4 bg-_green-100 rounded-full mb-4">
+            <Pencil class="w-12 h-12 text-_green-500" />
           </div>
-          <h3 class="text-2xl font-bold text-green-500">
+          <h3 class="text-2xl font-bold text-_green-500">
             {{ pets[currentPetIndex].name }}의 펫시터 가이드
           </h3>
           <p class="text-lg text-_gray-500 mt-2">
@@ -299,8 +301,8 @@ const handleCopyLink = () => {
           </p>
         </div>
 
-        <div class="bg-green-50 rounded-xl p-6 border border-green-100">
-          <h4 class="text-xl font-bold text-green-700 mb-4">기본 정보</h4>
+        <div class="bg-_green-50 rounded-xl p-6 border border-_green-100">
+          <h4 class="text-xl font-bold text-_green-700 mb-4">기본 정보</h4>
           <p class="text-_gray-700 leading-relaxed text-lg">
             {{ pets[currentPetIndex].petsitterGuide?.generalInfo }}
           </p>
@@ -339,7 +341,7 @@ const handleCopyLink = () => {
               :key="index"
             >
               <span
-                class="inline-block w-2 h-2 rounded-full bg-red-500 mt-2"
+                class="inline-block w-2 h-2 rounded-full bg-_red mt-2"
               ></span>
               {{ note }}
             </li>
@@ -377,15 +379,15 @@ const handleCopyLink = () => {
   .absolute,
   .flex,
   .grid,
-  .bg-\[#fff9e9\],
+  .bg-background,
   .bg-black\/50,
-  .shadow-lg,
+  .shadow-dang-lg,
   .hover\:scale-120,
   .hover\:-translate-y-1,
   .hover\:shadow-md,
-  .hover\:bg-gray-100,
-  .hover\:bg-gray-700,
-  .hover\:bg-\[#d97706\],
+  .hover\:bg-_gray-100,
+  .hover\:bg-_gray-700,
+  .hover\:bg-dang-secondary,
   .transition-transform,
   .transition-colors,
   .animate-slide-up {
@@ -401,7 +403,7 @@ const handleCopyLink = () => {
     border-top-width: 2px !important;
   }
 
-  .text-\[#f59e0b\] {
+  .text-dang-primary {
     color: black !important;
   }
 

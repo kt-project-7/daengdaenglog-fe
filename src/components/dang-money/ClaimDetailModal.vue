@@ -4,7 +4,7 @@
     @click.self="$emit('close')"
   >
     <div
-      class="bg-white rounded-2xl w-[90%] max-w-[600px] max-h-[90vh] overflow-y-auto relative"
+      class="bg-white rounded-2xl w-[90%] max-w-[37.5rem] max-h-[90vh] overflow-y-auto relative"
     >
       <button
         @click="$emit('close')"
@@ -30,7 +30,7 @@
           </div>
         </div>
 
-        <div class="bg-_gray-100 rounded-[10px] p-6 mb-6">
+        <div class="bg-_gray-100 rounded-xl p-6 mb-6">
           <div class="flex justify-between mb-3 pb-3 border-b border-_gray-200">
             <span class="font-bold text-_gray-400">병원명</span>
             <span class="text-_black">{{ claim.hospital }}</span>
@@ -84,7 +84,7 @@
           </div>
         </div>
 
-        <div v-if="claim.notes" class="bg-dang-pending rounded-[10px] p-6 mb-6">
+        <div v-if="claim.notes" class="bg-dang-pending rounded-xl p-6 mb-6">
           <h3 class="text-lg text-dang-pending-text mb-3">특이사항</h3>
           <p class="text-dang-pending-text text-sm leading-6">
             {{ claim.notes }}

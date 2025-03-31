@@ -7,13 +7,13 @@
       class="absolute top-1/2 left-[10%] -translate-y-1/2 z-20 hidden md:block"
     >
       <div
-        class="absolute w-5 h-[120px] rounded-md shadow-md bg-_red transform -rotate-15 -translate-x-[30px] z-[3] before:content-[''] before:absolute before:top-0 before:left-0 before:w-full before:h-[15px] before:bg-_red before:brightness-[0.8] before:rounded-t-md after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:border-l-[10px] after:border-r-[10px] after:border-transparent after:border-b-[15px] after:border-b-white"
+        class="absolute w-5 h-[7.5rem] rounded-md shadow-md bg-_red transform -rotate-15 -translate-x-[30px] z-[3] before:content-[''] before:absolute before:top-0 before:left-0 before:w-full before:h-[15px] before:bg-_red before:brightness-[0.8] before:rounded-t-md after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:border-l-[10px] after:border-r-[10px] after:border-transparent after:border-b-[15px] after:border-b-white"
       ></div>
       <div
-        class="absolute w-5 h-[120px] rounded-md shadow-md bg-blue-400 transform -rotate-5 z-[2] before:content-[''] before:absolute before:top-0 before:left-0 before:w-full before:h-[15px] before:bg-blue-400 before:brightness-[0.8] before:rounded-t-md after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:border-l-[10px] after:border-r-[10px] after:border-transparent after:border-b-[15px] after:border-b-white"
+        class="absolute w-5 h-[7.5rem] rounded-md shadow-md bg-blue-400 transform -rotate-5 z-[2] before:content-[''] before:absolute before:top-0 before:left-0 before:w-full before:h-[15px] before:bg-blue-400 before:brightness-[0.8] before:rounded-t-md after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:border-l-[10px] after:border-r-[10px] after:border-transparent after:border-b-[15px] after:border-b-white"
       ></div>
       <div
-        class="absolute w-5 h-[120px] rounded-md shadow-md bg-green-400 transform rotate-5 translate-x-[30px] z-[1] before:content-[''] before:absolute before:top-0 before:left-0 before:w-full before:h-[15px] before:bg-green-400 before:brightness-[0.8] before:rounded-t-md after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:border-l-[10px] after:border-r-[10px] after:border-transparent after:border-b-[15px] after:border-b-white"
+        class="absolute w-5 h-[7.5rem] rounded-md shadow-md bg-green-400 transform rotate-5 translate-x-[30px] z-[1] before:content-[''] before:absolute before:top-0 before:left-0 before:w-full before:h-[15px] before:bg-green-400 before:brightness-[0.8] before:rounded-t-md after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:border-l-[10px] after:border-r-[10px] after:border-transparent after:border-b-[15px] after:border-b-white"
       ></div>
     </div>
 
@@ -23,18 +23,18 @@
     >
       <!-- 바인더 부분 -->
       <div
-        class="w-full md:w-[30px] h-[30px] md:h-auto bg-yellow-600 rounded-t-lg md:rounded-l-lg md:rounded-tr-none flex flex-row md:flex-col justify-around items-center p-0 md:py-5"
+        class="w-full md:w-[1.875rem] h-[1.875rem] md:h-auto bg-yellow-600 rounded-t-lg md:rounded-l-lg md:rounded-tr-none flex flex-row md:flex-col justify-around items-center p-0 md:py-5"
       >
         <div
           v-for="n in 8"
           :key="n"
-          class="w-[15px] h-[15px] bg-'_gray-100' rounded-full mx-[5px] my-0 md:my-[5px] md:mx-0 shadow-[inset_0_0_3px_rgba(0,0,0,0.3)]"
+          class="w-[0.9375rem] h-[0.9375rem] bg-'_gray-100' rounded-full mx-[0.3125rem] my-0 md:my-[0.3125rem] md:mx-0 shadow-[inset_0_0_3px_rgba(0,0,0,0.3)]"
         ></div>
       </div>
 
       <!-- 내용 부분 -->
       <div
-        class="flex-1 bg-[#fffdf7] rounded-b-lg md:rounded-r-lg md:rounded-bl-none p-8 shadow-md relative bg-[linear-gradient(#f3f3f3_1px,transparent_1px),linear-gradient(90deg,#f3f3f3_1px,transparent_1px)] bg-[length:20px_20px]"
+        class="flex-1 bg-background rounded-b-lg md:rounded-r-lg md:rounded-bl-none p-8 shadow-md relative bg-[linear-gradient(#f3f3f3_1px,transparent_1px),linear-gradient(90deg,#f3f3f3_1px,transparent_1px)] bg-[length:20px_20px]"
       >
         <h2
           class="text-3xl text-primary text-center mb-8 font-bold relative after:content-[''] after:absolute after:bottom-[-10px] after:left-1/2 after:-translate-x-1/2 after:w-[150px] after:h-[3px] after:bg-primary after:rounded-md"

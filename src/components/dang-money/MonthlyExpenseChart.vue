@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-dang-light rounded-[20px] p-8 shadow-dang-md transition-all duration-300 hover:-translate-y-1 hover:shadow-dang-lg"
+    class="bg-dang-light rounded-xl p-8 shadow-dang-md transition-all duration-300 hover:-translate-y-1 hover:shadow-dang-lg"
   >
     <div class="flex justify-between items-center mb-6">
       <h3 class="text-xl text-dang-primary font-bold">월별 지출 내역</h3>
@@ -29,7 +29,7 @@
         </button>
       </div>
     </div>
-    <div class="h-[300px] relative">
+    <div class="h-[18.75rem] relative">
       <canvas ref="monthlyExpenseChart"></canvas>
     </div>
   </div>

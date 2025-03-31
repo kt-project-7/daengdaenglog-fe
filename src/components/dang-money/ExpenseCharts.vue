@@ -4,7 +4,7 @@
       <h2 class="text-4xl text-dang-primary font-bold">지출 분석</h2>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-[1200px] mx-auto">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-[75rem] mx-auto">
       <MonthlyExpenseChart />
       <CategoryExpenseChart />
     </div>

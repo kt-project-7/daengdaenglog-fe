@@ -81,7 +81,7 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="min-h-screen overflow-y-auto overflow-x-hidden perspective-[1px] scroll-smooth bg-'_gray-100'"
+    class="min-h-screen overflow-y-auto overflow-x-hidden perspective-[.0625rem] scroll-smooth bg-'_gray-100'"
     @scroll="handleScroll"
     ref="mainContainer"
   >

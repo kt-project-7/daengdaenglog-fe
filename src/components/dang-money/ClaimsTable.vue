@@ -2,13 +2,13 @@
   <div class="mb-8">
     <div
       v-if="claims.length === 0"
-      class="flex flex-col items-center justify-center p-12 bg-white rounded-[10px] shadow-sm"
+      class="flex flex-col items-center justify-center p-12 bg-white rounded-xl shadow-sm"
     >
       <FileQuestion class="w-16 h-16 text-_gray-200 mb-4" />
       <p class="text-_gray-300 text-lg">보험 청구 내역이 없습니다.</p>
     </div>
 
-    <div v-else class="overflow-x-auto rounded-[10px] shadow-sm">
+    <div v-else class="overflow-x-auto rounded-xl shadow-sm">
       <table class="w-full border-collapse bg-white">
         <thead>
           <tr>

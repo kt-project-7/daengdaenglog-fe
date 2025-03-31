@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fixed top-0 left-0 w-[300px] h-screen bg-white z-50 shadow-lg transition-transform duration-300 p-8"
+    class="fixed top-0 left-0 w-[18.75rem] h-screen bg-white z-50 shadow-lg transition-transform duration-300 p-8"
     :class="isOpen ? 'translate-x-0' : '-translate-x-full'"
   >
     <button
