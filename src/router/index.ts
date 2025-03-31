@@ -31,6 +31,11 @@ const routes = [
     component: () => import('@/views/ProfileView.vue'),
     meta: { requiresAuth: true },
   },
+  {
+    path: '/dang-money-chart',
+    name: 'dang-money-chart',
+    component: () => import('@/views/DangMoneyChart.vue'),
+  },
 ]
 
 const router = createRouter({
