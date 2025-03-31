@@ -11,6 +11,7 @@ import PetSelector from '@/components/profile/PetSelector.vue'
 import FeatureCard from '@/components/profile/FeatureCard.vue'
 import type { Profile } from '@/types/profile'
 import defaultProfileImage from '@/assets/svgs/profile.svg'
+import html2pdf from 'html2pdf.js'
 
 const profileStore = useProfileStore()
 
@@ -110,18 +111,77 @@ const showPetsitterGuide = () => {
 }
 
 const handleSavePdf = () => {
-  // PDF 저장 로직 구현 예정
-  alert('PDF 저장 기능 구현 예정입니다.')
+  const el = document.getElementById('pdf-target')
+  if (!el) return
+
+  html2pdf()
+    .set({
+      margin: 10,
+      filename: '댕댕로그-분석결과.pdf',
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    })
+    .from(el)
+    .save()
 }
 
 const handleShareKakao = () => {
-  // 카카오톡 공유 로직 구현 예정
-  alert('카카오톡 공유 기능 구현 예정입니다.')
+  // 카카오 SDK가 로드되었는지 확인
+  if (!window.Kakao) {
+    alert('카카오톡 SDK가 로드되지 않았습니다. 잠시 후 다시 시도해주세요.')
+    return
+  }
+
+  // 카카오 SDK 초기화가 필요한 경우 (한 번만 호출해야 함)
+  if (!window.Kakao.isInitialized()) {
+    window.Kakao.init(import.meta.env.VITE_KAKAO_JAVASCRIPT_KEY)
+  }
+
+  const petName = pets.value[currentPetIndex.value].name
+  const resultTitle = showDBTIResultModal.value
+    ? 'DBTI 분석 결과'
+    : '펫시터 가이드'
+  const resultDescription = showDBTIResultModal.value
+    ? pets.value[currentPetIndex.value].dbtiResult?.description ||
+      'DBTI 분석 결과'
+    : pets.value[currentPetIndex.value].petsitterGuide?.generalInfo ||
+      '펫시터 가이드'
+
+  // 카카오 공유하기 API 호출
+  window.Kakao.Share.sendDefault({
+    objectType: 'feed',
+    content: {
+      title: `${petName}의 ${resultTitle}`,
+      description: resultDescription,
+      imageUrl: '@/assets/svgs/logo.svg', // 대표 이미지 URL로 변경 필요
+      link: {
+        mobileWebUrl: window.location.href,
+        webUrl: window.location.href,
+      },
+    },
+    buttons: [
+      {
+        title: '결과 확인하기',
+        link: {
+          mobileWebUrl: window.location.href,
+          webUrl: window.location.href,
+        },
+      },
+    ],
+  })
 }
 
 const handleCopyLink = () => {
-  // 링크 복사 로직 구현 예정
-  alert('링크 복사 기능 구현 예정입니다.')
+  // 현재 페이지 URL을 클립보드에 복사
+  navigator.clipboard
+    .writeText(window.location.href)
+    .then(() => {
+      alert('URL이 클립보드에 복사되었습니다.')
+    })
+    .catch((err) => {
+      console.error('URL 복사 실패:', err)
+      alert('URL 복사에 실패했습니다.')
+    })
 }
 </script>
 
@@ -180,7 +240,7 @@ const handleCopyLink = () => {
           </div>
         </div>
 
-        <!-- 발자국 장식 (컴포넌트로 분리하지 않음) -->
+        <!-- 발자국 장식 -->
         <div
           class="absolute bottom-5 left-5 w-[3.75rem] h-[3.75rem] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-20 -rotate-15"
         ></div>
