@@ -126,10 +126,10 @@ const handleCopyLink = () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-_gray-100 py-12">
+  <div class="min-h-screen bg-dang-light py-12 bg-[linear-gradient(#f3f3f3_1px,transparent_1px),linear-gradient(90deg,#f3f3f3_1px,transparent_1px)] bg-[length:20px_20px]">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div
-        class="max-w-7xl w-full bg-white rounded-2xl p-8 shadow-dang-lg relative"
+        class="max-w-7xl w-full bg-dang-background rounded-2xl p-8 shadow-dang-lg relative border-t-4 border-dang-primary"
       >
         <div class="flex flex-col gap-8">
           <!-- 반려동물 선택 컴포넌트 -->
@@ -156,7 +156,7 @@ const handleCopyLink = () => {
               </FeatureCard>
 
               <!-- DBTI 분석 카드 -->
-              <FeatureCard :icon="Brain" title="DBTI 분석" color="_blue-400">
+              <FeatureCard :icon="Brain" title="DBTI 분석" color="chart-category2">
                 <DBTICard
                   :profile="pets[currentPetIndex]"
                   @analyze="analyzeDogPersonality"
@@ -168,7 +168,7 @@ const handleCopyLink = () => {
               <FeatureCard
                 :icon="Pencil"
                 title="펫시터 가이드"
-                color="_green-500"
+                color="chart-category3"
               >
                 <PetsitterGuideCard
                   :profile="pets[currentPetIndex]"
@@ -182,10 +182,16 @@ const handleCopyLink = () => {
 
         <!-- 발자국 장식 (컴포넌트로 분리하지 않음) -->
         <div
-          class="absolute bottom-5 left-5 w-[3.75rem] h-[3.75rem] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-20 -rotate-15"
+          class="absolute bottom-5 left-5 w-[3.75rem] h-[3.75rem] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-30 -rotate-15 animate-bounce-custom"
         ></div>
         <div
-          class="absolute bottom-5 right-5 w-[3.75rem] h-[3.75rem] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-20 rotate-15"
+          class="absolute bottom-5 right-5 w-[3.75rem] h-[3.75rem] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-30 rotate-15 animate-bounce-delay-2"
+        ></div>
+        <div
+          class="absolute top-10 right-10 w-[2.5rem] h-[2.5rem] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-20 rotate-45 animate-bounce-delay-3"
+        ></div>
+        <div
+          class="absolute top-20 left-20 w-[2rem] h-[2rem] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-20 -rotate-30 animate-bounce-delay-4"
         ></div>
       </div>
     </div>
@@ -209,10 +215,10 @@ const handleCopyLink = () => {
     >
       <div class="space-y-6" v-if="pets[currentPetIndex].dbtiResult">
         <div class="text-center mb-6">
-          <div class="inline-block p-4 bg-_blue-100 rounded-full mb-4">
-            <Brain class="w-12 h-12 text-_blue-500" />
+          <div class="inline-block p-4 bg-chart-category2 bg-opacity-20 rounded-full mb-4">
+            <Brain class="w-12 h-12 text-chart-category2" />
           </div>
-          <h3 class="text-2xl font-bold text-_blue-500">
+          <h3 class="text-2xl font-bold text-chart-category2">
             {{ pets[currentPetIndex].dbtiResult?.type }}
           </h3>
           <p class="text-lg text-_gray-500 mt-2">
@@ -220,56 +226,56 @@ const handleCopyLink = () => {
           </p>
         </div>
 
-        <div class="bg-_blue-50 rounded-xl p-6 border border-_blue-100">
-          <h4 class="text-xl font-bold text-_blue-700 mb-4">성격 분석</h4>
+        <div class="bg-chart-category2 bg-opacity-10 rounded-xl p-6 border border-chart-category2 border-opacity-20">
+          <h4 class="text-xl font-bold text-chart-category2 mb-4">성격 분석</h4>
           <p class="text-_gray-700 leading-relaxed text-lg">
             {{ pets[currentPetIndex].dbtiResult?.description }}
           </p>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
-          <div class="bg-_gray-50 rounded-xl p-5 border border-_gray-100">
-            <h4 class="text-lg font-bold text-_gray-700 mb-3">특징</h4>
+          <div class="bg-dang-light rounded-xl p-5 border border-chart-category2 border-opacity-20">
+            <h4 class="text-lg font-bold text-chart-category2 mb-3">특징</h4>
             <ul class="space-y-2 text-_gray-600">
               <li class="flex items-start gap-2">
                 <span
-                  class="inline-block w-2 h-2 rounded-full bg-_blue-500 mt-2"
+                  class="inline-block w-2 h-2 rounded-full bg-chart-category2 mt-2"
                 ></span>
                 활발하고 사교적인 성격
               </li>
               <li class="flex items-start gap-2">
                 <span
-                  class="inline-block w-2 h-2 rounded-full bg-_blue-500 mt-2"
+                  class="inline-block w-2 h-2 rounded-full bg-chart-category2 mt-2"
                 ></span>
                 새로운 환경과 사람에 호기심이 많음
               </li>
               <li class="flex items-start gap-2">
                 <span
-                  class="inline-block w-2 h-2 rounded-full bg-_blue-500 mt-2"
+                  class="inline-block w-2 h-2 rounded-full bg-chart-category2 mt-2"
                 ></span>
                 놀이와 활동에 대한 열정이 넘침
               </li>
             </ul>
           </div>
 
-          <div class="bg-_gray-50 rounded-xl p-5 border border-_gray-100">
-            <h4 class="text-lg font-bold text-_gray-700 mb-3">양육 팁</h4>
+          <div class="bg-dang-light rounded-xl p-5 border border-chart-category3 border-opacity-20">
+            <h4 class="text-lg font-bold text-chart-category3 mb-3">양육 팁</h4>
             <ul class="space-y-2 text-_gray-600">
               <li class="flex items-start gap-2">
                 <span
-                  class="inline-block w-2 h-2 rounded-full bg-_green-500 mt-2"
+                  class="inline-block w-2 h-2 rounded-full bg-chart-category3 mt-2"
                 ></span>
                 충분한 운동과 놀이 시간 제공
               </li>
               <li class="flex items-start gap-2">
                 <span
-                  class="inline-block w-2 h-2 rounded-full bg-_green-500 mt-2"
+                  class="inline-block w-2 h-2 rounded-full bg-chart-category3 mt-2"
                 ></span>
                 다양한 사회화 경험 제공
               </li>
               <li class="flex items-start gap-2">
                 <span
-                  class="inline-block w-2 h-2 rounded-full bg-_green-500 mt-2"
+                  class="inline-block w-2 h-2 rounded-full bg-chart-category3 mt-2"
                 ></span>
                 일관된 규칙과 훈련 제공
               </li>
@@ -290,10 +296,10 @@ const handleCopyLink = () => {
     >
       <div class="space-y-6" v-if="pets[currentPetIndex].petsitterGuide">
         <div class="text-center mb-6">
-          <div class="inline-block p-4 bg-_green-100 rounded-full mb-4">
-            <Pencil class="w-12 h-12 text-_green-500" />
+          <div class="inline-block p-4 bg-chart-category3 bg-opacity-20 rounded-full mb-4">
+            <Pencil class="w-12 h-12 text-chart-category3" />
           </div>
-          <h3 class="text-2xl font-bold text-_green-500">
+          <h3 class="text-2xl font-bold text-chart-category3">
             {{ pets[currentPetIndex].name }}의 펫시터 가이드
           </h3>
           <p class="text-lg text-_gray-500 mt-2">
@@ -301,38 +307,38 @@ const handleCopyLink = () => {
           </p>
         </div>
 
-        <div class="bg-_green-50 rounded-xl p-6 border border-_green-100">
-          <h4 class="text-xl font-bold text-_green-700 mb-4">기본 정보</h4>
+        <div class="bg-chart-category3 bg-opacity-10 rounded-xl p-6 border border-chart-category3 border-opacity-20">
+          <h4 class="text-xl font-bold text-chart-category3 mb-4">기본 정보</h4>
           <p class="text-_gray-700 leading-relaxed text-lg">
             {{ pets[currentPetIndex].petsitterGuide?.generalInfo }}
           </p>
         </div>
 
-        <div class="bg-_gray-50 rounded-xl p-6 border border-_gray-100">
-          <h4 class="text-xl font-bold text-_gray-700 mb-4">일상 생활</h4>
+        <div class="bg-dang-light rounded-xl p-6 border border-chart-category4 border-opacity-30">
+          <h4 class="text-xl font-bold text-chart-category4 mb-4">일상 생활</h4>
           <p class="text-_gray-700 leading-relaxed">
             {{ pets[currentPetIndex].petsitterGuide?.routineInfo }}
           </p>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
-          <div class="bg-_gray-50 rounded-xl p-5 border border-_gray-100">
-            <h4 class="text-lg font-bold text-_gray-700 mb-3">식사 관련</h4>
+          <div class="bg-dang-light rounded-xl p-5 border border-chart-category1 border-opacity-20">
+            <h4 class="text-lg font-bold text-chart-category1 mb-3">식사 관련</h4>
             <p class="text-_gray-600">
               {{ pets[currentPetIndex].petsitterGuide?.feedingInfo }}
             </p>
           </div>
 
-          <div class="bg-_gray-50 rounded-xl p-5 border border-_gray-100">
-            <h4 class="text-lg font-bold text-_gray-700 mb-3">건강 관련</h4>
+          <div class="bg-dang-light rounded-xl p-5 border border-chart-category5 border-opacity-30">
+            <h4 class="text-lg font-bold text-chart-category1 mb-3">건강 관련</h4>
             <p class="text-_gray-600">
               {{ pets[currentPetIndex].petsitterGuide?.healthInfo }}
             </p>
           </div>
         </div>
 
-        <div class="bg-_gray-50 rounded-xl p-6 border border-_gray-100">
-          <h4 class="text-xl font-bold text-_gray-700 mb-4">특별 주의사항</h4>
+        <div class="bg-dang-approved rounded-xl p-6 border border-dang-approved-text border-opacity-20">
+          <h4 class="text-xl font-bold text-dang-approved-text mb-4">특별 주의사항</h4>
           <ul class="space-y-2 text-_gray-600">
             <li
               class="flex items-start gap-2"
@@ -341,7 +347,7 @@ const handleCopyLink = () => {
               :key="index"
             >
               <span
-                class="inline-block w-2 h-2 rounded-full bg-_red mt-2"
+                class="inline-block w-2 h-2 rounded-full bg-dang-rejected-text mt-2"
               ></span>
               {{ note }}
             </li>

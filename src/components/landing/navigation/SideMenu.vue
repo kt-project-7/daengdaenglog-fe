@@ -38,10 +38,10 @@ const emit = defineEmits<{
 }>()
 
 const menuItems = [
-  { path: '/diary-write', label: '일기 작성' },
-  { path: '/diary-list', label: '일기 목록' },
-  { path: '/profile', label: '마이페이지' },
-  { path: '/dang-money-chart', label: '댕머니 차트' },
+  { path: '/diary-write', label: '🐾일기 작성' },
+  { path: '/diary-list', label: '🐾일기 목록' },
+  { path: '/profile', label: '🐾마이페이지' },
+  { path: '/dang-money-chart', label: '🐾댕머니 차트' },
 ]
 
 const handleNavigation = (path: string) => {

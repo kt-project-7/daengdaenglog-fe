@@ -21,7 +21,7 @@
         class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 text-center p-8 max-w-[37.5rem]"
       >
         <img
-          src="@/assets/svgs/title.svg"
+          src="@/assets/svgs/title2.svg"
           alt="댕댕로그"
           class="h-20 w-auto mx-auto mb-4"
         />

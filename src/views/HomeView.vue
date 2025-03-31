@@ -10,7 +10,7 @@ const mainContainer = ref<HTMLElement | null>(null)
 const isMenuOpen = ref(false)
 
 // 타이핑 애니메이션 관련 변수
-const fullText = '소중한 당신의 반려동물 일상을 기록하세요'
+const fullText = '소중한 당신의 반려견의 일상을 기록하세요'
 const displayText = ref('')
 const typingSpeed = 150 // 타이핑 속도 (ms)
 const cursorBlink = ref(true)
@@ -81,7 +81,7 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="min-h-screen overflow-y-auto overflow-x-hidden perspective-[.0625rem] scroll-smooth bg-'_gray-100'"
+    class="min-h-screen overflow-y-auto overflow-x-hidden perspective-[.0625rem] scroll-smooth bg-dang-light"
     @scroll="handleScroll"
     ref="mainContainer"
   >

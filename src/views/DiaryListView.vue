@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { useDiaryStore } from '@/stores/diaryStore'
@@ -34,9 +34,13 @@ const selectedMood = ref<Mood | 'all'>('all')
 // 정렬 옵션
 const sortOption = ref<'newest' | 'oldest'>('newest')
 
-// 페이지네이션
-const currentPage = ref(1)
+// 무한 스크롤 관련 변수
 const itemsPerPage = 5
+const currentPage = ref(1)
+const isLoading = ref(false)
+const hasMoreData = ref(true)
+const observer = ref<IntersectionObserver | null>(null)
+const loadingTriggerRef = ref<HTMLElement | null>(null)
 
 // 기분 옵션 배열 추가
 const moodOptions: Mood[] = [
@@ -83,22 +87,11 @@ const filteredDiaries = computed(() => {
   return result
 })
 
-// 현재 페이지에 보여줄 일기 목록
-const paginatedDiaries = computed(() => {
-  const startIndex = (currentPage.value - 1) * itemsPerPage
-  const endIndex = startIndex + itemsPerPage
-  return filteredDiaries.value.slice(startIndex, endIndex)
+// 현재 페이지까지 보여줄 일기 목록 (무한 스크롤용)
+const visibleDiaries = computed(() => {
+  const endIndex = currentPage.value * itemsPerPage
+  return filteredDiaries.value.slice(0, endIndex)
 })
-
-// 총 페이지 수
-const totalPages = computed(() => {
-  return Math.ceil(filteredDiaries.value.length / itemsPerPage)
-})
-
-// 페이지 변경
-const changePage = (page: number) => {
-  currentPage.value = page
-}
 
 // 시작일 변경 시 종료일 최소값 업데이트
 const handleStartDateChange = () => {
@@ -129,7 +122,7 @@ const applyDateFilter = () => {
   dateFilterError.value = ''
   appliedDateFilter.value.start = dateFilter.value.start
   appliedDateFilter.value.end = dateFilter.value.end
-  currentPage.value = 1 // 필터 적용 시 첫 페이지로 이동
+  resetInfiniteScroll() // 필터 적용 시 무한 스크롤 초기화
 }
 
 // 날짜 필터 초기화
@@ -139,7 +132,7 @@ const resetDateFilter = () => {
   appliedDateFilter.value.start = ''
   appliedDateFilter.value.end = ''
   dateFilterError.value = ''
-  currentPage.value = 1
+  resetInfiniteScroll()
 }
 
 // 기분 필터 변경
@@ -150,14 +143,14 @@ const changeMoodFilter = (mood: Mood | 'all') => {
   } else {
     selectedMood.value = mood
   }
-  currentPage.value = 1
+  resetInfiniteScroll()
 }
 
 // 정렬 변경
 const changeSortOption = (event: Event) => {
   const select = event.target as HTMLSelectElement
   sortOption.value = select.value as 'newest' | 'oldest'
-  currentPage.value = 1
+  resetInfiniteScroll()
 }
 
 // 모든 필터 초기화
@@ -165,6 +158,47 @@ const resetAllFilters = () => {
   resetDateFilter()
   selectedMood.value = 'all'
   sortOption.value = 'newest'
+  resetInfiniteScroll()
+}
+
+// 무한 스크롤 초기화
+const resetInfiniteScroll = () => {
+  currentPage.value = 1
+  hasMoreData.value = true
+}
+
+// 더 많은 데이터 로드
+const loadMoreData = () => {
+  if (isLoading.value || !hasMoreData.value) return
+
+  isLoading.value = true
+  
+  // 데이터 로드 시뮬레이션 (실제로는 API 호출 등이 있을 수 있음)
+  setTimeout(() => {
+    const totalItems = filteredDiaries.value.length
+    const loadedItems = currentPage.value * itemsPerPage
+    
+    if (loadedItems >= totalItems) {
+      hasMoreData.value = false
+    } else {
+      currentPage.value++
+    }
+    
+    isLoading.value = false
+  }, 500)
+}
+
+// 무한 스크롤 관찰자 설정
+const setupIntersectionObserver = () => {
+  observer.value = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting && !isLoading.value && hasMoreData.value) {
+      loadMoreData()
+    }
+  }, { threshold: 0.5 })
+  
+  if (loadingTriggerRef.value) {
+    observer.value.observe(loadingTriggerRef.value)
+  }
 }
 
 // 일기 상세보기로 이동
@@ -199,6 +233,7 @@ const handleLogin = (success: boolean) => {
 const loadDiaryData = async () => {
   try {
     await diaryStore.fetchDiaries()
+    setupIntersectionObserver()
   } catch (error) {
     console.error('일기 목록 로딩 실패:', error)
   }
@@ -212,27 +247,40 @@ onMounted(async () => {
 
   await loadDiaryData()
 })
+
+onUnmounted(() => {
+  if (observer.value && loadingTriggerRef.value) {
+    observer.value.unobserve(loadingTriggerRef.value)
+    observer.value.disconnect()
+  }
+})
 </script>
 
 <template>
-  <div class="min-h-screen bg-_gray-100 py-12">
+  <div class="min-h-screen bg-dang-light py-12 bg-[linear-gradient(#f3f3f3_1px,transparent_1px),linear-gradient(90deg,#f3f3f3_1px,transparent_1px)] bg-[length:20px_20px]">
     <!-- 기존 헤더는 제거하고 컨텐츠만 유지 -->
     <main class="container mx-auto px-4 py-8" style="max-width: 1280px">
       <!-- 일기 목록 페이지 - 매거진 스타일 -->
       <div>
-        <div
-          class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4"
-        >
-          <div>
-            <h1 class="text-3xl font-bold mb-2 text-_black">
+        <!-- 타이틀 섹션 - 중앙 정렬 및 강조 -->
+        <div class="text-center mb-10">
+          <div class="inline-block relative">
+            <h1 class="text-4xl font-bold text-dang-primary relative z-10">
               나의 댕댕이 관찰일기
             </h1>
-            <p class="text-_gray-300">소중한 반려견과의 일상을 기록하세요</p>
+            <div class="absolute -bottom-3 left-0 right-0 h-3 bg-chart-category3 opacity-30 rounded-full"></div>
+            
+            <!-- 강아지 발자국 장식 -->
+            <div class="absolute -top-6 -left-8 text-chart-category3 opacity-30 transform rotate-12">🐾</div>
+            <div class="absolute -bottom-6 -right-8 text-chart-category3 opacity-30 transform -rotate-12">🐾</div>
           </div>
+          <p class="mt-3 text-dang-secondary">소중한 반려견과의 일상을 기록하세요</p>
+        </div>
 
+        <div class="flex justify-end mb-6">
           <button
             @click="goToWrite"
-            class="bg-primary text-white px-5 py-2 rounded-lg hover:opacity-80 transition-colors flex items-center shadow-md"
+            class="bg-dang-primary text-white px-5 py-2 rounded-lg hover:bg-dang-secondary transition-colors flex items-center shadow-dang-md"
           >
             <span class="mr-1">+</span> 새 일기
           </button>
@@ -240,7 +288,7 @@ onMounted(async () => {
 
         <div
           v-if="diaryStore.diaries.length === 0"
-          class="text-center py-16 bg-white rounded-xl shadow-sm"
+          class="text-center py-16 bg-dang-background rounded-xl shadow-dang-sm"
         >
           <div class="mb-6">
             <img
@@ -250,10 +298,10 @@ onMounted(async () => {
             />
           </div>
           <p class="text-xl text-_black mb-4">아직 작성된 일기가 없어요!</p>
-          <p class="text-_gray-300 mb-6">댕댕이의 일상을 기록해보세요.</p>
+          <p class="text-dang-secondary mb-6">댕댕이의 일상을 기록해보세요.</p>
           <button
             @click="goToWrite"
-            class="inline-block bg-primary text-white px-6 py-3 rounded-lg hover:opacity-80 transition-colors shadow-md"
+            class="inline-block bg-dang-primary text-white px-6 py-3 rounded-lg hover:bg-dang-secondary transition-colors shadow-dang-md"
           >
             첫 일기 작성하기
           </button>
@@ -261,43 +309,43 @@ onMounted(async () => {
 
         <div v-else>
           <!-- 필터 및 정렬 옵션 -->
-          <div class="bg-white p-5 rounded-lg shadow-sm mb-6">
+          <div class="bg-dang-background p-5 rounded-lg shadow-dang-sm mb-6 border border-dang-light">
             <!-- 날짜별 검색 -->
             <div class="mb-4">
-              <h3 class="text-sm font-medium text-_black mb-2">날짜별 검색</h3>
+              <h3 class="text-sm font-medium text-dang-secondary mb-2">날짜별 검색</h3>
               <div class="flex flex-wrap gap-3">
                 <div class="flex items-center">
-                  <label class="text-sm text-_gray-300 mr-2">시작일:</label>
+                  <label class="text-sm text-dang-secondary mr-2">시작일:</label>
                   <input
                     type="date"
                     v-model="dateFilter.start"
                     @change="handleStartDateChange"
-                    class="border border-_gray-200 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    class="border border-dang-light rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-dang-primary"
                   />
                 </div>
                 <div class="flex items-center">
-                  <label class="text-sm text-_gray-300 mr-2">종료일:</label>
+                  <label class="text-sm text-dang-secondary mr-2">종료일:</label>
                   <input
                     type="date"
                     v-model="dateFilter.end"
                     :min="dateFilter.start || undefined"
-                    class="border border-_gray-200 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    class="border border-dang-light rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-dang-primary"
                   />
                 </div>
                 <button
                   @click="applyDateFilter"
-                  class="bg-primary bg-opacity-10 text-_black px-3 py-1 rounded-md text-sm hover:bg-opacity-20"
+                  class="bg-dang-primary bg-opacity-10 text-dang-secondary px-3 py-1 rounded-md text-sm hover:bg-opacity-20"
                 >
                   적용
                 </button>
                 <button
                   @click="resetDateFilter"
-                  class="bg-_gray-100 text-_gray-400 px-3 py-1 rounded-md text-sm hover:bg-_gray-200"
+                  class="bg-dang-light text-dang-secondary px-3 py-1 rounded-md text-sm hover:bg-dang-pending"
                 >
                   초기화
                 </button>
               </div>
-              <p v-if="dateFilterError" class="mt-2 text-_red text-xs">
+              <p v-if="dateFilterError" class="mt-2 text-dang-rejected-text text-xs">
                 {{ dateFilterError }}
               </p>
             </div>
@@ -307,7 +355,7 @@ onMounted(async () => {
             >
               <!-- 기분별 필터 -->
               <div>
-                <h3 class="text-sm font-medium text-_black mb-2">
+                <h3 class="text-sm font-medium text-dang-secondary mb-2">
                   기분별 필터
                 </h3>
                 <div class="flex flex-wrap gap-2">
@@ -316,8 +364,8 @@ onMounted(async () => {
                     class="px-3 py-1 rounded-full text-sm font-medium"
                     :class="
                       selectedMood === 'all'
-                        ? 'bg-primary text-white'
-                        : 'bg-primary bg-opacity-10 text-_black hover:bg-opacity-20'
+                        ? 'bg-dang-primary text-white'
+                        : 'bg-dang-primary bg-opacity-10 text-dang-secondary hover:bg-opacity-20'
                     "
                   >
                     전체
@@ -329,8 +377,8 @@ onMounted(async () => {
                     class="px-3 py-1 rounded-full text-sm font-medium flex items-center"
                     :class="
                       selectedMood === mood
-                        ? 'bg-primary text-white'
-                        : 'bg-_gray-100 text-_gray-400 hover:bg-_gray-200'
+                        ? 'bg-dang-primary text-white'
+                        : 'bg-dang-light text-dang-secondary hover:bg-dang-pending'
                     "
                   >
                     <span class="mr-1">{{
@@ -343,11 +391,11 @@ onMounted(async () => {
 
               <!-- 정렬 옵션 -->
               <div class="flex items-center">
-                <span class="text-sm text-_gray-300 mr-2">정렬:</span>
+                <span class="text-sm text-dang-secondary mr-2">정렬:</span>
                 <select
                   @change="changeSortOption"
                   v-model="sortOption"
-                  class="bg-_gray-100 border-0 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  class="bg-dang-light border-0 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-dang-primary"
                 >
                   <option value="newest">최신순</option>
                   <option value="oldest">오래된순</option>
@@ -358,13 +406,13 @@ onMounted(async () => {
 
           <div
             v-if="filteredDiaries.length === 0"
-            class="text-center py-10 bg-white rounded-xl shadow-sm"
+            class="text-center py-10 bg-dang-background rounded-xl shadow-dang-sm"
           >
-            <p class="text-xl text-_black mb-4">검색 결과가 없어요!</p>
-            <p class="text-_gray-300 mb-6">다른 필터 조건으로 검색해보세요.</p>
+            <p class="text-xl text-dang-primary mb-4">검색 결과가 없어요!</p>
+            <p class="text-dang-secondary mb-6">다른 필터 조건으로 검색해보세요.</p>
             <button
               @click="resetAllFilters"
-              class="inline-block bg-primary text-white px-6 py-2 rounded-lg hover:opacity-80 transition-colors shadow-md"
+              class="inline-block bg-dang-primary text-white px-6 py-2 rounded-lg hover:bg-dang-secondary transition-colors shadow-dang-md"
             >
               전체 보기
             </button>
@@ -375,17 +423,17 @@ onMounted(async () => {
             <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
               <!-- 첫 번째 일기 (큰 카드) -->
               <div
-                v-if="paginatedDiaries.length > 0"
-                class="md:col-span-8 bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-duration-300 cursor-pointer group"
-                @click="viewDiary(paginatedDiaries[0].id)"
+                v-if="visibleDiaries.length > 0"
+                class="md:col-span-8 bg-dang-background rounded-xl shadow-dang-md overflow-hidden hover:shadow-dang-lg transition-duration-300 cursor-pointer group border border-dang-light"
+                @click="viewDiary(visibleDiaries[0].id)"
               >
                 <div class="relative h-80">
                   <img
                     :src="
-                      paginatedDiaries[0].imageUrl ||
+                      visibleDiaries[0].imageUrl ||
                       'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?q=80&w=2376&auto=format&fit=crop'
                     "
-                    :alt="`${formatDate(paginatedDiaries[0].date)} 일기 이미지`"
+                    :alt="`${formatDate(visibleDiaries[0].date)} 일기 이미지`"
                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div
@@ -394,40 +442,40 @@ onMounted(async () => {
                   <div class="absolute bottom-0 left-0 p-6 text-white">
                     <div class="flex gap-2 mb-2">
                       <span
-                        class="px-3 py-1 bg-primary/80 rounded-full text-sm backdrop-blur-sm"
+                        class="px-3 py-1 bg-dang-primary/80 rounded-full text-sm backdrop-blur-sm"
                       >
                         <span class="mr-1">{{
-                          getMoodEmoji(paginatedDiaries[0].mood as Mood).split(
+                          getMoodEmoji(visibleDiaries[0].mood as Mood).split(
                             ' ',
                           )[0]
                         }}</span>
                         {{
-                          getMoodEmoji(paginatedDiaries[0].mood as Mood).split(
+                          getMoodEmoji(visibleDiaries[0].mood as Mood).split(
                             ' ',
                           )[1]
                         }}
                       </span>
                       <span
-                        class="px-3 py-1 bg-_gray-400/80 rounded-full text-sm backdrop-blur-sm"
+                        class="px-3 py-1 bg-chart-category3/80 rounded-full text-sm backdrop-blur-sm"
                       >
                         {{
                           getWeatherEmoji(
-                            paginatedDiaries[0].weather as Weather,
+                            visibleDiaries[0].weather as Weather,
                           )
                         }}
                       </span>
                     </div>
                     <h2 class="text-2xl font-bold mb-1">
-                      {{ formatDate(paginatedDiaries[0].date) }}
+                      {{ formatDate(visibleDiaries[0].date) }}
                     </h2>
                     <p class="line-clamp-2 text-_gray-100">
-                      {{ paginatedDiaries[0].content }}
+                      {{ visibleDiaries[0].content }}
                     </p>
                   </div>
 
                   <div
-                    v-if="paginatedDiaries[0].memory"
-                    class="absolute top-4 right-4 bg-primary/90 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm flex items-center"
+                    v-if="visibleDiaries[0].memory"
+                    class="absolute top-4 right-4 bg-dang-primary/90 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm flex items-center"
                   >
                     <span class="mr-1">✨</span>
                     <span>추억</span>
@@ -437,17 +485,17 @@ onMounted(async () => {
 
               <!-- 두 번째 일기 (중간 카드) -->
               <div
-                v-if="paginatedDiaries.length > 1"
-                class="md:col-span-4 bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-duration-300 cursor-pointer group"
-                @click="viewDiary(paginatedDiaries[1].id)"
+                v-if="visibleDiaries.length > 1"
+                class="md:col-span-4 bg-dang-background rounded-xl shadow-dang-md overflow-hidden hover:shadow-dang-lg transition-duration-300 cursor-pointer group border border-dang-light"
+                @click="viewDiary(visibleDiaries[1].id)"
               >
                 <div class="relative h-80">
                   <img
                     :src="
-                      paginatedDiaries[1].imageUrl ||
+                      visibleDiaries[1].imageUrl ||
                       'https://images.unsplash.com/photo-1588943211346-0908a1fb0b01?q=80&w=2376&auto=format&fit=crop'
                     "
-                    :alt="`${formatDate(paginatedDiaries[1].date)} 일기 이미지`"
+                    :alt="`${formatDate(visibleDiaries[1].date)} 일기 이미지`"
                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div
@@ -456,40 +504,40 @@ onMounted(async () => {
                   <div class="absolute bottom-0 left-0 p-4 text-white">
                     <div class="flex gap-2 mb-2">
                       <span
-                        class="px-2 py-1 bg-primary/80 rounded-full text-xs backdrop-blur-sm"
+                        class="px-2 py-1 bg-dang-primary/80 rounded-full text-xs backdrop-blur-sm"
                       >
                         <span class="mr-1">{{
-                          getMoodEmoji(paginatedDiaries[1].mood as Mood).split(
+                          getMoodEmoji(visibleDiaries[1].mood as Mood).split(
                             ' ',
                           )[0]
                         }}</span>
                         {{
-                          getMoodEmoji(paginatedDiaries[1].mood as Mood).split(
+                          getMoodEmoji(visibleDiaries[1].mood as Mood).split(
                             ' ',
                           )[1]
                         }}
                       </span>
                       <span
-                        class="px-2 py-1 bg-_gray-400/80 rounded-full text-xs backdrop-blur-sm"
+                        class="px-2 py-1 bg-chart-category3/80 rounded-full text-xs backdrop-blur-sm"
                       >
                         {{
                           getWeatherEmoji(
-                            paginatedDiaries[1].weather as Weather,
+                            visibleDiaries[1].weather as Weather,
                           )
                         }}
                       </span>
                     </div>
                     <h2 class="text-xl font-bold mb-1">
-                      {{ formatDate(paginatedDiaries[1].date) }}
+                      {{ formatDate(visibleDiaries[1].date) }}
                     </h2>
                     <p class="line-clamp-2 text-sm text-_gray-100">
-                      {{ paginatedDiaries[1].content }}
+                      {{ visibleDiaries[1].content }}
                     </p>
                   </div>
 
                   <div
-                    v-if="paginatedDiaries[1].memory"
-                    class="absolute top-4 right-4 bg-primary/90 text-white px-2 py-1 rounded-full text-xs backdrop-blur-sm flex items-center"
+                    v-if="visibleDiaries[1].memory"
+                    class="absolute top-4 right-4 bg-dang-primary/90 text-white px-2 py-1 rounded-full text-xs backdrop-blur-sm flex items-center"
                   >
                     <span class="mr-1">✨</span>
                     <span>추억</span>
@@ -499,9 +547,9 @@ onMounted(async () => {
 
               <!-- 나머지 일기들 (작은 카드) -->
               <div
-                v-for="diary in paginatedDiaries.slice(2)"
+                v-for="diary in visibleDiaries.slice(2)"
                 :key="diary.id"
-                class="md:col-span-4 bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-duration-300 cursor-pointer"
+                class="md:col-span-4 bg-dang-background rounded-xl shadow-dang-md overflow-hidden hover:shadow-dang-lg transition-duration-300 cursor-pointer border border-dang-light"
                 @click="viewDiary(diary.id)"
               >
                 <div class="flex flex-col h-full">
@@ -515,12 +563,12 @@ onMounted(async () => {
 
                   <div class="p-5 flex-grow flex flex-col">
                     <div class="flex justify-between items-start mb-3">
-                      <h3 class="font-bold text-lg text-_black">
+                      <h3 class="font-bold text-lg text-dang-primary">
                         {{ formatDate(diary.date) }}
                       </h3>
                       <div
                         v-if="diary.memory"
-                        class="bg-primary bg-opacity-10 text-_black px-2 py-1 rounded-full text-xs flex items-center"
+                        class="bg-dang-primary bg-opacity-10 text-dang-primary px-2 py-1 rounded-full text-xs flex items-center"
                       >
                         <span class="mr-1">✨</span>
                         <span>추억</span>
@@ -529,7 +577,7 @@ onMounted(async () => {
 
                     <div class="flex flex-wrap gap-2 mb-3">
                       <span
-                        class="text-xs px-2 py-1 bg-primary bg-opacity-10 rounded-full"
+                        class="text-xs px-2 py-1 bg-dang-primary bg-opacity-10 rounded-full"
                       >
                         <span class="mr-1">{{
                           getMoodEmoji(diary.mood as Mood).split(' ')[0]
@@ -537,12 +585,12 @@ onMounted(async () => {
                         {{ getMoodEmoji(diary.mood as Mood).split(' ')[1] }}
                       </span>
                       <span
-                        class="text-xs px-2 py-1 bg-_gray-100 rounded-full"
+                        class="text-xs px-2 py-1 bg-dang-light rounded-full"
                         >{{ getWeatherEmoji(diary.weather as Weather) }}</span
                       >
                       <span
                         v-if="diary.walkTime"
-                        class="text-xs px-2 py-1 bg-_gray-100 rounded-full"
+                        class="text-xs px-2 py-1 bg-dang-light rounded-full"
                       >
                         산책: {{ diary.walkTime }}분
                       </span>
@@ -553,15 +601,15 @@ onMounted(async () => {
                     </p>
 
                     <div
-                      class="flex justify-between items-center mt-auto pt-2 border-t border-_gray-100"
+                      class="flex justify-between items-center mt-auto pt-2 border-t border-dang-light"
                     >
                       <span
                         v-if="diary.mealTime"
-                        class="text-xs text-_gray-300"
+                        class="text-xs text-dang-secondary"
                       >
                         식사: {{ diary.mealTime }}
                       </span>
-                      <button class="text-primary text-xs hover:opacity-80">
+                      <button class="text-dang-primary text-xs hover:opacity-80">
                         자세히 보기 →
                       </button>
                     </div>
@@ -570,48 +618,26 @@ onMounted(async () => {
               </div>
             </div>
 
-            <!-- 페이지네이션 - 일기가 5개 이상일 때만 표시 -->
-            <div
-              v-if="filteredDiaries.length >= 5"
-              class="mt-10 flex justify-center"
+            <!-- 무한 스크롤 로딩 표시 -->
+            <div 
+              ref="loadingTriggerRef" 
+              class="mt-8 text-center py-4"
+              v-if="filteredDiaries.length > visibleDiaries.length || isLoading"
             >
-              <nav class="flex items-center space-x-2">
-                <button
-                  class="w-10 h-10 flex items-center justify-center rounded-full border border-_gray-200 bg-white text-_gray-300 hover:bg-_gray-100"
-                  :disabled="currentPage === 1"
-                  @click="changePage(currentPage - 1)"
-                  :class="{
-                    'opacity-50 cursor-not-allowed': currentPage === 1,
-                  }"
-                >
-                  &lt;
-                </button>
+              <div v-if="isLoading" class="flex justify-center items-center space-x-2">
+                <div class="w-3 h-3 rounded-full bg-dang-primary animate-bounce"></div>
+                <div class="w-3 h-3 rounded-full bg-dang-primary animate-bounce" style="animation-delay: 0.2s"></div>
+                <div class="w-3 h-3 rounded-full bg-dang-primary animate-bounce" style="animation-delay: 0.4s"></div>
+              </div>
+              <p v-else class="text-dang-secondary">스크롤하여 더 불러오는 중...</p>
+            </div>
 
-                <template v-for="page in totalPages" :key="page">
-                  <button
-                    class="w-10 h-10 flex items-center justify-center rounded-full"
-                    :class="
-                      currentPage === page
-                        ? 'bg-primary text-white'
-                        : 'border border-_gray-200 bg-white text-_black hover:bg-_gray-100'
-                    "
-                    @click="changePage(page)"
-                  >
-                    {{ page }}
-                  </button>
-                </template>
-
-                <button
-                  class="w-10 h-10 flex items-center justify-center rounded-full border border-_gray-200 bg-white text-_gray-300 hover:bg-_gray-100"
-                  :disabled="currentPage === totalPages"
-                  @click="changePage(currentPage + 1)"
-                  :class="{
-                    'opacity-50 cursor-not-allowed': currentPage === totalPages,
-                  }"
-                >
-                  &gt;
-                </button>
-              </nav>
+            <!-- 더 이상 데이터가 없을 때 표시 -->
+            <div 
+              v-if="!hasMoreData && visibleDiaries.length > 0 && visibleDiaries.length === filteredDiaries.length" 
+              class="mt-8 text-center py-4 border-t border-dang-light"
+            >
+              <p class="text-dang-secondary">더 이상 표시할 일기가 없습니다.</p>
             </div>
           </template>
         </div>

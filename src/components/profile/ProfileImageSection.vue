@@ -31,11 +31,11 @@ const handleImageSelect = (event: Event) => {
       <img
         :src="imageUrl || defaultImage"
         alt="프로필 이미지"
-        class="w-32 h-32 rounded-full border-4 border-primary object-cover"
+        class="w-32 h-32 rounded-full border-4 border-dang-primary object-cover shadow-dang-md"
       />
       <label
         for="profile-image"
-        class="absolute bottom-0 right-0 bg-primary text-white p-2 rounded-full cursor-pointer hover:bg-primary/80 transition-colors z-10 shadow-lg"
+        class="absolute bottom-0 right-0 bg-dang-primary text-white p-2 rounded-full cursor-pointer hover:bg-dang-secondary transition-colors z-10 shadow-dang-sm"
       >
         <Camera class="w-5 h-5" />
       </label>
