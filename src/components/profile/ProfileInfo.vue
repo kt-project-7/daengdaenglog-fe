@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { Camera, Save, X, Pencil } from 'lucide-vue-next'
-import { useProfileStore } from '@/stores/profile'
+import { useProfileStore } from '@/stores/profileStore'
 import type { Profile } from '@/types/profile'
 import defaultProfileImage from '@/assets/svgs/profile.svg'
 
