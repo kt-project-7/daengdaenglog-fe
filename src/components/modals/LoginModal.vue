@@ -2,16 +2,14 @@
 import { ref } from 'vue'
 import { X } from 'lucide-vue-next'
 import { signIn } from '@/apis/auth'
-import { useAuthStore } from '@/stores/authStore'
 import api from '@/apis/axios'
 
 const phoneNumber = ref('')
 const password = ref('')
-const authStore = useAuthStore()
 
 const emit = defineEmits<{
-  (e: 'close'): void
-  (e: 'login', accessToken: string): void
+  close: []
+  login: [accessToken: string]
 }>()
 
 const handleLogin = async () => {
@@ -21,7 +19,7 @@ const handleLogin = async () => {
   }
 
   try {
-    const { accessToken, user } = await signIn({
+    const { accessToken } = await signIn({
       phoneNumber: phoneNumber.value,
       password: password.value,
     })
@@ -35,9 +33,8 @@ const handleLogin = async () => {
 
     // 부모에 accessToken 전달
     emit('login', accessToken)
-  } catch (error: any) {
+  } catch {
     alert('로그인에 실패했습니다. 다시 시도해주세요.')
-    console.error(error)
   }
 }
 </script>
