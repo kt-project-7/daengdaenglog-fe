@@ -64,6 +64,7 @@ const addPet = (newPet: Profile) => {
   newPet.id = pets.value.length + 1
   pets.value.push(newPet)
   switchPet(pets.value.length - 1)
+  profileStore.setProfile(newPet)
 }
 
 // 로그인 처리
