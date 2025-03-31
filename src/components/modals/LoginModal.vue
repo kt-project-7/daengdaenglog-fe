@@ -2,7 +2,6 @@
 import { ref } from 'vue'
 import { X } from 'lucide-vue-next'
 import { signIn } from '@/apis/auth'
-import api from '@/apis/axios'
 
 const phoneNumber = ref('')
 const password = ref('')
@@ -24,15 +23,11 @@ const handleLogin = async () => {
       password: password.value,
     })
 
-    // axios 헤더 설정 (선택)
-    api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
+    emit('login', accessToken)
 
     // 폼 리셋
     phoneNumber.value = ''
     password.value = ''
-
-    // 부모에 accessToken 전달
-    emit('login', accessToken)
   } catch {
     alert('로그인에 실패했습니다. 다시 시도해주세요.')
   }

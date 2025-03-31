@@ -1,21 +1,5 @@
 import api from './axios'
-
-interface SignInRequest {
-  phoneNumber: string
-  password: string
-}
-
-interface SignInResult {
-  userName: string
-  imageUri: string
-}
-
-interface SignInResponse {
-  isSuccess: boolean
-  code: string
-  message: string
-  results: SignInResult
-}
+import type { SignInRequest, SignInResult, SignInResponse } from '@/types/auth'
 
 export const signIn = async (
   data: SignInRequest,
