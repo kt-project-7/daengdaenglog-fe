@@ -23,15 +23,6 @@ const handleLogin = (token: string) => {
     authStore.clearPendingRoute()
   }
 }
-
-const handleNavigation = (
-  page: 'diary-list' | 'profile' | 'diary-write' | 'dang-money-chart',
-) => {
-  router.push(`/${page}`)
-  if (isMenuOpen.value) {
-    isMenuOpen.value = false
-  }
-}
 </script>
 
 <template>
