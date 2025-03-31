@@ -4,24 +4,29 @@ import type { RouteLocationNormalized } from 'vue-router'
 
 export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = ref(false)
+  const accessToken = ref<string | null>(null)
   const showLoginModal = ref(false)
   const pendingRoute = ref<RouteLocationNormalized | null>(null)
 
-  // 로그인 상태 초기화
   const initializeAuth = () => {
-    const savedAuth = localStorage.getItem('isAuthenticated')
-    isAuthenticated.value = savedAuth === 'true'
+    const token = localStorage.getItem('accessToken')
+    if (token) {
+      isAuthenticated.value = true
+      accessToken.value = token
+    }
   }
 
-  const login = () => {
+  const login = (token: string) => {
     isAuthenticated.value = true
-    localStorage.setItem('isAuthenticated', 'true')
+    accessToken.value = token
+    localStorage.setItem('accessToken', token)
     showLoginModal.value = false
   }
 
   const logout = () => {
     isAuthenticated.value = false
-    localStorage.removeItem('isAuthenticated')
+    accessToken.value = null
+    localStorage.removeItem('accessToken')
   }
 
   const setPendingRoute = (route: RouteLocationNormalized) => {
@@ -32,11 +37,12 @@ export const useAuthStore = defineStore('auth', () => {
     pendingRoute.value = null
   }
 
-  // 초기 상태 설정
+  // 초기화
   initializeAuth()
 
   return {
     isAuthenticated,
+    accessToken,
     showLoginModal,
     pendingRoute,
     login,

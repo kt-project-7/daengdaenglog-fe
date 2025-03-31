@@ -15,13 +15,12 @@ const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
 }
 
-const handleLogin = (success: boolean) => {
-  if (success) {
-    authStore.login()
-    if (authStore.pendingRoute) {
-      router.push(authStore.pendingRoute.fullPath)
-      authStore.clearPendingRoute()
-    }
+const handleLogin = (token: string) => {
+  authStore.login(token)
+
+  if (authStore.pendingRoute) {
+    router.push(authStore.pendingRoute.fullPath)
+    authStore.clearPendingRoute()
   }
 }
 

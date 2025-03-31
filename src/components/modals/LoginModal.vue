@@ -1,3 +1,47 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+import { X } from 'lucide-vue-next'
+import { signIn } from '@/apis/auth'
+import { useAuthStore } from '@/stores/authStore'
+import api from '@/apis/axios'
+
+const phoneNumber = ref('')
+const password = ref('')
+const authStore = useAuthStore()
+
+const emit = defineEmits<{
+  (e: 'close'): void
+  (e: 'login', accessToken: string): void
+}>()
+
+const handleLogin = async () => {
+  if (!phoneNumber.value || !password.value) {
+    alert('전화번호와 비밀번호를 입력해주세요.')
+    return
+  }
+
+  try {
+    const { accessToken, user } = await signIn({
+      phoneNumber: phoneNumber.value,
+      password: password.value,
+    })
+
+    // axios 헤더 설정 (선택)
+    api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
+
+    // 폼 리셋
+    phoneNumber.value = ''
+    password.value = ''
+
+    // 부모에 accessToken 전달
+    emit('login', accessToken)
+  } catch (error: any) {
+    alert('로그인에 실패했습니다. 다시 시도해주세요.')
+    console.error(error)
+  }
+}
+</script>
+
 <template>
   <div
     class="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]"
@@ -42,27 +86,3 @@
     </div>
   </div>
 </template>
-
-<script lang="ts" setup>
-import { ref } from 'vue'
-import { X } from 'lucide-vue-next'
-
-const phoneNumber = ref('')
-const password = ref('')
-
-const emit = defineEmits<{
-  (e: 'close'): void
-  (e: 'login', success: boolean): void
-}>()
-
-const handleLogin = () => {
-  if (phoneNumber.value && password.value) {
-    emit('login', true)
-    // Reset form
-    phoneNumber.value = ''
-    password.value = ''
-  } else {
-    alert('전화번호와 비밀번호를 입력해주세요.')
-  }
-}
-</script>
