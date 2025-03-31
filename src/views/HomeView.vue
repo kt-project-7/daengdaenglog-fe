@@ -28,7 +28,7 @@
 <script lang="ts" setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import SideMenu from '@/components/landing/navigation/SideMenu.vue'
-import LoginModal from '@/components/landing/modals/LoginModal.vue'
+import LoginModal from '@/components/modals/LoginModal.vue'
 import HeroSection from '@/components/landing/sections/HeroSection.vue'
 import FeaturesSection from '@/components/landing/sections/FeaturesSection.vue'
 import StartSection from '@/components/landing/sections/StartSection.vue'

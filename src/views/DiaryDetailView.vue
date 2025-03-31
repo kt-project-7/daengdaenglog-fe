@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { useDiaryStore } from '@/stores/diary'
-import { useProfileStore } from '@/stores/profile'
+import { useDiaryStore } from '@/stores/diaryStore'
+import { useProfileStore } from '@/stores/profileStore'
 import { formatDate } from '@/utils/formatters'
 import DiaryDetail from '@/components/diary/DiaryDetail.vue'
 
@@ -26,8 +26,8 @@ const currentDiary = computed(() => diaryStore.currentDiary)
 const petName = computed(() => profileStore.profile.name)
 
 // 추억 생성
-const generateMemory = (type: 'image' | 'letter') => {
-  diaryStore.generateMemory(type)
+const generateMemory = () => {
+  diaryStore.generateMemory()
 }
 </script>
 

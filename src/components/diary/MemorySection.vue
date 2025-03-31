@@ -12,8 +12,6 @@ const emit = defineEmits<{
 }>()
 
 const hasMemory = computed(() => !!props.memoryImage)
-const hasImageMemory = computed(() => !!props.memoryImage)
-const hasLetterMemory = computed(() => !!props.memoryImage)
 
 // 추억 생성
 const generateMemory = () => {
@@ -34,7 +32,7 @@ const generateMemory = () => {
     <!-- 추억 콘텐츠 영역 -->
     <div class="space-y-6">
       <!-- 이미지 추억이 있는 경우 -->
-      <div v-if="hasImageMemory">
+      <div v-if="hasMemory">
         <h3 class="body-text font-medium mb-2 text-primary">그림 추억</h3>
         <img
           :src="memoryImage"
@@ -42,28 +40,10 @@ const generateMemory = () => {
           class="w-full max-h-80 object-contain rounded-lg shadow-md"
         />
       </div>
-
-      <!-- 편지 추억이 있는 경우 -->
-      <div v-if="hasLetterMemory">
-        <h3 class="body-text font-medium mb-2 text-primary">편지 추억</h3>
-        <div
-          class="bg-primary bg-opacity-10 p-4 rounded-lg border border-primary border-opacity-20"
-        >
-          <p class="whitespace-pre-line italic text-_black body-text">
-            {{ memoryImage }}
-          </p>
-          <p class="text-right mt-2 text-primary font-medium">
-            - {{ petName }} 올림
-          </p>
-        </div>
-      </div>
     </div>
 
     <!-- 추억 없는 경우 안내 메시지 -->
-    <div
-      v-if="!hasImageMemory && !hasLetterMemory"
-      class="text-center py-4 text-_gray-300"
-    >
+    <div v-if="!hasMemory" class="text-center py-4 text-_gray-300">
       <p>아직 추억이 없어요. 아래 버튼으로 추억을 만들어보세요!</p>
     </div>
 

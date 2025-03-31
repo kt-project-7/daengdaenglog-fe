@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { Camera, Save, X, Pencil } from 'lucide-vue-next'
+import { useProfileStore } from '@/stores/profile'
 import type { Profile } from '@/types/profile'
 import defaultProfileImage from '@/assets/svgs/profile.svg'
 
@@ -9,8 +10,10 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  'update:profile': [profile: Profile]
+  (e: 'update:profile', profile: Profile): void
 }>()
+
+const profileStore = useProfileStore()
 
 const isEditing = ref(false)
 const editedProfile = ref({ ...props.profile })
@@ -27,6 +30,10 @@ const genderDisplay = computed(() => {
   return props.profile.gender === 'male' ? '남아' : '여아'
 })
 
+const profileImage = computed(() => {
+  return props.profile.imageUrl || defaultProfileImage
+})
+
 const toggleEditMode = () => {
   isEditing.value = !isEditing.value
   if (!isEditing.value) {
@@ -40,6 +47,25 @@ const handleImageSelect = (event: Event) => {
   if (input.files && input.files[0]) {
     selectedImage.value = input.files[0]
     imagePreview.value = URL.createObjectURL(input.files[0])
+  }
+}
+
+const handleImageUpload = (event: Event) => {
+  const input = event.target as HTMLInputElement
+  if (input.files && input.files[0]) {
+    const file = input.files[0]
+    const reader = new FileReader()
+
+    reader.onload = (e) => {
+      const imageUrl = e.target?.result as string
+      const updatedProfile = {
+        ...props.profile,
+        imageUrl,
+      }
+      emit('update:profile', updatedProfile)
+    }
+
+    reader.readAsDataURL(file)
   }
 }
 
@@ -62,20 +88,20 @@ const saveChanges = () => {
       <div class="relative mb-10 flex flex-col items-center">
         <div class="relative">
           <img
-            :src="imagePreview || profile.imageUrl || defaultProfileImage"
+            :src="profileImage"
             alt="프로필 이미지"
             class="w-32 h-32 rounded-full border-4 border-primary object-cover"
           />
-          <button
-            type="button"
-            class="absolute bottom-0 right-0 bg-primary text-white p-2 rounded-full shadow-lg hover:bg-primary/90 transition-colors z-10"
-            @click="fileInput?.click()"
+          <label
+            for="profile-image"
+            class="absolute bottom-0 right-0 bg-primary text-white p-2 rounded-full cursor-pointer hover:bg-primary/80 transition-colors z-10 shadow-lg"
           >
             <Camera class="w-5 h-5" />
-          </button>
+          </label>
           <input
             ref="fileInput"
             type="file"
+            id="profile-image"
             accept="image/*"
             class="hidden"
             @change="handleImageSelect"

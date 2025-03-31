@@ -14,11 +14,11 @@
 
     <!-- Content layer -->
     <div
-      class="absolute w-full h-full top-0 left-0 z-20 flex items-center justify-center"
+      class="absolute w-full h-full top-0 left-0 z-50 flex items-center justify-center"
       :style="{ transform: `translateY(${scrollY * -0.2}px)` }"
     >
       <div
-        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 text-center p-8 max-w-[600px]"
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 text-center p-8 max-w-[600px]"
       >
         <img
           src="@/assets/svgs/title.svg"
@@ -33,12 +33,12 @@
             >|</span
           >
         </p>
-        <router-link
-          to="/diary-list"
-          class="inline-block bg-primary text-white py-4 px-8 rounded-full text-lg font-bold transition-all hover:bg-primary/80 hover:-translate-y-1 shadow-md hover:shadow-lg"
+        <button
+          @click="handleStart"
+          class="block w-fit mx-auto bg-primary text-white border-[3px] border-yellow-600 py-4 px-8 rounded-full text-lg font-bold transition-all hover:bg-primary/80 hover:-translate-y-1 hover:rotate-1 shadow-md hover:shadow-lg cursor-pointer"
         >
           시작하기
-        </router-link>
+        </button>
       </div>
     </div>
 
@@ -84,6 +84,9 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 defineProps<{
   scrollY: number
@@ -92,6 +95,10 @@ defineProps<{
 }>()
 
 const isAnimating = ref(true)
+
+const handleStart = () => {
+  router.push('/diary-list')
+}
 
 // Define paw positions and transformations
 const paws = [

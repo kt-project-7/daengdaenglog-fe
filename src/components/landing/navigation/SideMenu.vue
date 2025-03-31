@@ -11,26 +11,23 @@
     </button>
 
     <nav class="mt-8 flex flex-col gap-4">
-      <router-link
+      <button
         v-for="item in menuItems"
         :key="item.path"
-        :to="item.path"
-        custom
-        v-slot="{ navigate }"
+        @click="handleNavigation(item.path)"
+        class="bg-transparent text-left text-lg py-3 px-4 rounded-lg transition-colors hover:bg-'_gray-100' hover:text-primary"
       >
-        <button
-          @click="handleNavigation(navigate)"
-          class="bg-transparent text-left text-lg py-3 px-4 rounded-lg transition-colors hover:bg-'_gray-100' hover:text-primary"
-        >
-          {{ item.label }}
-        </button>
-      </router-link>
+        {{ item.label }}
+      </button>
     </nav>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { X } from 'lucide-vue-next'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 defineProps<{
   isOpen: boolean
@@ -46,8 +43,8 @@ const menuItems = [
   { path: '/profile', label: '마이페이지' },
 ]
 
-const handleNavigation = (navigate: Function) => {
-  navigate()
+const handleNavigation = (path: string) => {
+  router.push(path)
   emit('toggleMenu')
 }
 </script>

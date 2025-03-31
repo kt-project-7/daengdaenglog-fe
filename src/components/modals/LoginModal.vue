@@ -1,9 +1,9 @@
 <template>
   <div
-    class="fixed inset-0 bg-black/50 flex items-center justify-center z-[60]"
+    class="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]"
     @click.self="$emit('close')"
   >
-    <div class="bg-white rounded-2xl p-8 w-[90%] max-w-md relative">
+    <div class="bg-white rounded-2xl p-8 w-[90%] max-w-md relative z-[10000]">
       <button
         class="absolute top-4 right-4 bg-transparent border-none cursor-pointer"
         @click="$emit('close')"
