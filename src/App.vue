@@ -1,56 +1,61 @@
-<script setup lang="ts"></script>
+<script lang="ts" setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import AppHeader from '@/components/landing/header/AppHeader.vue'
+import SideMenu from '@/components/landing/navigation/SideMenu.vue'
+import LoginModal from '@/components/modals/LoginModal.vue'
+import AppFooter from '@/components/landing/footer/AppFooter.vue'
+import { useAuthStore } from '@/stores/authStore'
+
+const router = useRouter()
+const isMenuOpen = ref(false)
+const authStore = useAuthStore()
+
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value
+}
+
+const handleLogin = (success: boolean) => {
+  if (success) {
+    authStore.login()
+    if (authStore.pendingRoute) {
+      router.push(authStore.pendingRoute.fullPath)
+      authStore.clearPendingRoute()
+    }
+  }
+}
+
+const handleNavigation = (
+  page: 'diary-list' | 'profile' | 'diary-write' | 'dang-money-chart',
+) => {
+  router.push(`/${page}`)
+  if (isMenuOpen.value) {
+    isMenuOpen.value = false
+  }
+}
+</script>
 
 <template>
-  <div class="min-h-screen bg-_gray-100">
-    <header class="bg-primary text-white shadow-md">
-      <div
-        class="container mx-auto px-4 py-4 flex justify-between items-center"
-      >
-        <div class="title-1 flex items-center">
-          <router-link to="/" class="flex items-center">
-            <span>🐶 댕댕로그</span>
-          </router-link>
-        </div>
-        <nav>
-          <ul class="flex space-x-6 button-text">
-            <li>
-              <router-link
-                to="/"
-                class="hover:text-_gray-100 transition-colors"
-              >
-                일기목록
-              </router-link>
-            </li>
-            <li>
-              <router-link
-                to="/write"
-                class="hover:text-_gray-100 transition-colors"
-              >
-                일기작성
-              </router-link>
-            </li>
-            <li>
-              <router-link
-                to="/profile"
-                class="hover:text-_gray-100 transition-colors"
-              >
-                프로필
-              </router-link>
-            </li>
-          </ul>
-        </nav>
-      </div>
-    </header>
+  <div class="min-h-screen flex flex-col">
+    <AppHeader
+      :isLoggedIn="authStore.isAuthenticated"
+      @showLogin="authStore.showLoginModal = true"
+      @toggleMenu="toggleMenu"
+    />
 
-    <main class="container mx-auto px-4 py-6">
-      <router-view />
+    <main class="flex-1 mt-[64px]">
+      <RouterView />
     </main>
 
-    <footer class="bg-primary text-white py-4 mt-auto">
-      <div class="container mx-auto px-4 text-center body-text">
-        <p>© 2025 댕댕로그 - 소중한 반려견과의 추억을 기록하세요</p>
-      </div>
-    </footer>
+    <SideMenu :isOpen="isMenuOpen" @toggleMenu="toggleMenu" />
+
+    <LoginModal
+      v-if="authStore.showLoginModal"
+      @close="authStore.showLoginModal = false"
+      @login="handleLogin"
+    />
+
+    <AppFooter />
   </div>
 </template>
 

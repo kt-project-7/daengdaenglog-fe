@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { useDiaryStore } from '@/stores/diary'
-import { useProfileStore } from '@/stores/profile'
+import { useDiaryStore } from '@/stores/diaryStore'
+import { useProfileStore } from '@/stores/profileStore'
 import { formatDate } from '@/utils/formatters'
 import DiaryDetail from '@/components/diary/DiaryDetail.vue'
 
@@ -26,8 +26,8 @@ const currentDiary = computed(() => diaryStore.currentDiary)
 const petName = computed(() => profileStore.profile.name)
 
 // 추억 생성
-const generateMemory = (type: 'image' | 'letter') => {
-  diaryStore.generateMemory(type)
+const generateMemory = () => {
+  diaryStore.generateMemory()
 }
 </script>
 
@@ -37,7 +37,7 @@ const generateMemory = (type: 'image' | 'letter') => {
       <h1 class="title-1">{{ formatDate(currentDiary.date) }}</h1>
       <div class="flex space-x-2">
         <router-link
-          to="/"
+          to="/diary-list"
           class="px-3 py-1 bg-_gray-100 text-_black rounded-md hover:bg-_gray-200 button-text"
         >
           목록으로
@@ -54,7 +54,7 @@ const generateMemory = (type: 'image' | 'letter') => {
   <div v-else class="text-center py-10">
     <p class="text-xl text-_gray-300">일기를 찾을 수 없습니다.</p>
     <router-link
-      to="/"
+      to="/diary-list"
       class="mt-4 inline-block bg-primary text-white px-6 py-2 rounded-lg hover:opacity-80 transition-colors button-text"
     >
       일기 목록으로 돌아가기

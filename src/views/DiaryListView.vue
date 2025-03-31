@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useDiaryStore } from '@/stores/diary'
+import { useAuthStore } from '@/stores/authStore'
+import { useDiaryStore } from '@/stores/diaryStore'
 import { formatDate, getMoodEmoji, getWeatherEmoji } from '@/utils/formatters'
-import type { Mood, Weather, Diary } from '@/types/diary'
+import type { Mood, Weather } from '@/types/diary'
 
 const router = useRouter()
+const authStore = useAuthStore()
 const diaryStore = useDiaryStore()
+
+// 로그인 모달 상태
+const showLoginModal = ref(false)
 
 // 날짜 필터 입력값
 const dateFilter = ref({
@@ -32,6 +37,18 @@ const sortOption = ref<'newest' | 'oldest'>('newest')
 // 페이지네이션
 const currentPage = ref(1)
 const itemsPerPage = 5
+
+// 기분 옵션 배열 추가
+const moodOptions: Mood[] = [
+  'happy',
+  'sad',
+  'angry',
+  'surprised',
+  'hungry',
+  'hurt',
+  'love',
+  'sleepy',
+]
 
 // 필터 및 정렬이 적용된 일기 목록
 const filteredDiaries = computed(() => {
@@ -150,19 +167,55 @@ const resetAllFilters = () => {
   sortOption.value = 'newest'
 }
 
-onMounted(() => {
-  // 현재 다이어리 ID 초기화
-  diaryStore.setCurrentDiaryId('')
-})
-
 // 일기 상세보기로 이동
 const viewDiary = (id: string) => {
+  if (!authStore.isAuthenticated) {
+    showLoginModal.value = true
+    return
+  }
   router.push(`/diary/${id}`)
 }
+
+// 새 일기 작성 페이지로 이동
+const goToWrite = () => {
+  if (!authStore.isAuthenticated) {
+    showLoginModal.value = true
+    return
+  }
+  router.push('/diary-write')
+}
+
+// 로그인 처리
+const handleLogin = (success: boolean) => {
+  if (success) {
+    authStore.login()
+    showLoginModal.value = false
+    // 로그인 성공 후 일기 데이터 로드
+    loadDiaryData()
+  }
+}
+
+// 일기 데이터 로드
+const loadDiaryData = async () => {
+  try {
+    await diaryStore.fetchDiaries()
+  } catch (error) {
+    console.error('일기 목록 로딩 실패:', error)
+  }
+}
+
+onMounted(async () => {
+  if (!authStore.isAuthenticated) {
+    showLoginModal.value = true
+    return
+  }
+
+  await loadDiaryData()
+})
 </script>
 
 <template>
-  <div class="min-h-screen">
+  <div class="min-h-screen bg-_gray-100 py-12">
     <!-- 기존 헤더는 제거하고 컨텐츠만 유지 -->
     <main class="container mx-auto px-4 py-8" style="max-width: 1280px">
       <!-- 일기 목록 페이지 - 매거진 스타일 -->
@@ -177,12 +230,12 @@ const viewDiary = (id: string) => {
             <p class="text-_gray-300">소중한 반려견과의 일상을 기록하세요</p>
           </div>
 
-          <router-link
-            to="/write"
+          <button
+            @click="goToWrite"
             class="bg-primary text-white px-5 py-2 rounded-lg hover:opacity-80 transition-colors flex items-center shadow-md"
           >
             <span class="mr-1">+</span> 새 일기
-          </router-link>
+          </button>
         </div>
 
         <div
@@ -198,12 +251,12 @@ const viewDiary = (id: string) => {
           </div>
           <p class="text-xl text-_black mb-4">아직 작성된 일기가 없어요!</p>
           <p class="text-_gray-300 mb-6">댕댕이의 일상을 기록해보세요.</p>
-          <router-link
-            to="/write"
+          <button
+            @click="goToWrite"
             class="inline-block bg-primary text-white px-6 py-3 rounded-lg hover:opacity-80 transition-colors shadow-md"
           >
             첫 일기 작성하기
-          </router-link>
+          </button>
         </div>
 
         <div v-else>
@@ -270,70 +323,20 @@ const viewDiary = (id: string) => {
                     전체
                   </button>
                   <button
-                    @click="changeMoodFilter('happy')"
+                    v-for="mood in moodOptions"
+                    :key="mood"
+                    @click="changeMoodFilter(mood)"
                     class="px-3 py-1 rounded-full text-sm font-medium flex items-center"
                     :class="
-                      selectedMood === 'happy'
+                      selectedMood === mood
                         ? 'bg-primary text-white'
                         : 'bg-_gray-100 text-_gray-400 hover:bg-_gray-200'
                     "
                   >
-                    <span class="mr-1">😊</span> 기쁨
-                  </button>
-                  <button
-                    @click="changeMoodFilter('sad')"
-                    class="px-3 py-1 rounded-full text-sm font-medium flex items-center"
-                    :class="
-                      selectedMood === 'sad'
-                        ? 'bg-primary text-white'
-                        : 'bg-_gray-100 text-_gray-400 hover:bg-_gray-200'
-                    "
-                  >
-                    <span class="mr-1">😢</span> 슬픔
-                  </button>
-                  <button
-                    @click="changeMoodFilter('angry')"
-                    class="px-3 py-1 rounded-full text-sm font-medium flex items-center"
-                    :class="
-                      selectedMood === 'angry'
-                        ? 'bg-primary text-white'
-                        : 'bg-_gray-100 text-_gray-400 hover:bg-_gray-200'
-                    "
-                  >
-                    <span class="mr-1">😡</span> 분노
-                  </button>
-                  <button
-                    @click="changeMoodFilter('surprised')"
-                    class="px-3 py-1 rounded-full text-sm font-medium flex items-center"
-                    :class="
-                      selectedMood === 'surprised'
-                        ? 'bg-primary text-white'
-                        : 'bg-_gray-100 text-_gray-400 hover:bg-_gray-200'
-                    "
-                  >
-                    <span class="mr-1">😲</span> 놀람
-                  </button>
-                  <button
-                    @click="changeMoodFilter('hungry')"
-                    class="px-3 py-1 rounded-full text-sm font-medium flex items-center"
-                    :class="
-                      selectedMood === 'hungry'
-                        ? 'bg-primary text-white'
-                        : 'bg-_gray-100 text-_gray-400 hover:bg-_gray-200'
-                    "
-                  >
-                    <span class="mr-1">🍴</span> 배고픔
-                  </button>
-                  <button
-                    @click="changeMoodFilter('sleepy')"
-                    class="px-3 py-1 rounded-full text-sm font-medium flex items-center"
-                    :class="
-                      selectedMood === 'sleepy'
-                        ? 'bg-primary text-white'
-                        : 'bg-_gray-100 text-_gray-400 hover:bg-_gray-200'
-                    "
-                  >
-                    <span class="mr-1">😴</span> 졸림
+                    <span class="mr-1">{{
+                      getMoodEmoji(mood).split(' ')[0]
+                    }}</span>
+                    {{ getMoodEmoji(mood).split(' ')[1] }}
                   </button>
                 </div>
               </div>
@@ -393,12 +396,25 @@ const viewDiary = (id: string) => {
                       <span
                         class="px-3 py-1 bg-primary/80 rounded-full text-sm backdrop-blur-sm"
                       >
-                        {{ getMoodEmoji(paginatedDiaries[0].mood) }}
+                        <span class="mr-1">{{
+                          getMoodEmoji(paginatedDiaries[0].mood as Mood).split(
+                            ' ',
+                          )[0]
+                        }}</span>
+                        {{
+                          getMoodEmoji(paginatedDiaries[0].mood as Mood).split(
+                            ' ',
+                          )[1]
+                        }}
                       </span>
                       <span
                         class="px-3 py-1 bg-_gray-400/80 rounded-full text-sm backdrop-blur-sm"
                       >
-                        {{ getWeatherEmoji(paginatedDiaries[0].weather) }}
+                        {{
+                          getWeatherEmoji(
+                            paginatedDiaries[0].weather as Weather,
+                          )
+                        }}
                       </span>
                     </div>
                     <h2 class="text-2xl font-bold mb-1">
@@ -410,7 +426,7 @@ const viewDiary = (id: string) => {
                   </div>
 
                   <div
-                    v-if="paginatedDiaries[0].hasMemory"
+                    v-if="paginatedDiaries[0].memory"
                     class="absolute top-4 right-4 bg-primary/90 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm flex items-center"
                   >
                     <span class="mr-1">✨</span>
@@ -442,12 +458,25 @@ const viewDiary = (id: string) => {
                       <span
                         class="px-2 py-1 bg-primary/80 rounded-full text-xs backdrop-blur-sm"
                       >
-                        {{ getMoodEmoji(paginatedDiaries[1].mood) }}
+                        <span class="mr-1">{{
+                          getMoodEmoji(paginatedDiaries[1].mood as Mood).split(
+                            ' ',
+                          )[0]
+                        }}</span>
+                        {{
+                          getMoodEmoji(paginatedDiaries[1].mood as Mood).split(
+                            ' ',
+                          )[1]
+                        }}
                       </span>
                       <span
                         class="px-2 py-1 bg-_gray-400/80 rounded-full text-xs backdrop-blur-sm"
                       >
-                        {{ getWeatherEmoji(paginatedDiaries[1].weather) }}
+                        {{
+                          getWeatherEmoji(
+                            paginatedDiaries[1].weather as Weather,
+                          )
+                        }}
                       </span>
                     </div>
                     <h2 class="text-xl font-bold mb-1">
@@ -459,7 +488,7 @@ const viewDiary = (id: string) => {
                   </div>
 
                   <div
-                    v-if="paginatedDiaries[1].hasMemory"
+                    v-if="paginatedDiaries[1].memory"
                     class="absolute top-4 right-4 bg-primary/90 text-white px-2 py-1 rounded-full text-xs backdrop-blur-sm flex items-center"
                   >
                     <span class="mr-1">✨</span>
@@ -490,7 +519,7 @@ const viewDiary = (id: string) => {
                         {{ formatDate(diary.date) }}
                       </h3>
                       <div
-                        v-if="diary.hasMemory"
+                        v-if="diary.memory"
                         class="bg-primary bg-opacity-10 text-_black px-2 py-1 rounded-full text-xs flex items-center"
                       >
                         <span class="mr-1">✨</span>
@@ -501,11 +530,15 @@ const viewDiary = (id: string) => {
                     <div class="flex flex-wrap gap-2 mb-3">
                       <span
                         class="text-xs px-2 py-1 bg-primary bg-opacity-10 rounded-full"
-                        >{{ getMoodEmoji(diary.mood) }}</span
                       >
+                        <span class="mr-1">{{
+                          getMoodEmoji(diary.mood as Mood).split(' ')[0]
+                        }}</span>
+                        {{ getMoodEmoji(diary.mood as Mood).split(' ')[1] }}
+                      </span>
                       <span
                         class="text-xs px-2 py-1 bg-_gray-100 rounded-full"
-                        >{{ getWeatherEmoji(diary.weather) }}</span
+                        >{{ getWeatherEmoji(diary.weather as Weather) }}</span
                       >
                       <span
                         v-if="diary.walkTime"

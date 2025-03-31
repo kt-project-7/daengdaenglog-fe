@@ -1,11 +1,7 @@
 export type Gender = 'male' | 'female'
 
-export interface DBTIResult {
-  type: string
-  description: string
-}
-
 export interface Profile {
+  id: number
   name: string
   breed: string
   age: number
@@ -13,5 +9,16 @@ export interface Profile {
   gender: Gender
   neutered: boolean
   imageUrl: string | null
-  dbtiResult: DBTIResult | null
+  dbtiResult: {
+    type: string
+    description: string
+  } | null
+  petsitterGuide: {
+    generalInfo: string
+    routineInfo: string
+    feedingInfo: string
+    healthInfo: string
+    specialNotes: string[]
+    emergencyTips: string[]
+  } | null
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useDiaryStore } from '@/stores/diary'
+import { useDiaryStore } from '@/stores/diaryStore'
 
 const diaryStore = useDiaryStore()
 

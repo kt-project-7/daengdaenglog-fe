@@ -1,20 +1,23 @@
 <script setup lang="ts">
 import { formatDate, getMoodEmoji, getWeatherEmoji } from '@/utils/formatters'
-import type { Diary } from '@/types/diary'
+import type { Diary, Mood, Weather } from '@/types/diary'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 defineProps<{
   diary: Diary
 }>()
 
-defineEmits<{
-  (e: 'click', id: string): void
-}>()
+const handleClick = (id: string) => {
+  router.push(`/diary/${id}`)
+}
 </script>
 
 <template>
   <div
     class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-    @click="$emit('click', diary.id)"
+    @click="handleClick(diary.id)"
   >
     <div v-if="diary.imageUrl" class="h-48 overflow-hidden">
       <img
@@ -29,10 +32,10 @@ defineEmits<{
 
       <div class="flex flex-wrap gap-2 mb-3">
         <span class="text-sm px-2 py-1 bg-primary bg-opacity-10 rounded-full">{{
-          getMoodEmoji(diary.mood)
+          getMoodEmoji(diary.mood as Mood)
         }}</span>
         <span class="text-sm px-2 py-1 bg-blue-100 rounded-full">{{
-          getWeatherEmoji(diary.weather)
+          getWeatherEmoji(diary.weather as Weather)
         }}</span>
       </div>
 
@@ -43,7 +46,7 @@ defineEmits<{
         <span v-if="diary.mealTime">식사: {{ diary.mealTime }}</span>
       </div>
 
-      <div v-if="diary.hasMemory" class="mt-2 text-primary text-sm">
+      <div v-if="diary.memory" class="mt-2 text-primary text-sm">
         <span class="flex items-center">
           <span class="mr-1">✨</span>
           추억이 생성되었어요

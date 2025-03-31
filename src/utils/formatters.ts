@@ -28,7 +28,7 @@ export const getMoodEmoji = (mood: Mood): string => {
     angry: '😡 분노',
     surprised: '😲 놀람',
     hungry: '🍴 배고픔',
-    hurt: '🤕 상처',
+    hurt: '🤕 아픔',
     love: '💖 사랑',
     sleepy: '😴 졸림',
   }
