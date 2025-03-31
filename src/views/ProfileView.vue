@@ -8,6 +8,7 @@ import ProfileInfo from '@/components/profile/ProfileInfo.vue'
 import DBTICard from '@/components/profile/DBTICard.vue'
 import PetsitterGuideCard from '@/components/profile/PetsitterGuideCard.vue'
 import LoginModal from '@/components/modals/LoginModal.vue'
+import AddPetModal from '@/components/modals/AddPetModal.vue'
 import type { Profile } from '@/types/profile'
 import defaultProfileImage from '@/assets/svgs/profile.svg'
 
@@ -17,6 +18,9 @@ const authStore = useAuthStore()
 
 // 로그인 모달 상태
 const showLoginModal = ref(false)
+
+// 반려동물 추가 모달 상태
+const showAddPetModal = ref(false)
 
 // 현재 선택된 반려동물 인덱스
 const currentPetIndex = ref(0)
@@ -56,19 +60,8 @@ const switchPet = (index: number) => {
 }
 
 // 반려동물 추가 함수
-const addPet = () => {
-  const newPet: Profile = {
-    id: pets.value.length + 1,
-    name: '새로운 반려동물',
-    breed: '',
-    age: 0,
-    gender: 'male',
-    weight: 0,
-    neutered: false,
-    imageUrl: defaultProfileImage,
-    dbtiResult: null,
-    petsitterGuide: null,
-  }
+const addPet = (newPet: Profile) => {
+  newPet.id = pets.value.length + 1
   pets.value.push(newPet)
   switchPet(pets.value.length - 1)
 }
@@ -146,7 +139,7 @@ const generatePetsitterGuide = async () => {
             </div>
             <button
               class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
-              @click="addPet"
+              @click="showAddPetModal = true"
             >
               <UserCircle class="w-5 h-5" />
               반려동물 추가
@@ -226,6 +219,14 @@ const generatePetsitterGuide = async () => {
       v-if="showLoginModal"
       @close="showLoginModal = false"
       @login="handleLogin"
+    />
+
+    <!-- 반려동물 추가 모달 -->
+    <AddPetModal
+      v-if="showAddPetModal"
+      :show="showAddPetModal"
+      @close="showAddPetModal = false"
+      @add="addPet"
     />
   </div>
 </template>

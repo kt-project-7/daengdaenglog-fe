@@ -19,7 +19,7 @@ defineEmits<{
     >
       <div class="flex items-center gap-3 mb-4">
         <Brain class="w-6 h-6 text-blue-500" />
-        <h3 class="text-xl font-bold text-gray-800">DBTI 분석 결과</h3>
+        <h3 class="text-xl font-bold text-gray-800">댕BTI 분석 결과</h3>
       </div>
       <div class="space-y-4">
         <div>
