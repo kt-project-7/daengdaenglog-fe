@@ -26,7 +26,7 @@ const handleLogin = (success: boolean) => {
 }
 
 const handleNavigation = (
-  page: 'diary-list' | 'profile' | 'diary-write' | 'dang-bti' | 'pet-guide',
+  page: 'diary-list' | 'profile' | 'diary-write' | 'dang-money-chart',
 ) => {
   router.push(`/${page}`)
   if (isMenuOpen.value) {

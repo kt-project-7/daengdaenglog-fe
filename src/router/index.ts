@@ -35,6 +35,7 @@ const routes = [
     path: '/dang-money-chart',
     name: 'dang-money-chart',
     component: () => import('@/views/DangMoneyChart.vue'),
+    meta: { requiresAuth: true },
   },
 ]
 

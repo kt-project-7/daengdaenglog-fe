@@ -35,19 +35,13 @@ export const useProfileStore = defineStore('profile', () => {
   const generatePetsitterGuide = async () => {
     // API 호출 로직
     profile.value.petsitterGuide = {
-      meals: {
-        frequency: '2',
-        amount: '1컵(200g)',
-        schedule: '아침 8시, 저녁 6시에 급여해주세요',
-        preferences: '습식 사료를 더 좋아합니다',
-        restrictions: '닭고기 알러지가 있으니 주의해주세요',
-      },
-      walks: {
-        frequency: '2',
-        duration: '30분 정도가 적당합니다',
-        bestTime: '아침과 저녁 시간대를 선호합니다',
-        preferences: '공원에서 뛰어노는 것을 좋아합니다',
-      },
+      generalInfo: `${profile.value.name}는 ${profile.value.breed} 품종으로, ${profile.value.age}세 ${profile.value.gender === 'male' ? '수컷' : '암컷'}입니다. 체중은 ${profile.value.weight}kg이며, ${profile.value.neutered ? '중성화가 되어있습니다.' : '중성화가 되어있지 않습니다.'}`,
+      routineInfo:
+        '일반적으로 아침 7시에 일어나 산책하고, 저녁 9시에 잠드는 패턴을 가지고 있습니다. 낮잠은 보통 오후 2시경에 2시간 정도 자며, 활동량이 많은 편입니다.',
+      feedingInfo:
+        '하루 2번 아침 8시, 저녁 6시에 각 1컵(200g)의 사료를 급여합니다. 습식 사료를 선호하며, 닭고기 알러지가 있으니 주의해주세요.',
+      healthInfo:
+        '정기적인 검진은 3개월마다 받고 있으며, 최근 접종한 백신은 종합백신입니다. 특별한 건강 이슈는 없으나 더운 날씨에 체력 소모가 빠른 편입니다.',
       specialNotes: [
         '낯선 사람을 무서워하니 천천히 다가가주세요',
         '배를 만져주는 것을 좋아합니다',

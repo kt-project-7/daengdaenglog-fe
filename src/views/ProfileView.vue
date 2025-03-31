@@ -1,26 +1,23 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/authStore'
 import { useProfileStore } from '@/stores/profileStore'
-import { Dog, Cat, Brain, FileText, UserCircle } from 'lucide-vue-next'
+import { UserCircle, Brain, Pencil } from 'lucide-vue-next'
 import ProfileInfo from '@/components/profile/ProfileInfo.vue'
 import DBTICard from '@/components/profile/DBTICard.vue'
 import PetsitterGuideCard from '@/components/profile/PetsitterGuideCard.vue'
-import LoginModal from '@/components/modals/LoginModal.vue'
 import AddPetModal from '@/components/modals/AddPetModal.vue'
+import ResultModal from '@/components/modals/ResultModal.vue'
+import PetSelector from '@/components/profile/PetSelector.vue'
+import FeatureCard from '@/components/profile/FeatureCard.vue'
 import type { Profile } from '@/types/profile'
 import defaultProfileImage from '@/assets/svgs/profile.svg'
 
-const router = useRouter()
 const profileStore = useProfileStore()
-const authStore = useAuthStore()
 
-// 로그인 모달 상태
-const showLoginModal = ref(false)
-
-// 반려동물 추가 모달 상태
+// 모달 상태
 const showAddPetModal = ref(false)
+const showDBTIResultModal = ref(false)
+const showPetsitterGuideModal = ref(false)
 
 // 현재 선택된 반려동물 인덱스
 const currentPetIndex = ref(0)
@@ -67,20 +64,7 @@ const addPet = (newPet: Profile) => {
   profileStore.setProfile(newPet)
 }
 
-// 로그인 처리
-const handleLogin = (success: boolean) => {
-  if (success) {
-    authStore.login()
-    showLoginModal.value = false
-  }
-}
-
 onMounted(async () => {
-  if (!authStore.isAuthenticated) {
-    showLoginModal.value = true
-    return
-  }
-
   try {
     await profileStore.fetchProfile()
   } catch (error) {
@@ -97,6 +81,9 @@ const updateProfile = (updatedProfile: Profile) => {
 const analyzeDogPersonality = async () => {
   try {
     await profileStore.analyzeDogPersonality()
+    // 현재 반려동물 정보 업데이트
+    pets.value[currentPetIndex.value].dbtiResult =
+      profileStore.profile.dbtiResult
   } catch (error) {
     console.error('DBTI 분석 실패:', error)
   }
@@ -105,9 +92,36 @@ const analyzeDogPersonality = async () => {
 const generatePetsitterGuide = async () => {
   try {
     await profileStore.generatePetsitterGuide()
+    // 현재 반려동물 정보 업데이트
+    pets.value[currentPetIndex.value].petsitterGuide =
+      profileStore.profile.petsitterGuide
   } catch (error) {
     console.error('펫시터 가이드 생성 실패:', error)
   }
+}
+
+// 모달 관련 함수들
+const showDBTIResult = () => {
+  showDBTIResultModal.value = true
+}
+
+const showPetsitterGuide = () => {
+  showPetsitterGuideModal.value = true
+}
+
+const handleSavePdf = () => {
+  // PDF 저장 로직 구현 예정
+  alert('PDF 저장 기능 구현 예정입니다.')
+}
+
+const handleShareKakao = () => {
+  // 카카오톡 공유 로직 구현 예정
+  alert('카카오톡 공유 기능 구현 예정입니다.')
+}
+
+const handleCopyLink = () => {
+  // 링크 복사 로직 구현 예정
+  alert('링크 복사 기능 구현 예정입니다.')
 }
 </script>
 
@@ -116,96 +130,55 @@ const generatePetsitterGuide = async () => {
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-7xl w-full bg-white rounded-2xl p-8 shadow-lg relative">
         <div class="flex flex-col gap-8">
-          <!-- 반려동물 선택 -->
-          <div class="flex items-center justify-between">
-            <div class="flex gap-4">
-              <button
-                v-for="(pet, index) in pets"
-                :key="pet.id"
-                class="flex items-center gap-2 px-4 py-2 rounded-lg transition-all"
-                :class="[
-                  currentPetIndex === index
-                    ? 'bg-primary text-white'
-                    : 'bg-_gray-100 text-_gray-400 hover:bg-_gray-200',
-                ]"
-                @click="switchPet(index)"
-              >
-                <Dog
-                  v-if="pet.breed.toLowerCase().includes('리트리버')"
-                  class="w-5 h-5"
-                />
-                <Cat v-else class="w-5 h-5" />
-                {{ pet.name }}
-              </button>
-            </div>
-            <button
-              class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
-              @click="showAddPetModal = true"
-            >
-              <UserCircle class="w-5 h-5" />
-              반려동물 추가
-            </button>
-          </div>
+          <!-- 반려동물 선택 컴포넌트 -->
+          <PetSelector
+            :pets="pets"
+            :current-pet-index="currentPetIndex"
+            @switch="switchPet"
+            @add="showAddPetModal = true"
+          />
 
           <!-- 기능 카드 -->
           <div class="overflow-x-auto">
             <div class="grid grid-cols-3 gap-6 min-w-[900px]">
               <!-- 프로필 정보 -->
-              <div
-                class="bg-[#fff9e9] rounded-xl p-6 shadow-sm border border-gray-100 transition-transform hover:-translate-y-1 hover:shadow-md border-t-4 border-t-[#f59e0b]"
+              <FeatureCard
+                :icon="UserCircle"
+                title="반려동물 정보"
+                color="[#f59e0b]"
               >
-                <div
-                  class="flex items-center gap-3 mb-4 pb-3 border-b-2 border-[#f59e0b]"
-                >
-                  <UserCircle class="w-7 h-7 text-[#f59e0b]" />
-                  <h2 class="text-2xl text-gray-700 font-bold">
-                    반려동물 정보
-                  </h2>
-                </div>
                 <ProfileInfo
                   :profile="pets[currentPetIndex]"
                   @update:profile="updateProfile"
                 />
-              </div>
+              </FeatureCard>
 
               <!-- DBTI 분석 카드 -->
-              <div
-                class="bg-[#fff9e9] rounded-xl p-6 shadow-sm border border-gray-100 transition-transform hover:-translate-y-1 hover:shadow-md border-t-4 border-t-blue-400"
-              >
-                <div
-                  class="flex items-center gap-3 mb-4 pb-3 border-b-2 border-[#f59e0b]"
-                >
-                  <Brain class="w-7 h-7 text-[#f59e0b]" />
-                  <h2 class="text-2xl text-gray-700 font-bold">DBTI 분석</h2>
-                </div>
+              <FeatureCard :icon="Brain" title="DBTI 분석" color="blue-400">
                 <DBTICard
                   :profile="pets[currentPetIndex]"
                   @analyze="analyzeDogPersonality"
+                  @show-result="showDBTIResult"
                 />
-              </div>
+              </FeatureCard>
 
               <!-- 펫시터 가이드 카드 -->
-              <div
-                class="bg-[#fff9e9] rounded-xl p-6 shadow-sm border border-gray-100 transition-transform hover:-translate-y-1 hover:shadow-md border-t-4 border-t-green-500"
+              <FeatureCard
+                :icon="Pencil"
+                title="펫시터 가이드"
+                color="green-500"
               >
-                <div
-                  class="flex items-center gap-3 mb-4 pb-3 border-b-2 border-[#f59e0b]"
-                >
-                  <FileText class="w-7 h-7 text-[#f59e0b]" />
-                  <h2 class="text-2xl text-gray-700 font-bold">
-                    펫시터 가이드
-                  </h2>
-                </div>
                 <PetsitterGuideCard
                   :profile="pets[currentPetIndex]"
                   @generate="generatePetsitterGuide"
+                  @show-guide="showPetsitterGuide"
                 />
-              </div>
+              </FeatureCard>
             </div>
           </div>
         </div>
 
-        <!-- 발자국 장식 -->
+        <!-- 발자국 장식 (컴포넌트로 분리하지 않음) -->
         <div
           class="absolute bottom-5 left-5 w-[60px] h-[60px] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-20 -rotate-15"
         ></div>
@@ -215,13 +188,6 @@ const generatePetsitterGuide = async () => {
       </div>
     </div>
 
-    <!-- 로그인 모달 -->
-    <LoginModal
-      v-if="showLoginModal"
-      @close="showLoginModal = false"
-      @login="handleLogin"
-    />
-
     <!-- 반려동물 추가 모달 -->
     <AddPetModal
       v-if="showAddPetModal"
@@ -229,6 +195,158 @@ const generatePetsitterGuide = async () => {
       @close="showAddPetModal = false"
       @add="addPet"
     />
+
+    <!-- DBTI 결과 모달 -->
+    <ResultModal
+      :show="showDBTIResultModal"
+      title="DBTI 분석 결과"
+      @close="showDBTIResultModal = false"
+      @save-pdf="handleSavePdf"
+      @share-kakao="handleShareKakao"
+      @copy-link="handleCopyLink"
+    >
+      <div class="space-y-6" v-if="pets[currentPetIndex].dbtiResult">
+        <div class="text-center mb-6">
+          <div class="inline-block p-4 bg-blue-100 rounded-full mb-4">
+            <Brain class="w-12 h-12 text-blue-500" />
+          </div>
+          <h3 class="text-2xl font-bold text-blue-500">
+            {{ pets[currentPetIndex].dbtiResult?.type }}
+          </h3>
+          <p class="text-lg text-_gray-500 mt-2">
+            {{ pets[currentPetIndex].name }}의 DBTI 결과
+          </p>
+        </div>
+
+        <div class="bg-blue-50 rounded-xl p-6 border border-blue-100">
+          <h4 class="text-xl font-bold text-blue-700 mb-4">성격 분석</h4>
+          <p class="text-_gray-700 leading-relaxed text-lg">
+            {{ pets[currentPetIndex].dbtiResult?.description }}
+          </p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-_gray-50 rounded-xl p-5 border border-_gray-100">
+            <h4 class="text-lg font-bold text-_gray-700 mb-3">특징</h4>
+            <ul class="space-y-2 text-_gray-600">
+              <li class="flex items-start gap-2">
+                <span
+                  class="inline-block w-2 h-2 rounded-full bg-blue-500 mt-2"
+                ></span>
+                활발하고 사교적인 성격
+              </li>
+              <li class="flex items-start gap-2">
+                <span
+                  class="inline-block w-2 h-2 rounded-full bg-blue-500 mt-2"
+                ></span>
+                새로운 환경과 사람에 호기심이 많음
+              </li>
+              <li class="flex items-start gap-2">
+                <span
+                  class="inline-block w-2 h-2 rounded-full bg-blue-500 mt-2"
+                ></span>
+                놀이와 활동에 대한 열정이 넘침
+              </li>
+            </ul>
+          </div>
+
+          <div class="bg-_gray-50 rounded-xl p-5 border border-_gray-100">
+            <h4 class="text-lg font-bold text-_gray-700 mb-3">양육 팁</h4>
+            <ul class="space-y-2 text-_gray-600">
+              <li class="flex items-start gap-2">
+                <span
+                  class="inline-block w-2 h-2 rounded-full bg-green-500 mt-2"
+                ></span>
+                충분한 운동과 놀이 시간 제공
+              </li>
+              <li class="flex items-start gap-2">
+                <span
+                  class="inline-block w-2 h-2 rounded-full bg-green-500 mt-2"
+                ></span>
+                다양한 사회화 경험 제공
+              </li>
+              <li class="flex items-start gap-2">
+                <span
+                  class="inline-block w-2 h-2 rounded-full bg-green-500 mt-2"
+                ></span>
+                일관된 규칙과 훈련 제공
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </ResultModal>
+
+    <!-- 펫시터 가이드 결과 모달 -->
+    <ResultModal
+      :show="showPetsitterGuideModal"
+      title="펫시터 가이드"
+      @close="showPetsitterGuideModal = false"
+      @save-pdf="handleSavePdf"
+      @share-kakao="handleShareKakao"
+      @copy-link="handleCopyLink"
+    >
+      <div class="space-y-6" v-if="pets[currentPetIndex].petsitterGuide">
+        <div class="text-center mb-6">
+          <div class="inline-block p-4 bg-green-100 rounded-full mb-4">
+            <Pencil class="w-12 h-12 text-green-500" />
+          </div>
+          <h3 class="text-2xl font-bold text-green-500">
+            {{ pets[currentPetIndex].name }}의 펫시터 가이드
+          </h3>
+          <p class="text-lg text-_gray-500 mt-2">
+            아래 가이드를 펫시터에게 전달하세요
+          </p>
+        </div>
+
+        <div class="bg-green-50 rounded-xl p-6 border border-green-100">
+          <h4 class="text-xl font-bold text-green-700 mb-4">기본 정보</h4>
+          <p class="text-_gray-700 leading-relaxed text-lg">
+            {{ pets[currentPetIndex].petsitterGuide?.generalInfo }}
+          </p>
+        </div>
+
+        <div class="bg-_gray-50 rounded-xl p-6 border border-_gray-100">
+          <h4 class="text-xl font-bold text-_gray-700 mb-4">일상 생활</h4>
+          <p class="text-_gray-700 leading-relaxed">
+            {{ pets[currentPetIndex].petsitterGuide?.routineInfo }}
+          </p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-_gray-50 rounded-xl p-5 border border-_gray-100">
+            <h4 class="text-lg font-bold text-_gray-700 mb-3">식사 관련</h4>
+            <p class="text-_gray-600">
+              {{ pets[currentPetIndex].petsitterGuide?.feedingInfo }}
+            </p>
+          </div>
+
+          <div class="bg-_gray-50 rounded-xl p-5 border border-_gray-100">
+            <h4 class="text-lg font-bold text-_gray-700 mb-3">건강 관련</h4>
+            <p class="text-_gray-600">
+              {{ pets[currentPetIndex].petsitterGuide?.healthInfo }}
+            </p>
+          </div>
+        </div>
+
+        <div class="bg-_gray-50 rounded-xl p-6 border border-_gray-100">
+          <h4 class="text-xl font-bold text-_gray-700 mb-4">특별 주의사항</h4>
+          <ul class="space-y-2 text-_gray-600">
+            <li
+              class="flex items-start gap-2"
+              v-for="(note, index) in pets[currentPetIndex].petsitterGuide
+                ?.specialNotes"
+              :key="index"
+            >
+              <span
+                class="inline-block w-2 h-2 rounded-full bg-red-500 mt-2"
+              ></span>
+              {{ note }}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </ResultModal>
   </div>
 </template>
 

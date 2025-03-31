@@ -1,34 +1,6 @@
-<template>
-  <div
-    class="min-h-screen overflow-y-auto overflow-x-hidden perspective-[1px] scroll-smooth bg-'_gray-100'"
-    @scroll="handleScroll"
-    ref="mainContainer"
-  >
-    <SideMenu :isOpen="isMenuOpen" @toggleMenu="toggleMenu" />
-
-    <LoginModal
-      v-if="showLoginModal"
-      @close="showLoginModal = false"
-      @login="handleLogin"
-    />
-
-    <HeroSection
-      :scrollY="scrollY"
-      class="pt-16"
-      :displayText="displayText"
-      :cursorBlink="cursorBlink"
-    />
-
-    <FeaturesSection :scrollY="scrollY" />
-
-    <StartSection />
-  </div>
-</template>
-
 <script lang="ts" setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import SideMenu from '@/components/landing/navigation/SideMenu.vue'
-import LoginModal from '@/components/modals/LoginModal.vue'
 import HeroSection from '@/components/landing/sections/HeroSection.vue'
 import FeaturesSection from '@/components/landing/sections/FeaturesSection.vue'
 import StartSection from '@/components/landing/sections/StartSection.vue'
@@ -36,8 +8,6 @@ import StartSection from '@/components/landing/sections/StartSection.vue'
 const scrollY = ref(0)
 const mainContainer = ref<HTMLElement | null>(null)
 const isMenuOpen = ref(false)
-const showLoginModal = ref(false)
-const isLoggedIn = ref(false)
 
 // 타이핑 애니메이션 관련 변수
 const fullText = '소중한 당신의 반려동물 일상을 기록하세요'
@@ -87,13 +57,6 @@ const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
 }
 
-const handleLogin = (success: boolean) => {
-  if (success) {
-    isLoggedIn.value = true
-    showLoginModal.value = false
-  }
-}
-
 onMounted(() => {
   if (mainContainer.value) {
     mainContainer.value.addEventListener('scroll', handleScroll)
@@ -115,3 +78,21 @@ onUnmounted(() => {
   }
 })
 </script>
+
+<template>
+  <div
+    class="min-h-screen overflow-y-auto overflow-x-hidden perspective-[1px] scroll-smooth bg-'_gray-100'"
+    @scroll="handleScroll"
+    ref="mainContainer"
+  >
+    <SideMenu :isOpen="isMenuOpen" @toggleMenu="toggleMenu" />
+    <HeroSection
+      :scrollY="scrollY"
+      class="pt-16"
+      :displayText="displayText"
+      :cursorBlink="cursorBlink"
+    />
+    <FeaturesSection :scrollY="scrollY" />
+    <StartSection />
+  </div>
+</template>

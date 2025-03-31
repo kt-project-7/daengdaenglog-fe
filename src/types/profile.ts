@@ -14,19 +14,10 @@ export interface Profile {
     description: string
   } | null
   petsitterGuide: {
-    meals: {
-      frequency: string
-      amount: string
-      schedule: string
-      preferences: string
-      restrictions: string
-    }
-    walks: {
-      frequency: string
-      duration: string
-      bestTime: string
-      preferences: string
-    }
+    generalInfo: string
+    routineInfo: string
+    feedingInfo: string
+    healthInfo: string
     specialNotes: string[]
     emergencyTips: string[]
   } | null
