@@ -42,9 +42,8 @@ const emit = defineEmits<{
 
 const menuItems = [
   { path: '/diary-write', label: '일기 작성' },
-  { path: '/diary-list', label: '일기 보기' },
-  { path: '/dang-bti', label: '댕BTI' },
-  { path: '/pet-guide', label: '펫가이드' },
+  { path: '/diary-list', label: '일기 목록' },
+  { path: '/profile', label: '마이페이지' },
 ]
 
 const handleNavigation = (navigate: Function) => {

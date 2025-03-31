@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { FileText } from 'lucide-vue-next'
 import type { Profile } from '@/types/profile'
 
 defineProps<{
@@ -6,30 +7,31 @@ defineProps<{
 }>()
 
 defineEmits<{
-  (e: 'generate'): void
+  generate: []
 }>()
 </script>
 
 <template>
-  <div class="bg-white rounded-lg shadow-md p-6 flex flex-col">
-    <div class="flex items-center mb-4">
-      <div
-        class="w-10 h-10 rounded-full bg-_gray-100 flex items-center justify-center mr-3"
-      >
-        <span class="text-_gray-400 text-xl">📋</span>
+  <div class="flex flex-col gap-4">
+    <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+      <div class="flex items-center gap-3 mb-4">
+        <FileText class="w-6 h-6 text-green-500" />
+        <h3 class="text-xl font-bold text-gray-800">펫시터 가이드</h3>
       </div>
-      <h3 class="title-2">펫시터 가이드</h3>
+      <div class="space-y-4">
+        <p class="text-gray-600">
+          {{ profile.name }}의 펫시터를 위한 상세 가이드를 생성해드립니다. 식사,
+          산책, 특이사항 등 반려동물을 돌보는 데 필요한 모든 정보가 포함됩니다.
+        </p>
+      </div>
     </div>
 
-    <p class="body-text text-_gray-400 mb-4">
-      최근 5일간의 일기를 기반으로 펫시터를 위한 맞춤 가이드를 생성합니다.
-    </p>
-
     <button
+      class="inline-flex items-center gap-2 px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
       @click="$emit('generate')"
-      class="mt-auto py-2 bg-_black text-white rounded-md hover:opacity-80 flex items-center justify-center button-text"
     >
-      <span>펫시터 가이드 생성하기</span>
+      <FileText class="w-5 h-5" />
+      펫시터 가이드 생성하기
     </button>
   </div>
 </template>

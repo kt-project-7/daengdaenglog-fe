@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Brain } from 'lucide-vue-next'
 import type { Profile } from '@/types/profile'
 
 defineProps<{
@@ -6,42 +7,41 @@ defineProps<{
 }>()
 
 defineEmits<{
-  (e: 'analyze'): void
+  analyze: []
 }>()
 </script>
 
 <template>
-  <div class="bg-white rounded-lg shadow-md p-6 flex flex-col">
-    <div class="flex items-center mb-4">
-      <div
-        class="w-10 h-10 rounded-full bg-primary bg-opacity-10 flex items-center justify-center mr-3"
-      >
-        <span class="text-primary text-xl">🧠</span>
-      </div>
-      <h3 class="title-2">강아지 유형 분석</h3>
-    </div>
-
-    <p class="body-text text-_gray-400 mb-4">
-      {{ profile.name }}의 성격과 행동 패턴을 분석하여 DBTI 유형을 알아보세요.
-    </p>
-
+  <div class="flex flex-col gap-4">
     <div
       v-if="profile.dbtiResult"
-      class="bg-primary bg-opacity-10 p-4 rounded-lg mb-4"
+      class="bg-white rounded-lg p-6 shadow-sm border border-gray-100"
     >
-      <div class="text-center mb-2">
-        <span class="title-2 text-primary">{{ profile.dbtiResult.type }}</span>
+      <div class="flex items-center gap-3 mb-4">
+        <Brain class="w-6 h-6 text-blue-500" />
+        <h3 class="text-xl font-bold text-gray-800">DBTI 분석 결과</h3>
       </div>
-      <p class="body-text text-_black">{{ profile.dbtiResult.description }}</p>
+      <div class="space-y-4">
+        <div>
+          <h4 class="text-lg font-semibold text-blue-500 mb-2">
+            {{ profile.dbtiResult.type }}
+          </h4>
+          <p class="text-gray-600 leading-relaxed">
+            {{ profile.dbtiResult.description }}
+          </p>
+        </div>
+      </div>
     </div>
 
-    <button
-      @click="$emit('analyze')"
-      class="mt-auto py-2 bg-primary text-white rounded-md hover:opacity-80 flex items-center justify-center button-text"
-    >
-      <span>{{
-        profile.dbtiResult ? 'DBTI 다시 분석하기' : 'DBTI 분석하기'
-      }}</span>
-    </button>
+    <div v-else class="text-center py-8">
+      <p class="text-gray-600 mb-4">아직 DBTI 분석이 진행되지 않았습니다.</p>
+      <button
+        class="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+        @click="$emit('analyze')"
+      >
+        <Brain class="w-5 h-5" />
+        DBTI 분석하기
+      </button>
+    </div>
   </div>
 </template>
