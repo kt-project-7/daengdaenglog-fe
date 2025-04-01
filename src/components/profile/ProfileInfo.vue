@@ -47,7 +47,7 @@ const saveChanges = () => {
   <div class="flex flex-col items-center relative">
     <!-- 프로필 이미지 섹션 -->
     <ProfileImageSection
-      :image-url="profile.imageUrl"
+      :image-url="profile?.imageUrl || defaultProfileImage"
       :default-image="defaultProfileImage"
       @update:image="updateProfileImage"
     />

@@ -38,7 +38,7 @@ const fetchPets = async () => {
     const response = await axios.get('https://dangdanglog.com/pet/', {
       headers: {
         'accept': '*/*',
-        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3NDM0ODI0MTYsImV4cCI6MTc0MzQ4NjAxNiwiaXNzIjoiY2xvdmVyIiwic3ViIjoiMSIsInJvbGUiOiJBRE1JTiJ9.82orFcxmQoOf5MoCOesWZRKIdHhkwihtdTI22xenPD00bLVMcCYt2DK1qZHwEvOnuu1TyEEdyqhGFXD7wIxUZw'
+        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3NDM0ODY0MjIsImV4cCI6MTc0MzUyMjQyMiwiaXNzIjoiY2xvdmVyIiwic3ViIjoiMSIsInJvbGUiOiJBRE1JTiJ9.g6U0bHwq7oNi-gLbYxWZzjzN6Y1hF1uZqRgE7Jx7ObWUetN81O_x4IUVfXksQHckH9NEFjd_cf501575OU9BGg'
       }
     })
     
