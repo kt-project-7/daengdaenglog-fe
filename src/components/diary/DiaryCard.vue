@@ -32,10 +32,10 @@ const handleClick = (id: string) => {
 
       <div class="flex flex-wrap gap-2 mb-3">
         <span class="text-sm px-2 py-1 bg-primary bg-opacity-10 rounded-full">{{
-          getMoodEmoji(diary.mood as Mood)
+          getMoodEmoji(diary.mood)
         }}</span>
         <span class="text-sm px-2 py-1 bg-blue-100 rounded-full">{{
-          getWeatherEmoji(diary.weather as Weather)
+          getWeatherEmoji(diary.weather)
         }}</span>
       </div>
 

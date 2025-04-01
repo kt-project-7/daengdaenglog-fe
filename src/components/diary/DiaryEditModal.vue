@@ -82,7 +82,6 @@ const saveDiary = async () => {
         date: editedDiary.value.date,
         mood: editedDiary.value.mood as Mood,
         weather: editedDiary.value.weather as Weather,
-        // title: editedDiary.value.title || '',
         content: editedDiary.value.content,
         walkTime: editedDiary.value.walkTime || null,
         mealTime: editedDiary.value.mealTime || '',

@@ -15,8 +15,8 @@ export const fetchAllDiaries = async (): Promise<Diary[]> => {
       id: diary.diaryId.toString(),
       date: diary.createdDate,
       content: diary.content,
-      mood: diary.mood?.toLowerCase() || '',
-      weather: diary.weather?.toLowerCase() || '',
+      mood: diary.emotionType,
+      weather: diary.weatherType,
       walkTime: diary.walkTime,
       mealTime: diary.mealTime,
       imageUrl: diary.imageUrl,
@@ -41,7 +41,6 @@ export const createDiary = async (formData: FormData) => {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
-      // Content-Type 설정 ❌ (자동으로 설정됨)
     },
     body: formData,
   })
@@ -65,7 +64,6 @@ export const updateDiary = async (diaryId: number, formData: FormData) => {
     method: 'PUT',
     headers: {
       Authorization: `Bearer ${token}`,
-      // Content-Type은 자동 설정 (절대 넣지 마!)
     },
     body: formData,
   })

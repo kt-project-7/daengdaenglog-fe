@@ -1,4 +1,4 @@
-import type { Mood, Weather } from '@/types/diary'
+import type { Mood, Weather, Diary, RawDiary } from '@/types/diary'
 
 /**
  * 날짜 포맷팅
@@ -54,4 +54,21 @@ export const getWeatherEmoji = (weather: Weather): string => {
   }
 
   return weatherMap[weather] || weather
+}
+
+/**
+ * RawDiary를 Diary 타입으로 변환
+ * @param rawDiary API에서 받아온 RawDiary 데이터
+ * @returns Diary 타입으로 변환된 데이터
+ */
+export const convertRawDiaryToDiary = (rawDiary: RawDiary): Diary => {
+  return {
+    id: rawDiary.diaryId.toString(),
+    date: rawDiary.createdDate,
+    content: rawDiary.content,
+    mood: rawDiary.emotionType as Mood,
+    weather: rawDiary.weatherType as Weather,
+    imageUrl: rawDiary.imageUrl,
+    memory: rawDiary.memory,
+  }
 }

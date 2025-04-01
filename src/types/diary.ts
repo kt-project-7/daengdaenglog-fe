@@ -22,9 +22,8 @@ export interface Diary {
   id: string
   date: string
   content: string
-  mood: string
-  weather: string
-  // title?: string
+  mood: Mood
+  weather: Weather
   walkTime?: number
   mealTime?: string
   imageUrl?: string
@@ -35,7 +34,6 @@ export interface NewDiary {
   date: string
   mood: Mood | ''
   weather: Weather | ''
-  // title: string | ''
   content: string
   walkTime: number | null
   mealTime: string
@@ -46,8 +44,8 @@ export interface RawDiary {
   diaryId: number
   createdDate: string
   content: string
-  mood?: string
-  weather?: string
+  emotionType: string
+  weatherType: string
   walkTime?: number
   mealTime?: string
   imageUrl?: string
