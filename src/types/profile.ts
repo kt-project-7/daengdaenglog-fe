@@ -9,6 +9,8 @@ export interface Profile {
   gender: Gender
   neutered: boolean
   imageUrl: string | null
+  pbti: string | null
+  petType: String
   dbtiResult: {
     type: string
     description: string

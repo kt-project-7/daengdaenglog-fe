@@ -2,8 +2,8 @@
 import { Brain } from 'lucide-vue-next'
 import type { Profile } from '@/types/profile'
 
-defineProps<{
-  profile: Profile
+const props = defineProps<{
+  profile: Profile | null // profile이 null일 수 있음을 명시
 }>()
 
 defineEmits<{
@@ -14,10 +14,8 @@ defineEmits<{
 
 <template>
   <div class="flex flex-col gap-4">
-    <div
-      v-if="profile.dbtiResult"
-      class="bg-white rounded-lg p-6 shadow-dang-sm border border-_gray-100"
-    >
+    <!-- profile이 존재하고 dbtiResult가 있는 경우 -->
+    <div v-if="profile?.dbtiResult" class="bg-white rounded-lg p-6 shadow-dang-sm border border-_gray-100">
       <div class="flex items-center gap-3 mb-4">
         <Brain class="w-6 h-6 text-_blue-500" />
         <h3 class="text-xl font-bold text-_gray-800">DBTI 분석 결과</h3>
@@ -43,6 +41,7 @@ defineEmits<{
       </button>
     </div>
 
+    <!-- profile이 없거나 dbtiResult가 없을 경우 -->
     <div v-else class="text-center py-8">
       <p class="text-_gray-600 mb-4">아직 DBTI 분석이 진행되지 않았습니다.</p>
       <button
