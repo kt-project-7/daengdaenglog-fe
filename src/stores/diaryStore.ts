@@ -14,6 +14,8 @@ export const useDiaryStore = defineStore('diary', () => {
   const diaries = ref<Diary[]>([])
   const currentDiary = ref<Diary | null>(null)
   const selectedImageFile = ref<File | null>(null)
+  const selectedPetId = ref<number>(1)
+  const selectedDiaryId = ref<number>(0)
 
   const today = computed(() => {
     const now = new Date()
@@ -24,7 +26,6 @@ export const useDiaryStore = defineStore('diary', () => {
     date: today.value,
     mood: '',
     weather: '',
-    // title: '',
     content: '',
     walkTime: null,
     mealTime: '',
@@ -35,44 +36,6 @@ export const useDiaryStore = defineStore('diary', () => {
 
   const setImageFile = (file: File | null) => {
     selectedImageFile.value = file
-  }
-
-  const createFormDataFromNewDiary = (): FormData => {
-    const request = {
-      petId: 1,
-      emotionType: newDiary.value.mood.toUpperCase(),
-      weatherType: newDiary.value.weather.toUpperCase(),
-      // title: '수정된 일기',
-      content: newDiary.value.content,
-      walkTime: newDiary.value.walkTime || 0,
-      mealTime: newDiary.value.mealTime || '',
-      diaryScheduleRequestList: [],
-    }
-
-    const formData = new FormData()
-    formData.append('updateDiaryRequest', JSON.stringify(request))
-    if (selectedImageFile.value) {
-      formData.append('file', selectedImageFile.value)
-    }
-    return formData
-  }
-
-  const createFormDataFromNewDiaryForCreate = (): FormData => {
-    const request = {
-      petId: 1,
-      emotionType: newDiary.value.mood.toUpperCase() || 'SAD',
-      weatherType: newDiary.value.weather.toUpperCase() || 'THUNDER',
-      title: 'create',
-      content: newDiary.value.content || 'string',
-      diaryScheduleRequestList: [],
-    }
-
-    const formData = new FormData()
-    formData.append('createDiaryRequest', JSON.stringify(request))
-    if (selectedImageFile.value) {
-      formData.append('file', selectedImageFile.value)
-    }
-    return formData
   }
 
   const fetchDiaries = async () => {
@@ -90,7 +53,7 @@ export const useDiaryStore = defineStore('diary', () => {
 
   const createDiary = async () => {
     const createDiaryRequest = {
-      petId: 1,
+      petId: selectedPetId.value,
       emotionType: newDiary.value.mood.toUpperCase(),
       weatherType: newDiary.value.weather.toUpperCase(),
       title: 'create',
@@ -99,20 +62,26 @@ export const useDiaryStore = defineStore('diary', () => {
     }
 
     const formData = new FormData()
-    formData.append('createDiaryRequest', JSON.stringify(createDiaryRequest))
+    formData.append(
+      'createDiaryRequest',
+      new Blob([JSON.stringify(createDiaryRequest)], {
+        type: 'application/json',
+      }),
+    )
 
     if (selectedImageFile.value) {
       formData.append('file', selectedImageFile.value)
     } else {
-      // 서버에서 file 필드를 요구하는 경우 빈값도 보내줘야 함
       formData.append('file', new Blob())
     }
 
     await createDiaryAPI(formData)
+    await fetchDiaries()
   }
 
   const updateDiary = async (diaryId: number) => {
     const updateDiaryRequest = {
+      petId: selectedPetId.value,
       emotionType: newDiary.value.mood.toUpperCase(),
       weatherType: newDiary.value.weather.toUpperCase(),
       title: '수정된 일기',
@@ -123,12 +92,17 @@ export const useDiaryStore = defineStore('diary', () => {
     }
 
     const formData = new FormData()
-    formData.append('updateDiaryRequest', JSON.stringify(updateDiaryRequest))
+    formData.append(
+      'updateDiaryRequest',
+      new Blob([JSON.stringify(updateDiaryRequest)], {
+        type: 'application/json',
+      }),
+    )
 
     if (selectedImageFile.value) {
       formData.append('file', selectedImageFile.value)
     } else {
-      formData.append('file', '') // 선택 안 했을 때도 key는 있어야 함
+      formData.append('file', new Blob())
     }
 
     return await updateDiaryAPI(diaryId, formData)
@@ -149,7 +123,6 @@ export const useDiaryStore = defineStore('diary', () => {
         date: diary.date,
         mood: diary.mood as Mood,
         weather: diary.weather as Weather,
-        // title: diary.title || '',
         content: diary.content,
         walkTime: diary.walkTime ?? null,
         mealTime: diary.mealTime ?? '',
@@ -176,5 +149,6 @@ export const useDiaryStore = defineStore('diary', () => {
     updateDiary,
     deleteDiary,
     checkAndLoadTodayDiary,
+    selectedPetId,
   }
 })

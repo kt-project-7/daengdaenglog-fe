@@ -33,56 +33,27 @@ export const getDiary = async (diaryId: number): Promise<Diary> => {
 
 // 다이어리 생성
 export const createDiary = async (formData: FormData) => {
-  const baseURL = import.meta.env.VITE_API_BASE_URL || ''
-  const url = `${baseURL}/diary`
-  const token = localStorage.getItem('accessToken')
-
-  const response = await fetch(url, {
-    method: 'POST',
+  const response = await api.post('/diary', formData, {
     headers: {
-      Authorization: `Bearer ${token}`,
+      'Content-Type': 'multipart/form-data',
     },
-    body: formData,
   })
-
-  if (!response.ok) {
-    const errorData = await response.json()
-    console.error('생성 실패:', errorData)
-    throw new Error(`HTTP error ${response.status}: ${errorData.detail}`)
-  }
-
-  return await response.json()
+  return response.data.results
 }
 
 // 다이어리 수정
 export const updateDiary = async (diaryId: number, formData: FormData) => {
-  const baseURL = import.meta.env.VITE_API_BASE_URL || ''
-  const url = `${baseURL}/diary/${diaryId}`
-  const token = localStorage.getItem('accessToken')
-
-  const response = await fetch(url, {
-    method: 'PUT',
+  const response = await api.put(`/diary/${diaryId}`, formData, {
     headers: {
-      Authorization: `Bearer ${token}`,
+      'Content-Type': 'multipart/form-data',
     },
-    body: formData,
   })
-
-  if (!response.ok) {
-    const errorData = await response.json()
-    console.error('서버 오류 응답:', response.status, errorData)
-    throw new Error(`HTTP error ${response.status}: ${errorData.detail}`)
-  }
-
-  const data = await response.json()
-  console.log('서버 응답:', data)
-  return data.results || { diaryId }
+  return response.data.results || { diaryId }
 }
 
 // 다이어리 삭제
 export const deleteDiary = async (diaryId: number): Promise<void> => {
-  const response = await api.delete(`/diary/${diaryId}`)
-  return response.data.results
+  await api.delete(`/diary/${diaryId}`)
 }
 
 // 오늘 다이어리 작성 여부 확인
