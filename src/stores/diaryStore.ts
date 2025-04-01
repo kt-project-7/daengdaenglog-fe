@@ -65,5 +65,7 @@ export const useDiaryStore = defineStore('diary', () => {
     fetchDiaries,
     fetchDiaryById,
     createDiary,
+    updateDiary,
+    deleteDiary,
   }
 })

@@ -32,32 +32,36 @@ const generateMemory = () => {
 </script>
 
 <template>
-  <div v-if="currentDiary">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="title-1">{{ formatDate(currentDiary.date) }}</h1>
-      <div class="flex space-x-2">
+  <div class="min-h-screen bg-dang-light py-12 bg-[linear-gradient(#f3f3f3_1px,transparent_1px),linear-gradient(90deg,#f3f3f3_1px,transparent_1px)] bg-[length:20px_20px]">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+      <div v-if="currentDiary" class="bg-dang-background rounded-xl shadow-dang-md p-6 border border-dang-light">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-3xl font-bold text-dang-primary">{{ formatDate(currentDiary.date) }}</h1>
+          <div class="flex space-x-2">
+            <router-link
+              to="/diary-list"
+              class="px-3 py-1 bg-dang-light text-dang-secondary rounded-md hover:bg-dang-pending transition-colors shadow-sm"
+            >
+              목록으로
+            </router-link>
+          </div>
+        </div>
+
+        <DiaryDetail
+          :diary="currentDiary"
+          :pet-name="petName"
+          @generate-memory="generateMemory"
+        />
+      </div>
+      <div v-else class="text-center py-10 bg-dang-background rounded-xl shadow-dang-md">
+        <p class="text-xl text-dang-secondary">일기를 찾을 수 없습니다.</p>
         <router-link
           to="/diary-list"
-          class="px-3 py-1 bg-_gray-100 text-_black rounded-md hover:bg-_gray-200 button-text"
+          class="mt-4 inline-block bg-dang-primary text-white px-6 py-2 rounded-lg hover:bg-dang-secondary transition-colors shadow-dang-sm"
         >
-          목록으로
+          일기 목록으로 돌아가기
         </router-link>
       </div>
     </div>
-
-    <DiaryDetail
-      :diary="currentDiary"
-      :pet-name="petName"
-      @generate-memory="generateMemory"
-    />
-  </div>
-  <div v-else class="text-center py-10">
-    <p class="text-xl text-_gray-300">일기를 찾을 수 없습니다.</p>
-    <router-link
-      to="/diary-list"
-      class="mt-4 inline-block bg-primary text-white px-6 py-2 rounded-lg hover:opacity-80 transition-colors button-text"
-    >
-      일기 목록으로 돌아가기
-    </router-link>
   </div>
 </template>
