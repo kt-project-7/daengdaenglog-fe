@@ -26,17 +26,26 @@ const currentDiary = computed(() => diaryStore.currentDiary)
 const petName = computed(() => profileStore.profile.name)
 
 // 추억 생성
-const generateMemory = () => {
-  diaryStore.generateMemory()
-}
+// const generateMemory = () => {
+//   if (currentDiary.value) {
+//     diaryStore.generateMemory(currentDiary.value.id)
+//   }
+// }
 </script>
 
 <template>
-  <div class="min-h-screen bg-dang-light py-12 bg-[linear-gradient(#f3f3f3_1px,transparent_1px),linear-gradient(90deg,#f3f3f3_1px,transparent_1px)] bg-[length:20px_20px]">
+  <div
+    class="min-h-screen bg-dang-light py-12 bg-[linear-gradient(#f3f3f3_1px,transparent_1px),linear-gradient(90deg,#f3f3f3_1px,transparent_1px)] bg-[length:20px_20px]"
+  >
     <div class="container mx-auto px-4 py-8 max-w-4xl">
-      <div v-if="currentDiary" class="bg-dang-background rounded-xl shadow-dang-md p-6 border border-dang-light">
+      <div
+        v-if="currentDiary"
+        class="bg-dang-background rounded-xl shadow-dang-md p-6 border border-dang-light"
+      >
         <div class="flex justify-between items-center mb-6">
-          <h1 class="text-3xl font-bold text-dang-primary">{{ formatDate(currentDiary.date) }}</h1>
+          <h1 class="text-3xl font-bold text-dang-primary">
+            {{ formatDate(currentDiary.date) }}
+          </h1>
           <div class="flex space-x-2">
             <router-link
               to="/diary-list"
@@ -53,7 +62,10 @@ const generateMemory = () => {
           @generate-memory="generateMemory"
         />
       </div>
-      <div v-else class="text-center py-10 bg-dang-background rounded-xl shadow-dang-md">
+      <div
+        v-else
+        class="text-center py-10 bg-dang-background rounded-xl shadow-dang-md"
+      >
         <p class="text-xl text-dang-secondary">일기를 찾을 수 없습니다.</p>
         <router-link
           to="/diary-list"

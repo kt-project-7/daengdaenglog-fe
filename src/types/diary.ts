@@ -24,7 +24,7 @@ export interface Diary {
   content: string
   mood: string
   weather: string
-  title?: string
+  // title?: string
   walkTime?: number
   mealTime?: string
   imageUrl?: string
@@ -35,7 +35,7 @@ export interface NewDiary {
   date: string
   mood: Mood | ''
   weather: Weather | ''
-  title: string | ''
+  // title: string | ''
   content: string
   walkTime: number | null
   mealTime: string

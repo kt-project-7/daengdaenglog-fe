@@ -82,16 +82,18 @@ const saveDiary = async () => {
         date: editedDiary.value.date,
         mood: editedDiary.value.mood as Mood,
         weather: editedDiary.value.weather as Weather,
-        title: editedDiary.value.title || '',
+        // title: editedDiary.value.title || '',
         content: editedDiary.value.content,
         walkTime: editedDiary.value.walkTime || null,
         mealTime: editedDiary.value.mealTime || '',
         imageUrl: editedDiary.value.imageUrl || null,
       }
 
-      await diaryStore.updateDiary(Number(editedDiary.value.id))
+      const result = await diaryStore.updateDiary(Number(editedDiary.value.id))
+      console.log('일기 수정 성공:', result)
       emit('save', editedDiary.value)
     } catch (error) {
+      console.error('일기 수정 실패:', error)
       alert('일기 수정에 실패했습니다.')
     }
   }

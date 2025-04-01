@@ -241,7 +241,10 @@ const openEditModal = (diary: Diary) => {
 
 // 일기 수정 저장
 const saveDiaryEdit = (updatedDiary: Diary) => {
-  diaryStore.updateDiary(Number(updatedDiary.id))
+  const index = diaryStore.diaries.findIndex((d) => d.id === updatedDiary.id)
+  if (index !== -1) {
+    diaryStore.diaries[index] = { ...updatedDiary }
+  }
   showEditModal.value = false
   currentEditDiary.value = null
 }

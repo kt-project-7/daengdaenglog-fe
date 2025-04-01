@@ -13,7 +13,7 @@ const saveDiary = async () => {
   try {
     const result = await diaryStore.createDiary()
     console.log('일기 저장 성공:', result)
-    router.push(`/diary/${result.diaryId}`)
+    router.push('/diary-list')
   } catch (error) {
     console.error('일기 저장 실패:', error)
     alert('일기를 저장하는 중 오류가 발생했습니다. 다시 시도해주세요.')
