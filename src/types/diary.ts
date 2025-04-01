@@ -1,22 +1,22 @@
 export type Mood =
-  | 'happy'
-  | 'sad'
-  | 'angry'
-  | 'surprised'
-  | 'hungry'
-  | 'hurt'
-  | 'love'
-  | 'sleepy'
+  | 'HAPPY'
+  | 'SAD'
+  | 'ANGRY'
+  | 'SURPRISED'
+  | 'HUNGRY'
+  | 'SICK'
+  | 'LOVE'
+  | 'SLEEPY'
 
 export type Weather =
-  | 'sunny'
-  | 'cloudy'
-  | 'rainy'
-  | 'snowy'
-  | 'thunderstorm'
-  | 'hail'
-  | 'foggy'
-  | 'yellowdust'
+  | 'SUNNY'
+  | 'CLOUDY'
+  | 'RAINY'
+  | 'SNOWY'
+  | 'THUNDER'
+  | 'HAILSTONE'
+  | 'FOG'
+  | 'YELLOW_DUST'
 
 export interface Diary {
   id: string
@@ -24,6 +24,7 @@ export interface Diary {
   content: string
   mood: string
   weather: string
+  title?: string
   walkTime?: number
   mealTime?: string
   imageUrl?: string
@@ -34,10 +35,32 @@ export interface NewDiary {
   date: string
   mood: Mood | ''
   weather: Weather | ''
+  title: string | ''
   content: string
   walkTime: number | null
   mealTime: string
   imageUrl: string | null
+}
+
+export interface RawDiary {
+  diaryId: number
+  createdDate: string
+  content: string
+  mood?: string
+  weather?: string
+  walkTime?: number
+  mealTime?: string
+  imageUrl?: string
+  memory?: MemoryImage
+}
+
+export interface PetDiaryGroup {
+  petId: number
+  name: string
+  imageUri: string
+  pbti: string
+  petType: string
+  diaryList: RawDiary[]
 }
 
 export interface MemoryImage {

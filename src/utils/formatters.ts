@@ -23,14 +23,14 @@ export const formatDate = (dateString: string): string => {
  */
 export const getMoodEmoji = (mood: Mood): string => {
   const moodMap: Record<Mood, string> = {
-    happy: '😊 기쁨',
-    sad: '😢 슬픔',
-    angry: '😡 분노',
-    surprised: '😲 놀람',
-    hungry: '🍴 배고픔',
-    hurt: '🤕 아픔',
-    love: '💖 사랑',
-    sleepy: '😴 졸림',
+    HAPPY: '😊 기쁨',
+    SAD: '😢 슬픔',
+    ANGRY: '😡 분노',
+    SURPRISED: '😲 놀람',
+    HUNGRY: '🍴 배고픔',
+    SICK: '🤕 아픔',
+    LOVE: '💖 사랑',
+    SLEEPY: '😴 졸림',
   }
 
   return moodMap[mood] || mood
@@ -43,14 +43,14 @@ export const getMoodEmoji = (mood: Mood): string => {
  */
 export const getWeatherEmoji = (weather: Weather): string => {
   const weatherMap: Record<Weather, string> = {
-    sunny: '☀️ 맑음',
-    cloudy: '☁️ 흐림',
-    rainy: '🌧️ 비',
-    snowy: '❄️ 눈',
-    thunderstorm: '⚡️ 번개',
-    hail: '🌨️ 우박',
-    foggy: '🌫️ 안개',
-    yellowdust: '💨 황사',
+    SUNNY: '☀️ 맑음',
+    CLOUDY: '☁️ 흐림',
+    RAINY: '🌧️ 비',
+    SNOWY: '❄️ 눈',
+    THUNDER: '⚡️ 번개',
+    HAILSTONE: '🌨️ 우박',
+    FOG: '🌫️ 안개',
+    YELLOW_DUST: '💨 황사',
   }
 
   return weatherMap[weather] || weather

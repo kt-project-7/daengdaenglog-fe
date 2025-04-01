@@ -10,8 +10,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'close'): void
-  (e: 'save', diary: Diary): void
+  close: []
+  save: [diary: Diary]
 }>()
 
 const diaryStore = useDiaryStore()
@@ -24,13 +24,17 @@ const imageInput = ref<HTMLInputElement | null>(null)
 const imagePreview = ref<string | null>(null)
 
 // props.diary가 변경될 때 editedDiary 업데이트
-watch(() => props.diary, (newDiary) => {
-  if (newDiary) {
-    // 깊은 복사를 통해 원본 데이터 변경 방지
-    editedDiary.value = JSON.parse(JSON.stringify(newDiary))
-    imagePreview.value = newDiary.imageUrl || null
-  }
-}, { immediate: true })
+watch(
+  () => props.diary,
+  (newDiary) => {
+    if (newDiary) {
+      // 깊은 복사를 통해 원본 데이터 변경 방지
+      editedDiary.value = JSON.parse(JSON.stringify(newDiary))
+      imagePreview.value = newDiary.imageUrl || null
+    }
+  },
+  { immediate: true },
+)
 
 // 이미지 선택 처리
 const handleImageSelect = (event: Event) => {
@@ -38,14 +42,15 @@ const handleImageSelect = (event: Event) => {
   if (input.files && input.files[0]) {
     const file = input.files[0]
     const reader = new FileReader()
-    
+
     reader.onload = (e) => {
       if (e.target && editedDiary.value) {
         imagePreview.value = e.target.result as string
         editedDiary.value.imageUrl = e.target.result as string
+        diaryStore.setImageFile(file)
       }
     }
-    
+
     reader.readAsDataURL(file)
   }
 }
@@ -56,6 +61,7 @@ const removeImage = () => {
   if (editedDiary.value) {
     editedDiary.value.imageUrl = undefined
   }
+  diaryStore.setImageFile(null)
   if (imageInput.value) {
     imageInput.value.value = ''
   }
@@ -69,9 +75,25 @@ const openImageSelector = () => {
 }
 
 // 수정 저장
-const saveDiary = () => {
+const saveDiary = async () => {
   if (editedDiary.value) {
-    emit('save', editedDiary.value)
+    try {
+      diaryStore.newDiary = {
+        date: editedDiary.value.date,
+        mood: editedDiary.value.mood as Mood,
+        weather: editedDiary.value.weather as Weather,
+        title: editedDiary.value.title || '',
+        content: editedDiary.value.content,
+        walkTime: editedDiary.value.walkTime || null,
+        mealTime: editedDiary.value.mealTime || '',
+        imageUrl: editedDiary.value.imageUrl || null,
+      }
+
+      await diaryStore.updateDiary(Number(editedDiary.value.id))
+      emit('save', editedDiary.value)
+    } catch (error) {
+      alert('일기 수정에 실패했습니다.')
+    }
   }
 }
 
@@ -99,21 +121,31 @@ onMounted(() => {
   document.addEventListener('keydown', handleKeyDown)
 })
 
-watch(() => props.show, (newVal) => {
-  if (newVal) {
-    document.body.style.overflow = 'hidden' // 모달 열릴 때 스크롤 방지
-  } else {
-    document.body.style.overflow = '' // 모달 닫힐 때 스크롤 복원
-  }
-})
+watch(
+  () => props.show,
+  (newVal) => {
+    if (newVal) {
+      document.body.style.overflow = 'hidden' // 모달 열릴 때 스크롤 방지
+    } else {
+      document.body.style.overflow = '' // 모달 닫힐 때 스크롤 복원
+    }
+  },
+)
 </script>
 
 <template>
-  <div v-if="show && editedDiary" class="fixed inset-0 z-50 flex items-center justify-center modal-overlay bg-black bg-opacity-50" @click="handleOutsideClick">
-    <div class="bg-dang-background rounded-xl shadow-dang-lg p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto" @click.stop>
+  <div
+    v-if="show && editedDiary"
+    class="fixed inset-0 z-50 flex items-center justify-center modal-overlay bg-black bg-opacity-50"
+    @click="handleOutsideClick"
+  >
+    <div
+      class="bg-dang-background rounded-xl shadow-dang-lg p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto"
+      @click.stop
+    >
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold text-dang-primary">일기 수정하기</h2>
-        <button 
+        <button
           @click="closeModal"
           class="text-dang-secondary hover:text-dang-primary p-1 rounded-full transition-colors"
         >
@@ -135,7 +167,9 @@ watch(() => props.show, (newVal) => {
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
-            <label class="block text-dang-primary font-medium mb-2">댕댕이 기분</label>
+            <label class="block text-dang-primary font-medium mb-2"
+              >댕댕이 기분</label
+            >
             <select
               v-model="editedDiary.mood"
               class="w-full px-3 py-2 border border-dang-light rounded-md focus:outline-none focus:ring-2 focus:ring-dang-primary bg-white"
@@ -174,7 +208,9 @@ watch(() => props.show, (newVal) => {
         </div>
 
         <div>
-          <label class="block text-dang-primary font-medium mb-2">관찰 내용</label>
+          <label class="block text-dang-primary font-medium mb-2"
+            >관찰 내용</label
+          >
           <textarea
             v-model="editedDiary.content"
             rows="5"
@@ -186,7 +222,9 @@ watch(() => props.show, (newVal) => {
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
-            <label class="block text-dang-primary font-medium mb-2">오늘의 산책 시간 (분)</label>
+            <label class="block text-dang-primary font-medium mb-2"
+              >오늘의 산책 시간 (분)</label
+            >
             <input
               type="number"
               v-model="editedDiary.walkTime"
@@ -197,7 +235,9 @@ watch(() => props.show, (newVal) => {
           </div>
 
           <div>
-            <label class="block text-dang-primary font-medium mb-2">오늘의 식사 시간</label>
+            <label class="block text-dang-primary font-medium mb-2"
+              >오늘의 식사 시간</label
+            >
             <input
               type="text"
               v-model="editedDiary.mealTime"
@@ -208,10 +248,12 @@ watch(() => props.show, (newVal) => {
         </div>
 
         <div>
-          <label class="block text-dang-primary font-medium mb-2">일기 이미지</label>
-          <div 
+          <label class="block text-dang-primary font-medium mb-2"
+            >일기 이미지</label
+          >
+          <div
             class="relative border-2 border-dashed border-dang-light rounded-lg p-4 text-center hover:border-dang-primary transition-colors"
-            :class="{'bg-dang-light bg-opacity-20': !imagePreview}"
+            :class="{ 'bg-dang-light bg-opacity-20': !imagePreview }"
           >
             <input
               ref="imageInput"
@@ -220,11 +262,13 @@ watch(() => props.show, (newVal) => {
               class="hidden"
               @change="handleImageSelect"
             />
-            
+
             <div v-if="!imagePreview" class="py-8">
               <Camera class="w-12 h-12 mx-auto text-dang-secondary mb-3" />
               <p class="text-dang-secondary mb-2">이미지를 업로드해주세요</p>
-              <p class="text-dang-secondary text-sm mb-4">JPG, PNG 파일 (최대 5MB)</p>
+              <p class="text-dang-secondary text-sm mb-4">
+                JPG, PNG 파일 (최대 5MB)
+              </p>
               <button
                 type="button"
                 @click="openImageSelector"
@@ -233,11 +277,11 @@ watch(() => props.show, (newVal) => {
                 이미지 선택하기
               </button>
             </div>
-            
+
             <div v-else class="relative">
-              <img 
-                :src="imagePreview" 
-                alt="선택한 이미지" 
+              <img
+                :src="imagePreview"
+                alt="선택한 이미지"
                 class="max-h-64 mx-auto rounded-md"
               />
               <button

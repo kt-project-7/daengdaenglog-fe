@@ -52,14 +52,14 @@ const openDropdownId = ref<string | null>(null)
 
 // 기분 옵션 배열 추가
 const moodOptions: Mood[] = [
-  'happy',
-  'sad',
-  'angry',
-  'surprised',
-  'hungry',
-  'hurt',
-  'love',
-  'sleepy',
+  'HAPPY',
+  'SAD',
+  'ANGRY',
+  'SURPRISED',
+  'HUNGRY',
+  'SICK',
+  'LOVE',
+  'SLEEPY',
 ]
 
 // 필터 및 정렬이 적용된 일기 목록
@@ -241,7 +241,7 @@ const openEditModal = (diary: Diary) => {
 
 // 일기 수정 저장
 const saveDiaryEdit = (updatedDiary: Diary) => {
-  diaryStore.updateDiary(updatedDiary)
+  diaryStore.updateDiary(Number(updatedDiary.id))
   showEditModal.value = false
   currentEditDiary.value = null
 }
@@ -256,7 +256,7 @@ const confirmDelete = (id: string) => {
 // 일기 삭제 실행
 const deleteDiary = () => {
   if (diaryToDelete.value) {
-    diaryStore.deleteDiary(diaryToDelete.value)
+    diaryStore.deleteDiary(Number(diaryToDelete.value))
     showDeleteConfirm.value = false
     diaryToDelete.value = null
   }

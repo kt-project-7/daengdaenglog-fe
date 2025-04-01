@@ -5,14 +5,12 @@ import { Camera, X } from 'lucide-vue-next'
 
 const diaryStore = useDiaryStore()
 
-defineEmits<{
-  (e: 'submit'): void
-  (e: 'cancel'): void
-}>()
+defineEmits(['submit', 'cancel'])
 
 // 이미지 업로드 관련
 const imageInput = ref<HTMLInputElement | null>(null)
-const imagePreview = ref<string | null>(null)
+const imagePreview = ref<string | null>(diaryStore.newDiary.imageUrl ?? null)
+let selectedImageFile: File | null = null
 
 // 이미지 선택 처리
 const handleImageSelect = (event: Event) => {
@@ -20,14 +18,16 @@ const handleImageSelect = (event: Event) => {
   if (input.files && input.files[0]) {
     const file = input.files[0]
     const reader = new FileReader()
-    
+
     reader.onload = (e) => {
       if (e.target) {
         imagePreview.value = e.target.result as string
         diaryStore.newDiary.imageUrl = e.target.result as string
+        diaryStore.setImageFile(file)
+        console.log('이미지 선택됨:', file.name)
       }
     }
-    
+
     reader.readAsDataURL(file)
   }
 }
@@ -36,9 +36,11 @@ const handleImageSelect = (event: Event) => {
 const removeImage = () => {
   imagePreview.value = null
   diaryStore.newDiary.imageUrl = null
+  diaryStore.setImageFile(null)
   if (imageInput.value) {
     imageInput.value.value = ''
   }
+  console.log('이미지 제거됨')
 }
 
 // 이미지 선택 창 열기
@@ -67,7 +69,9 @@ const openImageSelector = () => {
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
       <div>
-        <label class="block text-dang-primary font-medium mb-2">댕댕이 기분</label>
+        <label class="block text-dang-primary font-medium mb-2"
+          >댕댕이 기분</label
+        >
         <select
           v-model="diaryStore.newDiary.mood"
           class="w-full px-3 py-2 border border-dang-light rounded-md focus:outline-none focus:ring-2 focus:ring-dang-primary bg-white"
@@ -108,7 +112,9 @@ const openImageSelector = () => {
     <!-- 산책 시간과 식사 시간 필드 추가 -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
       <div>
-        <label class="block text-dang-primary font-medium mb-2">오늘의 산책 시간 (분)</label>
+        <label class="block text-dang-primary font-medium mb-2"
+          >오늘의 산책 시간 (분)</label
+        >
         <input
           type="number"
           v-model="diaryStore.newDiary.walkTime"
@@ -120,7 +126,9 @@ const openImageSelector = () => {
       </div>
 
       <div>
-        <label class="block text-dang-primary font-medium mb-2">오늘의 식사 시간</label>
+        <label class="block text-dang-primary font-medium mb-2"
+          >오늘의 식사 시간</label
+        >
         <input
           type="text"
           v-model="diaryStore.newDiary.mealTime"
@@ -142,10 +150,12 @@ const openImageSelector = () => {
     </div>
 
     <div class="mb-6">
-      <label class="block text-dang-primary font-medium mb-2">일기 이미지</label>
-      <div 
+      <label class="block text-dang-primary font-medium mb-2"
+        >일기 이미지</label
+      >
+      <div
         class="relative border-2 border-dashed border-dang-light rounded-lg p-4 text-center hover:border-dang-primary transition-colors"
-        :class="{'bg-dang-light bg-opacity-20': !imagePreview}"
+        :class="{ 'bg-dang-light bg-opacity-20': !imagePreview }"
       >
         <input
           ref="imageInput"
@@ -154,11 +164,13 @@ const openImageSelector = () => {
           class="hidden"
           @change="handleImageSelect"
         />
-        
+
         <div v-if="!imagePreview" class="py-8">
           <Camera class="w-12 h-12 mx-auto text-dang-secondary mb-3" />
           <p class="text-dang-secondary mb-2">이미지를 업로드해주세요</p>
-          <p class="text-dang-secondary text-sm mb-4">JPG, PNG 파일 (최대 5MB)</p>
+          <p class="text-dang-secondary text-sm mb-4">
+            JPG, PNG 파일 (최대 5MB)
+          </p>
           <button
             type="button"
             @click="openImageSelector"
@@ -167,11 +179,11 @@ const openImageSelector = () => {
             이미지 선택하기
           </button>
         </div>
-        
+
         <div v-else class="relative">
-          <img 
-            :src="imagePreview" 
-            alt="선택한 이미지" 
+          <img
+            :src="imagePreview"
+            alt="선택한 이미지"
             class="max-h-64 mx-auto rounded-md"
           />
           <button
