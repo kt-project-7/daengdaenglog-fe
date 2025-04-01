@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import axios from 'axios'
 import { useProfileStore } from '@/stores/profileStore'
 import { UserCircle, Brain, Pencil } from 'lucide-vue-next'
 import ProfileInfo from '@/components/profile/ProfileInfo.vue'
@@ -23,33 +24,41 @@ const showPetsitterGuideModal = ref(false)
 // 현재 선택된 반려동물 인덱스
 const currentPetIndex = ref(0)
 
-// 반려동물 목록 (예시 데이터)
-const pets = ref<Profile[]>([
-  {
-    id: 1,
-    name: '멍멍이',
-    breed: '골든 리트리버',
-    age: 3,
-    gender: 'male',
-    weight: 30,
-    neutered: true,
-    imageUrl: defaultProfileImage,
-    dbtiResult: null,
-    petsitterGuide: null,
-  },
-  {
-    id: 2,
-    name: '냥냥이',
-    breed: '페르시안',
-    age: 2,
-    gender: 'female',
-    weight: 4,
-    neutered: true,
-    imageUrl: defaultProfileImage,
-    dbtiResult: null,
-    petsitterGuide: null,
-  },
-])
+// 반려동물 목록 (빈 배열로 초기화)
+const pets = ref<Profile[]>([])
+const isLoading = ref(false)
+const error = ref<string | null>(null)
+
+// 반려동물 데이터 가져오기
+const fetchPets = async () => {
+  isLoading.value = true
+  error.value = null
+  
+  try {
+    const response = await axios.get('https://dangdanglog.com/pet/', {
+      headers: {
+        'accept': '*/*',
+        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3NDM0ODI0MTYsImV4cCI6MTc0MzQ4NjAxNiwiaXNzIjoiY2xvdmVyIiwic3ViIjoiMSIsInJvbGUiOiJBRE1JTiJ9.82orFcxmQoOf5MoCOesWZRKIdHhkwihtdTI22xenPD00bLVMcCYt2DK1qZHwEvOnuu1TyEEdyqhGFXD7wIxUZw'
+      }
+    })
+    
+    // API 응답 데이터를 pets에 할당
+    pets.value = response.data
+    
+    // 반려동물이 있으면 첫 번째 반려동물을 선택
+    if (pets.value.length > 0) {
+      switchPet(0)
+    }
+  } catch (err) {
+    console.error('반려동물 데이터 가져오기 실패:', err)
+    error.value = '반려동물 데이터를 가져오는데 실패했습니다.'
+    
+    // 에러 발생 시 빈 배열로 초기화
+    pets.value = []
+  } finally {
+    isLoading.value = false
+  }
+}
 
 // 반려동물 전환 함수
 const switchPet = (index: number) => {
@@ -67,17 +76,21 @@ const addPet = (newPet: Profile) => {
 
 onMounted(async () => {
   try {
+    // 반려동물 데이터 가져오기
+    await fetchPets()
+    
+    // 프로필 스토어 데이터 가져오기
     await profileStore.fetchProfile()
   } catch (error) {
     console.error('프로필 로딩 실패:', error)
   }
 })
 
-const updateProfile = (updatedProfile: Profile) => {
-  profileStore.updateProfile(updatedProfile)
-  // 현재 반려동물 정보 업데이트
-  pets.value[currentPetIndex.value] = updatedProfile
-}
+// const updateProfile = (updatedProfile: Profile) => {
+//   profileStore.updateProfile(updatedProfile)
+//   // 현재 반려동물 정보 업데이트
+//   pets.value[currentPetIndex.value] = updatedProfile
+// }
 
 const analyzeDogPersonality = async () => {
   try {
@@ -191,7 +204,35 @@ const handleCopyLink = () => {
       <div
         class="max-w-7xl w-full bg-dang-background rounded-2xl p-8 shadow-dang-lg relative border-t-4 border-dang-primary"
       >
-        <div class="flex flex-col gap-8">
+        <!-- 로딩 상태 표시 -->
+        <div v-if="isLoading" class="flex justify-center items-center py-12">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-dang-primary"></div>
+        </div>
+        
+        <!-- 에러 메시지 표시 -->
+        <div v-else-if="error" class="flex flex-col items-center justify-center py-12">
+          <div class="text-dang-rejected-text text-lg mb-4">{{ error }}</div>
+          <button 
+            @click="fetchPets" 
+            class="px-4 py-2 bg-dang-primary text-white rounded-lg hover:bg-dang-primary-dark transition-colors"
+          >
+            다시 시도
+          </button>
+        </div>
+        
+        <!-- 반려동물 데이터가 없는 경우 -->
+        <div v-else-if="pets.length === 0" class="flex flex-col items-center justify-center py-12">
+          <div class="text-_gray-500 text-lg mb-4">등록된 반려동물이 없습니다.</div>
+          <button 
+            @click="showAddPetModal = true" 
+            class="px-4 py-2 bg-dang-primary text-white rounded-lg hover:bg-dang-primary-dark transition-colors"
+          >
+            반려동물 추가하기
+          </button>
+        </div>
+        
+        <!-- 반려동물 데이터가 있는 경우 -->
+        <div v-else class="flex flex-col gap-8">
           <!-- 반려동물 선택 컴포넌트 -->
           <PetSelector
             :pets="pets"
@@ -210,8 +251,7 @@ const handleCopyLink = () => {
                 color="dang-primary"
               >
                 <ProfileInfo
-                  :profile="pets[currentPetIndex]"
-                  @update:profile="updateProfile"
+                  :profile="pets[currentPetIndex]" 
                 />
               </FeatureCard>
 
@@ -273,7 +313,7 @@ const handleCopyLink = () => {
       @share-kakao="handleShareKakao"
       @copy-link="handleCopyLink"
     >
-      <div class="space-y-6" v-if="pets[currentPetIndex].dbtiResult">
+      <div class="space-y-6" v-if="pets.length > 0 && pets[currentPetIndex].dbtiResult">
         <div class="text-center mb-6">
           <div class="inline-block p-4 bg-chart-category2 bg-opacity-20 rounded-full mb-4">
             <Brain class="w-12 h-12 text-chart-category2" />
@@ -354,7 +394,7 @@ const handleCopyLink = () => {
       @share-kakao="handleShareKakao"
       @copy-link="handleCopyLink"
     >
-      <div class="space-y-6" v-if="pets[currentPetIndex].petsitterGuide">
+      <div class="space-y-6" v-if="pets.length > 0 && pets[currentPetIndex].petsitterGuide">
         <div class="text-center mb-6">
           <div class="inline-block p-4 bg-chart-category3 bg-opacity-20 rounded-full mb-4">
             <Pencil class="w-12 h-12 text-chart-category3" />
