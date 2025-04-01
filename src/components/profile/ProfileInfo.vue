@@ -47,7 +47,7 @@ const saveChanges = () => {
   <div class="flex flex-col items-center relative">
     <!-- 프로필 이미지 섹션 -->
     <ProfileImageSection
-      :image-url="profile.imageUrl"
+      :image-url="profile?.imageUrl || defaultProfileImage"
       :default-image="defaultProfileImage"
       @update:image="updateProfileImage"
     />
@@ -58,33 +58,5 @@ const saveChanges = () => {
       :is-editing="isEditing"
       @update:profile="handleFormUpdate"
     />
-
-    <!-- 편집 버튼 -->
-    <div class="flex justify-end gap-4 mt-8 w-full">
-      <button
-        v-if="isEditing"
-        class="flex items-center gap-2 px-4 py-2 text-_gray-400 bg-_gray-100 rounded-lg hover:bg-_gray-200 transition-colors"
-        @click="toggleEditMode"
-      >
-        <X class="w-4 h-4" />
-        취소
-      </button>
-      <button
-        v-if="isEditing"
-        class="flex items-center gap-2 px-4 py-2 text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors"
-        @click="saveChanges"
-      >
-        <Save class="w-4 h-4" />
-        저장
-      </button>
-      <button
-        v-else
-        class="flex items-center gap-2 px-4 py-2 text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors"
-        @click="toggleEditMode"
-      >
-        <Pencil class="w-4 h-4" />
-        수정
-      </button>
-    </div>
   </div>
 </template>
