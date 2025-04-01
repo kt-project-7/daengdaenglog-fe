@@ -12,6 +12,19 @@ dist
 dist-ssr
 *.local
 
+# 빌드로 생긴 JS 파일 무시 (src 내부)
+src/**/*.js
+
+# TypeScript 빌드 캐시
+*.tsbuildinfo
+
+# vue-tsc 캐시
+.vue-tsc-cache/
+.vite/
+
+# JS 파일 무시
+vite.config.js
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
