@@ -1,17 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/authStore'
 import { useDiaryStore } from '@/stores/diaryStore'
 import { formatDate, getMoodEmoji, getWeatherEmoji } from '@/utils/formatters'
 import type { Mood, Weather } from '@/types/diary'
 
 const router = useRouter()
-const authStore = useAuthStore()
 const diaryStore = useDiaryStore()
-
-// 로그인 모달 상태
-const showLoginModal = ref(false)
 
 // 날짜 필터 입력값
 const dateFilter = ref({
@@ -169,30 +164,12 @@ const resetAllFilters = () => {
 
 // 일기 상세보기로 이동
 const viewDiary = (id: string) => {
-  if (!authStore.isAuthenticated) {
-    showLoginModal.value = true
-    return
-  }
   router.push(`/diary/${id}`)
 }
 
 // 새 일기 작성 페이지로 이동
 const goToWrite = () => {
-  if (!authStore.isAuthenticated) {
-    showLoginModal.value = true
-    return
-  }
   router.push('/diary-write')
-}
-
-// 로그인 처리
-const handleLogin = (success: boolean) => {
-  if (success) {
-    authStore.login()
-    showLoginModal.value = false
-    // 로그인 성공 후 일기 데이터 로드
-    loadDiaryData()
-  }
 }
 
 // 일기 데이터 로드
@@ -205,11 +182,6 @@ const loadDiaryData = async () => {
 }
 
 onMounted(async () => {
-  if (!authStore.isAuthenticated) {
-    showLoginModal.value = true
-    return
-  }
-
   await loadDiaryData()
 })
 </script>
