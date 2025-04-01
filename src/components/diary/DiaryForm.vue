@@ -105,6 +105,31 @@ const openImageSelector = () => {
       </div>
     </div>
 
+    <!-- 산책 시간과 식사 시간 필드 추가 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+      <div>
+        <label class="block text-dang-primary font-medium mb-2">오늘의 산책 시간 (분)</label>
+        <input
+          type="number"
+          v-model="diaryStore.newDiary.walkTime"
+          min="0"
+          max="300"
+          class="w-full px-3 py-2 border border-dang-light rounded-md focus:outline-none focus:ring-2 focus:ring-dang-primary bg-white"
+          placeholder="예: 30"
+        />
+      </div>
+
+      <div>
+        <label class="block text-dang-primary font-medium mb-2">오늘의 식사 시간</label>
+        <input
+          type="text"
+          v-model="diaryStore.newDiary.mealTime"
+          class="w-full px-3 py-2 border border-dang-light rounded-md focus:outline-none focus:ring-2 focus:ring-dang-primary bg-white"
+          placeholder="예: 08:00, 12:00, 18:00"
+        />
+      </div>
+    </div>
+
     <div class="mb-5">
       <label class="block text-dang-primary font-medium mb-2">관찰 내용</label>
       <textarea

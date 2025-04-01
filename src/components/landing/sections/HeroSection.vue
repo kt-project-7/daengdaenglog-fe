@@ -14,11 +14,11 @@
 
     <!-- Content layer -->
     <div
-      class="absolute w-full h-full top-0 left-0 z-50 flex items-center justify-center"
-      :style="{ transform: `translateY(${scrollY * -0.2}px)` }"
+      class="absolute w-full h-full top-0 left-0 z-30 flex items-center justify-center"
+      :style="{ transform: `translateY(${Math.max(scrollY * -0.2, -100)}px)` }"
     >
       <div
-        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 text-center p-8 max-w-[37.5rem]"
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 text-center p-8 pt-16 max-w-[37.5rem]"
       >
         <img
           src="@/assets/svgs/title2.svg"

@@ -88,7 +88,7 @@ onUnmounted(() => {
     <SideMenu :isOpen="isMenuOpen" @toggleMenu="toggleMenu" />
     <HeroSection
       :scrollY="scrollY"
-      class="pt-16"
+      class="pt-24"
       :displayText="displayText"
       :cursorBlink="cursorBlink"
     />
