@@ -134,6 +134,16 @@ export const useDiaryStore = defineStore('diary', () => {
     }
   }
 
+  const memoryImages = ref<Record<string, string>>({})
+
+  const setMemoryImage = (diaryId: string, imageUrl: string) => {
+    memoryImages.value[diaryId] = imageUrl
+  }
+
+  const getMemoryImage = (diaryId: string) => {
+    return memoryImages.value[diaryId]
+  }
+
   return {
     diaries,
     currentDiary,
@@ -150,5 +160,8 @@ export const useDiaryStore = defineStore('diary', () => {
     deleteDiary,
     checkAndLoadTodayDiary,
     selectedPetId,
+    memoryImages,
+    setMemoryImage,
+    getMemoryImage,
   }
 })

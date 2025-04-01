@@ -4,23 +4,19 @@ import { computed } from 'vue'
 const props = defineProps<{
   memoryImage?: string
   petName: string
-  diaryId: string
+  diaryId: number
+  isLoading?: boolean
 }>()
 
 const emit = defineEmits<{
-  (e: 'generate', type: string): void
+  (e: 'generate', diaryId: number): void
 }>()
 
 const hasMemory = computed(() => !!props.memoryImage)
-
-// 추억 생성
-const generateMemory = () => {
-  emit('generate', props.diaryId)
-}
+const generateMemory = () => emit('generate', props.diaryId)
 </script>
 
 <template>
-  <!-- 추억 섹션 -->
   <div class="mt-8 border-t border-_gray-100 pt-6">
     <div class="flex justify-between items-center mb-4">
       <h2 class="title-2 flex items-center">
@@ -29,9 +25,7 @@ const generateMemory = () => {
       </h2>
     </div>
 
-    <!-- 추억 콘텐츠 영역 -->
     <div class="space-y-6">
-      <!-- 이미지 추억이 있는 경우 -->
       <div v-if="hasMemory">
         <h3 class="body-text font-medium mb-2 text-primary">그림 추억</h3>
         <img
@@ -42,19 +36,19 @@ const generateMemory = () => {
       </div>
     </div>
 
-    <!-- 추억 없는 경우 안내 메시지 -->
     <div v-if="!hasMemory" class="text-center py-4 text-_gray-300">
       <p>아직 추억이 없어요. 아래 버튼으로 추억을 만들어보세요!</p>
     </div>
 
-    <!-- 추억 생성 버튼 섹션 -->
     <div class="mt-6">
       <button
-        v-if="!memoryImage"
+        v-if="!hasMemory"
         @click="generateMemory"
+        :disabled="isLoading"
         class="w-full bg-gradient-to-r from-primary to-primary text-white py-3 px-4 rounded-lg shadow hover:opacity-80 flex items-center justify-center button-text"
       >
-        AI로 추억 만들기
+        <span v-if="!isLoading">AI로 추억 만들기</span>
+        <span v-else>추억 만드는 중...</span>
       </button>
     </div>
   </div>

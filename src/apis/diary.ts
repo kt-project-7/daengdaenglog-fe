@@ -64,13 +64,10 @@ export const checkTodayDiary = async (
   return response.data.results
 }
 
-// 추억 그림 생성
+// 추억 그림 생성 (GET 메서드 기반)
 export const createDiaryMemoryImage = async (
   diaryId: number,
-  formData: FormData,
 ): Promise<MemoryImage> => {
-  const response = await api.post(`/diary/${diaryId}/image`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  })
+  const response = await api.get(`/diary/${diaryId}/image`)
   return response.data.results
 }
