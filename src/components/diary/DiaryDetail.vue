@@ -1,12 +1,62 @@
 <script setup lang="ts">
+import { ref, defineEmits } from 'vue'
 import { formatDate, getMoodEmoji, getWeatherEmoji } from '@/utils/formatters'
 import type { Diary, Mood, Weather } from '@/types/diary'
 import MemorySection from './MemorySection.vue'
+import DiaryEditModal from './DiaryEditModal.vue'
+import { useDiaryStore } from '@/stores/diaryStore'
+import { Edit, Trash2 } from 'lucide-vue-next'
 
-defineProps<{
+const props = defineProps<{
   diary: Diary
   petName: string
 }>()
+
+const emit = defineEmits<{
+  (e: 'generate-memory'): void
+  (e: 'diary-updated'): void
+  (e: 'diary-deleted'): void
+}>()
+
+const diaryStore = useDiaryStore()
+const showEditModal = ref(false)
+const isDeleting = ref(false)
+
+// 수정 모달 열기
+const openEditModal = () => {
+  showEditModal.value = true
+}
+
+// 수정 모달 닫기
+const closeEditModal = () => {
+  showEditModal.value = false
+}
+
+// 일기 수정 저장
+const saveDiary = async (updatedDiary: Diary) => {
+  try {
+    await diaryStore.updateDiary(updatedDiary)
+    closeEditModal()
+    emit('diary-updated')
+  } catch (error) {
+    console.error('일기 수정 중 오류가 발생했습니다:', error)
+  }
+}
+
+// 일기 삭제
+const deleteDiary = async () => {
+  if (!confirm('정말로 이 일기를 삭제하시겠습니까?')) return
+  
+  try {
+    isDeleting.value = true
+    await diaryStore.deleteDiary(props.diary.id)
+    emit('diary-deleted')
+  } catch (error) {
+    console.error('일기 삭제 중 오류가 발생했습니다:', error)
+  } finally {
+    isDeleting.value = false
+  }
+}
 </script>
 
 <template>
@@ -20,6 +70,25 @@ defineProps<{
     </div>
 
     <div class="p-6">
+      <!-- 수정/삭제 버튼 추가 -->
+      <div class="flex justify-end mb-4 gap-2">
+        <button 
+          @click="openEditModal"
+          class="flex items-center gap-1 px-3 py-1.5 bg-dang-primary bg-opacity-10 text-dang-primary rounded-md hover:bg-opacity-20 transition-colors"
+        >
+          <Edit class="w-4 h-4" />
+          <span>수정</span>
+        </button>
+        <button 
+          @click="deleteDiary"
+          :disabled="isDeleting"
+          class="flex items-center gap-1 px-3 py-1.5 bg-dang-rejected bg-opacity-10 text-red-500 rounded-md hover:bg-red-500/10 transition-colors"
+        >
+          <Trash2 class="w-4 h-4" />
+          <span>{{ isDeleting ? '삭제 중...' : '삭제' }}</span>
+        </button>
+      </div>
+
       <div class="flex flex-wrap gap-2 mb-4">
         <span
           class="px-3 py-1 bg-primary bg-opacity-10 text-primary rounded-full"
@@ -53,7 +122,16 @@ defineProps<{
         :memory-image="diary.memory?.image?.content"
         :pet-name="petName"
         :diary-id="diary.id"
+        @generate="$emit('generate-memory')"
       />
     </div>
+
+    <!-- 수정 모달 -->
+    <DiaryEditModal
+      :show="showEditModal"
+      :diary="diary"
+      @close="closeEditModal"
+      @save="saveDiary"
+    />
   </div>
 </template>

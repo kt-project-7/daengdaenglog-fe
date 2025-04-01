@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { onMounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useDiaryStore } from '@/stores/diaryStore'
 import { useProfileStore } from '@/stores/profileStore'
 import { formatDate } from '@/utils/formatters'
 import DiaryDetail from '@/components/diary/DiaryDetail.vue'
 
 const route = useRoute()
+const router = useRouter()
 const diaryStore = useDiaryStore()
 const profileStore = useProfileStore()
 
@@ -28,6 +29,20 @@ const petName = computed(() => profileStore.profile.name)
 // 추억 생성
 const generateMemory = () => {
   diaryStore.generateMemory()
+}
+
+// 일기가 업데이트되었을 때
+const handleDiaryUpdated = () => {
+  // 현재 일기 다시 불러오기
+  if (diaryId.value) {
+    diaryStore.setCurrentDiaryId(diaryId.value)
+  }
+}
+
+// 일기가 삭제되었을 때
+const handleDiaryDeleted = () => {
+  // 일기 목록 페이지로 이동
+  router.push('/diary-list')
 }
 </script>
 
@@ -51,6 +66,8 @@ const generateMemory = () => {
           :diary="currentDiary"
           :pet-name="petName"
           @generate-memory="generateMemory"
+          @diary-updated="handleDiaryUpdated"
+          @diary-deleted="handleDiaryDeleted"
         />
       </div>
       <div v-else class="text-center py-10 bg-dang-background rounded-xl shadow-dang-md">
