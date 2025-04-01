@@ -11,6 +11,8 @@ const router = useRouter()
 const isMenuOpen = ref(false)
 const authStore = useAuthStore()
 
+authStore.initializeAuth()
+
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
 }
