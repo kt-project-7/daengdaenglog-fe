@@ -27,11 +27,7 @@ export interface Diary {
   walkTime?: number
   mealTime?: string
   imageUrl?: string
-  memory?: {
-    image: {
-      content: string
-    }
-  }
+  memory?: MemoryImage
 }
 
 export interface NewDiary {
@@ -42,4 +38,14 @@ export interface NewDiary {
   walkTime: number | null
   mealTime: string
   imageUrl: string | null
+}
+
+export interface MemoryImage {
+  content: string
+  imageUrl: string
+}
+
+export interface TodayDiaryCheck {
+  isWrite: boolean
+  diaryId: number
 }
