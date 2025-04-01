@@ -78,6 +78,29 @@ export const useDiaryStore = defineStore('diary', () => {
     }
   }
 
+  // 일기 수정
+  const updateDiary = (updatedDiary: Diary) => {
+    const index = diaries.value.findIndex(diary => diary.id === updatedDiary.id)
+    if (index !== -1) {
+      diaries.value[index] = updatedDiary
+      
+      // 현재 보고 있는 일기가 수정된 일기라면 현재 일기도 업데이트
+      if (currentDiary.value && currentDiary.value.id === updatedDiary.id) {
+        currentDiary.value = updatedDiary
+      }
+    }
+  }
+
+  // 일기 삭제
+  const deleteDiary = (id: string) => {
+    diaries.value = diaries.value.filter(diary => diary.id !== id)
+    
+    // 현재 보고 있는 일기가 삭제된 일기라면 현재 일기 초기화
+    if (currentDiary.value && currentDiary.value.id === id) {
+      currentDiary.value = null
+    }
+  }
+
   // 더미 데이터
   const dummyDiaries: Diary[] = [
     {
@@ -167,5 +190,7 @@ export const useDiaryStore = defineStore('diary', () => {
     fetchDiaries,
     fetchDiaryById,
     createDiary,
+    updateDiary,
+    deleteDiary,
   }
 })
