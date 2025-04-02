@@ -78,7 +78,11 @@ const initChart = () => {
 }
 
 onMounted(() => {
-  initChart()
+  // 먼저 데이터가 모두 로딩될 때까지 기다립니다.
+  store.fetchClaims().then(() => {
+    // 데이터가 로드된 후에 차트 초기화
+    initChart()
+  })
 })
 
 onUnmounted(() => {

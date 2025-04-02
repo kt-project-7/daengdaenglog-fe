@@ -41,6 +41,7 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import { useDangMoneyStore } from '@/stores/dangMoneyStore'
 import ClaimsFilter from './ClaimsFilter.vue'
 import ClaimsTable from './ClaimsTable.vue'
@@ -48,4 +49,8 @@ import ClaimsPagination from './ClaimsPagination.vue'
 import ClaimDetailModal from './ClaimDetailModal.vue'
 
 const store = useDangMoneyStore()
+
+onMounted(() => {
+  store.fetchClaims()
+})
 </script>

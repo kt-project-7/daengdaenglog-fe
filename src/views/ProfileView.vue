@@ -40,7 +40,7 @@ const fetchPets = async () => {
       headers: {
         accept: '*/*',
         Authorization:
-          'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3NDM0ODY0MjIsImV4cCI6MTc0MzUyMjQyMiwiaXNzIjoiY2xvdmVyIiwic3ViIjoiMSIsInJvbGUiOiJBRE1JTiJ9.g6U0bHwq7oNi-gLbYxWZzjzN6Y1hF1uZqRgE7Jx7ObWUetN81O_x4IUVfXksQHckH9NEFjd_cf501575OU9BGg',
+          'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3NDM1NTIyODMsImV4cCI6MTc0MzU4ODI4MywiaXNzIjoiY2xvdmVyIiwic3ViIjoiMSIsInJvbGUiOiJBRE1JTiJ9.Kft4oQkEZ1oXBRnqBq1OcigpyG7bUlXD1ikzvForBjHeG-lkIGJQJALHh6amvMRlIV7mwHnGiAQ-h_tyo0OrRA',
       },
     })
     // API 응답 데이터를 pets에 할당
