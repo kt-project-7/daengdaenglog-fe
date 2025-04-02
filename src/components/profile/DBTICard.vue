@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { Brain } from 'lucide-vue-next'
-import axios from 'axios'
 import type { Profile } from '@/types/profile'
+import { fetchDbtiResult } from '@/apis/dbti'
+import { usePetStore } from '@/stores/petStore'
 
 const props = defineProps<{
   profile: Profile | null
@@ -13,6 +14,7 @@ const emit = defineEmits<{
   'show-result': []
 }>()
 
+const petStore = usePetStore()
 const isAnalyzed = ref(false)
 const isLoading = ref(false)
 const error = ref<string | null>(null)
@@ -25,22 +27,31 @@ const handleAnalyzeClick = async () => {
   error.value = null
 
   try {
-    const response = await axios.get('https://dangdanglog.com/pet/pbti/1', {
-      headers: {
-        accept: '*/*',
-        Authorization:
-          'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3NDM1NzE1NzQsImV4cCI6MTc0MzYwNzU3NCwiaXNzIjoiY2xvdmVyIiwic3ViIjoiMSIsInJvbGUiOiJBRE1JTiJ9.hbbkrPnvBhDUuEPWD5EhxX-ycckAQDhasRahn8wTgBiFhWH5u_F32fZ1cTqhta4fWfyqs4N0btFCHLrmx86NuQ',
-      },
-    })
+    const data = await fetchDbtiResult(props.profile.id)
+    console.log('DBTI 분석 결과 원본:', data)
+    console.log('DBTI 분석 결과 결과값:', data.results)
 
-    // API 응답 처리 (여기서는 응답 데이터를 어떻게 처리할지에 대한 구체적인 정보가 없어 emit만 합니다)
-    console.log('PBTI 분석 결과:', response.data)
+    // 응답 데이터 형식 확인
+    if (data.results === null) {
+      console.error('DBTI 결과가 null입니다')
+      petStore.updatePetPbti('ERROR')
+    } else if (typeof data.results === 'string') {
+      console.log('DBTI 결과가 문자열입니다:', data.results)
+      petStore.updatePetPbti(data.results)
+    } else if (typeof data.results === 'object') {
+      console.log('DBTI 결과가 객체입니다:', data.results)
+      // 객체인 경우 적절한 필드 추출
+      petStore.updatePetPbti(JSON.stringify(data.results))
+    } else {
+      console.error('DBTI 결과 타입이 예상과 다릅니다:', typeof data.results)
+      petStore.updatePetPbti(String(data.results))
+    }
 
+    console.log('설정된 PBTI 값:', props.profile.pbti)
     isAnalyzed.value = true
     emit('analyze')
-    props.profile.pbti = response.data.results // 분석 결과를 profile에 저장
   } catch (err) {
-    console.error('PBTI 분석 중 오류 발생:', err)
+    console.error('DBTI 분석 중 오류 발생:', err)
     error.value = '분석 중 오류가 발생했습니다. 다시 시도해주세요.'
   } finally {
     isLoading.value = false

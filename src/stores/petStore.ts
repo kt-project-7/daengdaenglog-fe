@@ -42,9 +42,11 @@ export const usePetStore = defineStore('pet', () => {
     currentPetIndex.value = pets.value.length - 1
   }
 
-  const analyzeDogPersonality = async () => {
-    // 여기에 실제 API 호출로 대체하세요
-    pets.value[currentPetIndex.value].pbti = 'ENFP'
+  // DBTI 분석 결과를 직접 업데이트하는 함수
+  const updatePetPbti = (pbtiValue: string) => {
+    if (currentPet.value) {
+      pets.value[currentPetIndex.value].pbti = pbtiValue
+    }
   }
 
   const generatePetsitterGuide = async () => {
@@ -61,7 +63,7 @@ export const usePetStore = defineStore('pet', () => {
     fetchPets,
     switchPet,
     addPet,
-    analyzeDogPersonality,
+    updatePetPbti,
     generatePetsitterGuide,
   }
 })

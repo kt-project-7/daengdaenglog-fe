@@ -121,7 +121,7 @@ const handleShareKakao = () => {
               >
                 <DBTICard
                   :profile="petStore.currentPet"
-                  @analyze="petStore.analyzeDogPersonality"
+                  @analyze="() => {}"
                   @show-result="showDBTIResultModal = true"
                 />
               </FeatureCard>
