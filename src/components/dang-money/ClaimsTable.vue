@@ -38,21 +38,21 @@
         <tbody>
           <tr
             v-for="claim in claims"
-            :key="claim.id"
+            :key="claim.id ?? ''"
             :class="{ 'bg-dang-rejected': claim.status === 'rejected' }"
             class="border-b border-_gray-100 hover:bg-_gray-100"
           >
-            <td class="p-4">{{ store.formatDate(claim.date) }}</td>
+            <td class="p-4">{{ formatDate(claim.date) }}</td>
             <td class="p-4">{{ claim.hospital }}</td>
             <td class="p-4">{{ claim.description }}</td>
-            <td class="p-4">{{ store.formatCurrency(claim.claimAmount) }}</td>
-            <td class="p-4">{{ store.formatCurrency(claim.refundAmount) }}</td>
+            <td class="p-4">{{ formatCurrency(claim.claimAmount) }}</td>
+            <td class="p-4">{{ formatCurrency(claim.refundAmount) }}</td>
             <td class="p-4">
               <span
                 class="inline-block py-1 px-2 rounded-full text-xs font-bold"
-                :class="store.getStatusClass(claim.status)"
+                :class="getStatusClass(claim.status)"
               >
-                {{ store.getStatusText(claim.status) }}
+                {{ getStatusText(claim.status) }}
               </span>
             </td>
             <td class="p-4">
@@ -76,8 +76,19 @@ import { FileQuestion, Eye } from 'lucide-vue-next'
 
 const store = useDangMoneyStore()
 
+type Claim = {
+  id: number | null
+  date: string
+  hospital: string
+  description: string
+  medicalFee: number
+  claimAmount: number
+  refundAmount: number
+  status: string
+}
+
 defineProps<{
-  claims: any[]
+  claims: Claim[]
 }>()
 
 const emit = defineEmits<{
@@ -86,5 +97,40 @@ const emit = defineEmits<{
 
 const viewDetail = (claim: any) => {
   emit('viewDetail', claim)
+}
+
+function formatCurrency(amount: number) {
+  return amount.toLocaleString('ko-KR') + '원'
+}
+
+function formatDate(dateString: string) {
+  const date = new Date(dateString)
+  return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`
+}
+
+function getStatusText(status: string) {
+  switch (status) {
+    case 'pending':
+      return '처리중'
+    case 'approved':
+      return '승인'
+    case 'rejected':
+      return '거절'
+    default:
+      return ''
+  }
+}
+
+function getStatusClass(status: string) {
+  switch (status) {
+    case 'pending':
+      return 'bg-dang-pending text-dang-pending-text px-2 py-1 rounded'
+    case 'approved':
+      return 'bg-dang-approved text-dang-approved-text px-2 py-1 rounded'
+    case 'rejected':
+      return 'bg-dang-rejected text-dang-rejected-text px-2 py-1 rounded'
+    default:
+      return ''
+  }
 }
 </script>

@@ -1,39 +1,103 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
+import axios from 'axios'
+
+type Claim = {
+  id: number | null
+  date: string
+  hospital: string
+  description: string
+  medicalFee: number
+  claimAmount: number
+  refundAmount: number
+  status: string
+}
 
 export const useDangMoneyStore = defineStore('dangMoney', () => {
-  // 요약 데이터
-  const totalExpense = ref(2850000)
-  const claimCount = ref(12)
-  const refundRate = ref(65)
+  // 총 지출
+  const totalExpense = computed(() => {
+    const totalMedicalFee = claims.value.reduce(
+      (sum, claim) => sum + claim.medicalFee,
+      0,
+    )
+    const totalRefundAmount = claims.value.reduce(
+      (sum, claim) => sum + claim.refundAmount,
+      0,
+    )
+
+    return totalMedicalFee - totalRefundAmount
+  })
+
+  // 보험 청구 건수 (배열 길이)
+  const claimCount = computed(() => {
+    return claims.value.length
+  })
+
+  // 평균 환급률 ((총 환급 금액 / 총 청구 금액) * 100)
+  const refundRate = computed(() => {
+    const totalClaimAmount = claims.value.reduce(
+      (sum, claim) => sum + claim.claimAmount,
+      0,
+    )
+    const totalRefundAmount = claims.value.reduce(
+      (sum, claim) => sum + claim.refundAmount,
+      0,
+    )
+
+    return totalClaimAmount === 0
+      ? 0
+      : Math.round((totalRefundAmount / totalClaimAmount) * 100)
+  })
 
   // 차트 관련 상태
   const chartPeriod = ref('month')
 
   // 월별 지출 데이터
-  const monthlyExpenseData = ref([
-    { month: '1월', amount: 150000 },
-    { month: '2월', amount: 220000 },
-    { month: '3월', amount: 180000 },
-    { month: '4월', amount: 320000 },
-    { month: '5월', amount: 250000 },
-    { month: '6월', amount: 190000 },
-    { month: '7월', amount: 280000 },
-    { month: '8월', amount: 350000 },
-    { month: '9월', amount: 310000 },
-    { month: '10월', amount: 230000 },
-    { month: '11월', amount: 270000 },
-    { month: '12월', amount: 100000 },
-  ])
+  const monthlyExpenseData = computed(() => {
+    // 월별 지출을 계산하기 위한 객체
+    const monthlyExpense: { [key: string]: number } = {}
+
+    // claims 배열을 순회하면서 각 청구 항목을 월별로 구분
+    claims.value.forEach((claim) => {
+      const month = new Date(claim.date).getMonth() + 1 // 월은 0부터 시작하므로 1을 더함
+      const monthStr = `${month}월`
+
+      // 월별 지출 금액을 합산
+      if (monthlyExpense[monthStr]) {
+        monthlyExpense[monthStr] += claim.medicalFee
+      } else {
+        monthlyExpense[monthStr] = claim.medicalFee
+      }
+    })
+
+    // 결과를 배열로 반환 (12개월에 대한 데이터 생성)
+    return [
+      { month: '1월', amount: monthlyExpense['1월'] || 0 },
+      { month: '2월', amount: monthlyExpense['2월'] || 0 },
+      { month: '3월', amount: monthlyExpense['3월'] || 0 },
+      { month: '4월', amount: monthlyExpense['4월'] || 0 },
+      { month: '5월', amount: monthlyExpense['5월'] || 0 },
+      { month: '6월', amount: monthlyExpense['6월'] || 0 },
+      { month: '7월', amount: monthlyExpense['7월'] || 0 },
+      { month: '8월', amount: monthlyExpense['8월'] || 0 },
+      { month: '9월', amount: monthlyExpense['9월'] || 0 },
+      { month: '10월', amount: monthlyExpense['10월'] || 0 },
+      { month: '11월', amount: monthlyExpense['11월'] || 0 },
+      { month: '12월', amount: monthlyExpense['12월'] || 0 },
+    ]
+  })
 
   // 카테고리별 지출 데이터
-  const expenseCategories = ref([
-    { name: '정기검진', amount: 850000 },
-    { name: '예방접종', amount: 450000 },
-    { name: '질병치료', amount: 950000 },
-    { name: '수술', amount: 350000 },
-    { name: '약품', amount: 250000 },
-  ])
+  const expenseCategories = computed(() => {
+    const expense = totalExpense.value
+    return [
+      { name: '정기검진', amount: expense * 0.3 },
+      { name: '예방접종', amount: expense * 0.15 },
+      { name: '질병치료', amount: expense * 0.33 },
+      { name: '수술', amount: expense * 0.12 },
+      { name: '약품', amount: expense * 0.1 },
+    ]
+  })
 
   // 카테고리 색상
   const categoryColors = [
@@ -45,211 +109,51 @@ export const useDangMoneyStore = defineStore('dangMoney', () => {
   ]
 
   // 청구 내역 관련 상태
+  const claims = ref<Claim[]>([])
+  const paginatedClaims = ref<Claim[]>([])
+  const currentPage = ref(1)
+  const totalPages = ref(1)
   const statusFilter = ref('all')
   const dateFilter = ref('all')
-  const currentPage = ref(1)
   const itemsPerPage = 5
   const showClaimDetailModal = ref(false)
   const selectedClaim = ref<any>(null)
 
-  // 청구 내역 데이터
-  const claimData = ref([
-    {
-      id: 1,
-      date: '2025-03-15',
-      hospital: '댕댕 동물병원',
-      description: '정기검진 및 예방접종',
-      medicalFee: 150000,
-      claimAmount: 120000,
-      refundAmount: 80000,
-      status: 'approved',
-      documents: [
-        { name: '진료확인서.pdf', url: '#' },
-        { name: '영수증.pdf', url: '#' },
-      ],
-      notes: '정기검진 결과 모두 건강합니다.',
-    },
-    {
-      id: 2,
-      date: '2025-02-28',
-      hospital: '멍멍 동물메디컬센터',
-      description: '피부질환 치료',
-      medicalFee: 220000,
-      claimAmount: 180000,
-      refundAmount: 120000,
-      status: 'approved',
-      documents: [
-        { name: '진료확인서.pdf', url: '#' },
-        { name: '영수증.pdf', url: '#' },
-        { name: '처방전.pdf', url: '#' },
-      ],
-    },
-    {
-      id: 3,
-      date: '2025-02-10',
-      hospital: '행복한 동물병원',
-      description: '치과 치료',
-      medicalFee: 350000,
-      claimAmount: 300000,
-      refundAmount: 180000,
-      status: 'approved',
-      documents: [
-        { name: '진료확인서.pdf', url: '#' },
-        { name: '영수증.pdf', url: '#' },
-      ],
-    },
-    {
-      id: 4,
-      date: '2025-01-25',
-      hospital: '댕댕 동물병원',
-      description: '혈액검사',
-      medicalFee: 80000,
-      claimAmount: 70000,
-      refundAmount: 45000,
-      status: 'approved',
-      documents: [
-        { name: '진료확인서.pdf', url: '#' },
-        { name: '영수증.pdf', url: '#' },
-        { name: '검사결과지.pdf', url: '#' },
-      ],
-    },
-    {
-      id: 5,
-      date: '2025-01-05',
-      hospital: '24시 동물응급센터',
-      description: '구토 및 설사 응급치료',
-      medicalFee: 180000,
-      claimAmount: 150000,
-      refundAmount: 90000,
-      status: 'approved',
-      documents: [
-        { name: '진료확인서.pdf', url: '#' },
-        { name: '영수증.pdf', url: '#' },
-      ],
-      notes: '밤에 갑자기 구토와 설사 증상이 있어 응급실 방문',
-    },
-    {
-      id: 6,
-      date: '2024-12-20',
-      hospital: '멍멍 동물메디컬센터',
-      description: '슬개골 탈구 수술',
-      medicalFee: 1200000,
-      claimAmount: 1000000,
-      refundAmount: 650000,
-      status: 'approved',
-      documents: [
-        { name: '진료확인서.pdf', url: '#' },
-        { name: '영수증.pdf', url: '#' },
-        { name: '수술동의서.pdf', url: '#' },
-      ],
-    },
-    {
-      id: 7,
-      date: '2024-11-15',
-      hospital: '댕댕 동물병원',
-      description: '정기검진',
-      medicalFee: 100000,
-      claimAmount: 80000,
-      refundAmount: 50000,
-      status: 'approved',
-      documents: [
-        { name: '진료확인서.pdf', url: '#' },
-        { name: '영수증.pdf', url: '#' },
-      ],
-    },
-    {
-      id: 8,
-      date: '2024-10-30',
-      hospital: '행복한 동물병원',
-      description: '알러지 검사',
-      medicalFee: 150000,
-      claimAmount: 120000,
-      refundAmount: 75000,
-      status: 'approved',
-      documents: [
-        { name: '진료확인서.pdf', url: '#' },
-        { name: '영수증.pdf', url: '#' },
-        { name: '검사결과지.pdf', url: '#' },
-      ],
-    },
-    {
-      id: 9,
-      date: '2024-10-05',
-      hospital: '멍멍 동물메디컬센터',
-      description: '예방접종',
-      medicalFee: 120000,
-      claimAmount: 100000,
-      refundAmount: 60000,
-      status: 'approved',
-      documents: [
-        { name: '진료확인서.pdf', url: '#' },
-        { name: '영수증.pdf', url: '#' },
-      ],
-    },
-    {
-      id: 10,
-      date: '2024-09-20',
-      hospital: '댕댕 동물병원',
-      description: '귀 염증 치료',
-      medicalFee: 90000,
-      claimAmount: 75000,
-      refundAmount: 45000,
-      status: 'approved',
-      documents: [
-        { name: '진료확인서.pdf', url: '#' },
-        { name: '영수증.pdf', url: '#' },
-      ],
-    },
-    {
-      id: 11,
-      date: '2024-09-05',
-      hospital: '24시 동물응급센터',
-      description: '이물질 제거 (장난감 삼킴)',
-      medicalFee: 250000,
-      claimAmount: 200000,
-      refundAmount: 120000,
-      status: 'approved',
-      documents: [
-        { name: '진료확인서.pdf', url: '#' },
-        { name: '영수증.pdf', url: '#' },
-        { name: 'X-ray 사진.pdf', url: '#' },
-      ],
-      notes: '장난감 조각을 삼켜서 응급 처치 필요',
-    },
-    {
-      id: 12,
-      date: '2025-03-20',
-      hospital: '멍멍 동물메디컬센터',
-      description: '건강검진 패키지',
-      medicalFee: 300000,
-      claimAmount: 250000,
-      refundAmount: 0,
-      status: 'pending',
-      documents: [
-        { name: '진료확인서.pdf', url: '#' },
-        { name: '영수증.pdf', url: '#' },
-      ],
-    },
-    {
-      id: 13,
-      date: '2024-08-15',
-      hospital: '행복한 동물병원',
-      description: '피부 알러지 치료',
-      medicalFee: 180000,
-      claimAmount: 150000,
-      refundAmount: 0,
-      status: 'rejected',
-      documents: [
-        { name: '진료확인서.pdf', url: '#' },
-        { name: '영수증.pdf', url: '#' },
-      ],
-      notes: '보험 적용 대상이 아닌 치료로 판단되어 거절됨',
-    },
-  ])
+  // 서버에서 데이터 가져오기
+  const fetchClaims = async () => {
+    try {
+      const response = await axios.get(
+        'https://dangdanglog.com/pet/insurance/1',
+        {
+          headers: {
+            accept: '*/*',
+            Authorization:
+              'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3NDM1NTIyODMsImV4cCI6MTc0MzU4ODI4MywiaXNzIjoiY2xvdmVyIiwic3ViIjoiMSIsInJvbGUiOiJBRE1JTiJ9.Kft4oQkEZ1oXBRnqBq1OcigpyG7bUlXD1ikzvForBjHeG-lkIGJQJALHh6amvMRlIV7mwHnGiAQ-h_tyo0OrRA',
+          },
+        },
+      ) // API 엔드포인트 수정 필요
+      claims.value = response.data.results.petInsuranceList.map(
+        (item: any) => ({
+          id: item.id || null,
+          date: item.date,
+          hospital: item.hospitalName,
+          description: item.description,
+          medicalFee: item.medicalFee,
+          claimAmount: item.claimAmount,
+          refundAmount: item.refundAmount,
+          status: item.ProgressType.toLowerCase(),
+        }),
+      )
+
+      updatePaginatedClaims()
+    } catch (error) {
+      console.error('Failed to fetch claims:', error)
+    }
+  }
 
   // 필터링된 청구 내역
-  const filteredClaims = computed(() => {
-    let filtered = [...claimData.value]
+  const filteredClaims = computed<Claim[]>(() => {
+    let filtered: Claim[] = [...claims.value]
 
     // 상태 필터링
     if (statusFilter.value !== 'all') {
@@ -287,15 +191,9 @@ export const useDangMoneyStore = defineStore('dangMoney', () => {
     return filtered
   })
 
-  // 페이지네이션
-  const totalPages = computed(() => {
-    return Math.ceil(filteredClaims.value.length / itemsPerPage)
-  })
-
-  const paginatedClaims = computed(() => {
-    const start = (currentPage.value - 1) * itemsPerPage
-    const end = start + itemsPerPage
-    return filteredClaims.value.slice(start, end)
+  watch([statusFilter, dateFilter], () => {
+    currentPage.value = 1
+    updatePaginatedClaims()
   })
 
   // 유틸리티 함수
@@ -343,13 +241,22 @@ export const useDangMoneyStore = defineStore('dangMoney', () => {
   function prevPage() {
     if (currentPage.value > 1) {
       currentPage.value--
+      updatePaginatedClaims()
     }
   }
 
   function nextPage() {
     if (currentPage.value < totalPages.value) {
       currentPage.value++
+      updatePaginatedClaims()
     }
+  }
+
+  const updatePaginatedClaims = () => {
+    const start = (currentPage.value - 1) * itemsPerPage
+    const end = start + itemsPerPage
+    paginatedClaims.value = filteredClaims.value.slice(start, end)
+    totalPages.value = Math.ceil(filteredClaims.value.length / itemsPerPage)
   }
 
   function resetFilters() {
@@ -387,10 +294,10 @@ export const useDangMoneyStore = defineStore('dangMoney', () => {
     itemsPerPage,
     showClaimDetailModal,
     selectedClaim,
-    claimData,
     filteredClaims,
     totalPages,
     paginatedClaims,
+    fetchClaims,
     formatCurrency,
     formatDate,
     getStatusText,

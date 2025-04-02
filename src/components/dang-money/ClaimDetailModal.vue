@@ -64,32 +64,6 @@
             >
           </div>
         </div>
-
-        <div class="mb-6">
-          <h3 class="text-lg text-_gray-400 mb-4">첨부 서류</h3>
-          <div class="flex flex-col gap-3">
-            <div
-              v-for="(doc, index) in claim.documents"
-              :key="index"
-              class="flex items-center gap-3 bg-_gray-100 p-3 rounded-lg"
-            >
-              <FileText class="w-5 h-5 text-_gray-400" />
-              <span class="flex-1 text-sm text-_gray-400">{{ doc.name }}</span>
-              <button
-                class="bg-transparent border-none cursor-pointer text-dang-primary transition-colors duration-200 hover:text-dang-secondary"
-              >
-                <Download class="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div v-if="claim.notes" class="bg-dang-pending rounded-xl p-6 mb-6">
-          <h3 class="text-lg text-dang-pending-text mb-3">특이사항</h3>
-          <p class="text-dang-pending-text text-sm leading-6">
-            {{ claim.notes }}
-          </p>
-        </div>
       </div>
 
       <div class="flex justify-end p-6 border-t border-_gray-100">
@@ -106,7 +80,7 @@
 
 <script setup lang="ts">
 import { useDangMoneyStore } from '@/stores/dangMoneyStore'
-import { X, FileText, Download } from 'lucide-vue-next'
+import { X } from 'lucide-vue-next'
 
 const store = useDangMoneyStore()
 

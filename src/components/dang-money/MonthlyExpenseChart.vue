@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, onUnmounted } from 'vue'
+import { ref, onMounted, watch, onUnmounted, nextTick } from 'vue'
 import { useDangMoneyStore } from '@/stores/dangMoneyStore'
 import Chart from 'chart.js/auto'
 
@@ -50,6 +50,10 @@ const initChart = () => {
 
   const ctx = monthlyExpenseChart.value.getContext('2d')
   if (!ctx) return
+
+  if (chart) {
+    chart.destroy()
+  }
 
   chart = new Chart(ctx, {
     type: 'bar',
@@ -104,6 +108,15 @@ const updateChart = () => {
 
 // 기간 변경 감시
 watch(
+  () => store.monthlyExpenseData,
+  async () => {
+    // DOM이 갱신된 후 차트를 초기화
+    await nextTick()
+    initChart()
+  },
+)
+
+watch(
   () => store.chartPeriod,
   () => {
     updateChart()
@@ -111,7 +124,9 @@ watch(
 )
 
 onMounted(() => {
-  initChart()
+  nextTick(() => {
+    initChart() // DOM 업데이트 후 차트 초기화
+  })
 })
 
 onUnmounted(() => {
