@@ -20,21 +20,22 @@ const error = ref<string | null>(null)
 // 분석 버튼 눌렀을 때 실행되는 함수
 const handleAnalyzeClick = async () => {
   if (!props.profile) return
-  
+
   isLoading.value = true
   error.value = null
-  
+
   try {
     const response = await axios.get('https://dangdanglog.com/pet/pbti/1', {
       headers: {
-        'accept': '*/*',
-        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3NDM1NzE1NzQsImV4cCI6MTc0MzYwNzU3NCwiaXNzIjoiY2xvdmVyIiwic3ViIjoiMSIsInJvbGUiOiJBRE1JTiJ9.hbbkrPnvBhDUuEPWD5EhxX-ycckAQDhasRahn8wTgBiFhWH5u_F32fZ1cTqhta4fWfyqs4N0btFCHLrmx86NuQ'
-      }
+        accept: '*/*',
+        Authorization:
+          'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3NDM1NzE1NzQsImV4cCI6MTc0MzYwNzU3NCwiaXNzIjoiY2xvdmVyIiwic3ViIjoiMSIsInJvbGUiOiJBRE1JTiJ9.hbbkrPnvBhDUuEPWD5EhxX-ycckAQDhasRahn8wTgBiFhWH5u_F32fZ1cTqhta4fWfyqs4N0btFCHLrmx86NuQ',
+      },
     })
-    
+
     // API 응답 처리 (여기서는 응답 데이터를 어떻게 처리할지에 대한 구체적인 정보가 없어 emit만 합니다)
     console.log('PBTI 분석 결과:', response.data)
-    
+
     isAnalyzed.value = true
     emit('analyze')
     props.profile.pbti = response.data.results // 분석 결과를 profile에 저장
@@ -47,10 +48,13 @@ const handleAnalyzeClick = async () => {
 }
 
 // 반려동물 바뀌면 분석 초기화
-watch(() => props.profile, () => {
-  isAnalyzed.value = false
-  error.value = null
-})
+watch(
+  () => props.profile,
+  () => {
+    isAnalyzed.value = false
+    error.value = null
+  },
+)
 </script>
 
 <template>
@@ -94,10 +98,28 @@ watch(() => props.profile, () => {
       </button>
     </div>
 
-    <!-- 로딩 상태 -->
-    <div v-else-if="isLoading" class="text-center py-8">
-      <p class="text-_gray-600 mb-4">DBTI 분석 중입니다...</p>
-      <div class="w-8 h-8 border-4 border-_blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+    <div
+      v-else-if="isLoading"
+      class="flex flex-col items-center justify-center py-16 space-y-6"
+    >
+      <!-- 귀여운 로딩 이모지 -->
+      <div class="text-4xl animate-bounce">🐶</div>
+
+      <!-- 텍스트 + 이모지 조합 -->
+      <p class="text-_gray-600 text-lg font-semibold animate-pulse">
+        DBTI를 부지런히 분석 중이에요... ⏳
+      </p>
+
+      <!-- 둥글둥글 귀여운 도트 스피너 -->
+      <div class="flex space-x-2">
+        <div
+          class="w-3 h-3 bg-_blue-400 rounded-full animate-bounce [animation-delay:-0.3s]"
+        ></div>
+        <div
+          class="w-3 h-3 bg-_blue-400 rounded-full animate-bounce [animation-delay:-0.15s]"
+        ></div>
+        <div class="w-3 h-3 bg-_blue-400 rounded-full animate-bounce"></div>
+      </div>
     </div>
 
     <!-- 분석 전 상태 -->

@@ -9,7 +9,7 @@ import type { CreateDiaryRequest } from '@/types/diary'
 import EditDiaryModal from '@/components/diary/EditDiaryModal.vue'
 import PetSelector from '@/components/profile/PetSelector.vue'
 import { Edit, Trash2, MoreVertical } from 'lucide-vue-next'
-import LogoSvg from '@/assets/svgs/logo.svg'
+import LogoSvg from '@/assets/svgs/default.svg'
 
 const router = useRouter()
 const diaryStore = useDiaryStore()
@@ -481,7 +481,7 @@ onUnmounted(() => {
                 </div>
 
                 <!-- 수정/삭제 드롭다운 -->
-                <div class="absolute top-4 left-4 z-20">
+                <div class="absolute top-4 right-4 z-20">
                   <button
                     @click="toggleDropdown(visibleDiaries[0].diaryId, $event)"
                     class="p-2 bg-white/80 hover:bg-white rounded-full text-dang-secondary hover:text-dang-primary transition-colors backdrop-blur-sm dropdown-trigger"
@@ -571,7 +571,7 @@ onUnmounted(() => {
                 </div>
 
                 <!-- 수정/삭제 드롭다운 -->
-                <div class="absolute top-4 left-4 z-20">
+                <div class="absolute top-4 right-4 z-20">
                   <button
                     @click="toggleDropdown(visibleDiaries[1].diaryId, $event)"
                     class="p-2 bg-white/80 hover:bg-white rounded-full text-dang-secondary hover:text-dang-primary transition-colors backdrop-blur-sm dropdown-trigger"
@@ -623,7 +623,7 @@ onUnmounted(() => {
                   />
 
                   <!-- 수정/삭제 드롭다운 -->
-                  <div class="absolute top-4 left-4 z-20">
+                  <div class="absolute top-4 right-4 z-20">
                     <button
                       @click="toggleDropdown(diary.diaryId, $event)"
                       class="p-2 bg-white/80 hover:bg-white rounded-full text-dang-secondary hover:text-dang-primary transition-colors backdrop-blur-sm dropdown-trigger"
@@ -817,6 +817,18 @@ onUnmounted(() => {
         </div>
       </div>
     </div>
+    <div
+      class="absolute bottom-5 left-5 w-[3.75rem] h-[3.75rem] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-30 -rotate-15 animate-bounce-custom"
+    ></div>
+    <div
+      class="absolute bottom-5 right-5 w-[3.75rem] h-[3.75rem] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-30 rotate-15 animate-bounce-delay-2"
+    ></div>
+    <div
+      class="absolute top-10 right-10 w-[2.5rem] h-[2.5rem] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-20 rotate-45 animate-bounce-delay-3"
+    ></div>
+    <div
+      class="absolute top-20 left-20 w-[2rem] h-[2rem] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-20 -rotate-30 animate-bounce-delay-4"
+    ></div>
   </div>
 </template>
 

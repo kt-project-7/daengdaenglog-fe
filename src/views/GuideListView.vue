@@ -125,7 +125,7 @@ const guideTypeMap: Record<string, string> = {
       <!-- List View -->
       <div v-if="!isLoading && !error && !showDetailView">
         <div class="flex items-center justify-between mb-6">
-          <h2 class="text-2xl font-bold text-_gray-800">
+          <h2 class="text-2xl font-bold text-dang-primary">
             반려동물 가이드 목록
           </h2>
         </div>
@@ -165,10 +165,10 @@ const guideTypeMap: Record<string, string> = {
             <!-- Reset filters -->
             <button
               @click="resetFilters"
-              class="inline-flex items-center gap-2 px-4 py-2 border border-_gray-300 rounded-lg hover:bg-_gray-50 transition-colors"
+              class="inline-flex items-center justify-center gap-2 px-4 py-2 border border-_gray-300 rounded-lg hover:bg-_gray-50 transition-colors"
             >
-              <Filter class="w-4 h-4" />
-              필터 초기화
+              <!-- <Filter class="w-4 h-4" /> -->
+              <span class="flex-1 text-center">⟲ 필터 초기화</span>
             </button>
           </div>
         </div>
@@ -286,6 +286,18 @@ const guideTypeMap: Record<string, string> = {
           </div>
         </div>
       </div>
+      <div
+      class="absolute bottom-5 left-5 w-[3.75rem] h-[3.75rem] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-30 -rotate-15 animate-bounce-custom"
+    ></div>
+    <div
+      class="absolute bottom-5 right-5 w-[3.75rem] h-[3.75rem] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-30 rotate-15 animate-bounce-delay-2"
+    ></div>
+    <div
+      class="absolute top-10 right-10 w-[2.5rem] h-[2.5rem] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-20 rotate-45 animate-bounce-delay-3"
+    ></div>
+    <div
+      class="absolute top-20 left-20 w-[2rem] h-[2rem] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-20 -rotate-30 animate-bounce-delay-4"
+    ></div>
     </div>
   </div>
 </template>

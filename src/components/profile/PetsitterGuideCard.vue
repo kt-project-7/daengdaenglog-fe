@@ -86,7 +86,7 @@ const handleGenerateGuide = async () => {
 
     <!-- profile이 없거나 petsitterGuide가 없을 경우 -->
     <div v-else class="text-center py-8">
-      <p class="text-_gray-600 mb-4">아직 가이드가 생성되지 않았습니다.</p>
+      <p class="text-_gray-600 mb-4">조건에 맞는 항목을 선택하세요.</p>
 
       <!-- 라디오 버튼으로 가이드 대상 선택 -->
       <div class="flex justify-center gap-4 mb-6 flex-wrap">

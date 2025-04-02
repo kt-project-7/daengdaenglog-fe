@@ -236,7 +236,7 @@ const handleSubmit = async () => {
               v-model="activity.endTime"
               class="px-2 py-1 border rounded"
             />
-            <button type="button" @click="removeActivity(index)">🗑</button>
+            <button type="button" @click="removeActivity(index)">🗑️</button>
           </div>
         </div>
 

@@ -90,7 +90,7 @@ const handleSubmit = async () => {
       <input
         type="text"
         v-model="form.title"
-        class="w-full px-3 py-2 border border-dang-light rounded-md"
+        class="w-full px-3 py-2 border border-gray-200 rounded-md"
         required
       />
     </div>
@@ -100,7 +100,7 @@ const handleSubmit = async () => {
       <textarea
         v-model="form.content"
         rows="5"
-        class="w-full px-3 py-2 border border-dang-light rounded-md"
+        class="w-full px-3 py-2 border border-gray-200 rounded-md"
         required
       ></textarea>
     </div>
@@ -110,7 +110,7 @@ const handleSubmit = async () => {
         <label class="block text-dang-primary font-medium mb-2">기분</label>
         <select
           v-model="form.emotionType"
-          class="w-full px-3 py-2 border border-dang-light rounded-md"
+          class="w-full px-3 py-2 border border-gray-200 rounded-md"
           required
         >
           <option value="" disabled>기분 선택</option>
@@ -128,7 +128,7 @@ const handleSubmit = async () => {
         <label class="block text-dang-primary font-medium mb-2">날씨</label>
         <select
           v-model="form.weatherType"
-          class="w-full px-3 py-2 border border-dang-light rounded-md"
+          class="w-full px-3 py-2 border border-gray-200 rounded-md"
           required
         >
           <option value="" disabled>날씨 선택</option>
@@ -175,13 +175,13 @@ const handleSubmit = async () => {
           v-model="activity.endTime"
           class="px-2 py-1 border rounded"
         />
-        <button type="button" @click="removeActivity(index)">🗑</button>
+        <button type="button" @click="removeActivity(index)">🗑️</button>
       </div>
     </div>
 
     <div class="mb-6">
       <label class="block text-dang-primary font-medium mb-2">이미지</label>
-      <div class="border-2 border-dashed p-4 text-center rounded-lg">
+      <div class="border-2 border-dashed border-gray-200 p-4 text-center rounded-lg">
         <input
           type="file"
           ref="imageInput"
