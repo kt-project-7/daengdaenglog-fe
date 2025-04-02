@@ -3,16 +3,18 @@ import { ref } from 'vue'
 import { Pencil } from 'lucide-vue-next'
 import type { Profile } from '@/types/profile'
 import { useGuideStore } from '@/stores/guideStore'
+import { useRouter } from 'vue-router'
 
 const props = defineProps<{
   profile: Profile | null
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   generate: []
   'show-guide': []
 }>()
 
+const router = useRouter()
 const selectedTarget = ref('기본') // 기본값 설정
 const profileInput = ref('')
 const guideStore = useGuideStore()
@@ -40,7 +42,16 @@ const handleGenerateGuide = async () => {
 
   try {
     await guideStore.generateGuide(props.profile.id, guideType, description)
-    alert('가이드가 성공적으로 생성되었습니다.')
+
+    // 확인을 누르면 가이드 페이지로 이동하도록 설정
+    if (
+      confirm(
+        '가이드가 성공적으로 생성되었습니다. 가이드 페이지로 이동하시겠습니까?',
+      )
+    ) {
+      // 'dang-guide' 라우트로 직접 이동
+      router.push('/dang-guide')
+    }
   } catch (error) {
     alert('가이드 생성에 실패했습니다.')
   }
@@ -77,7 +88,7 @@ const handleGenerateGuide = async () => {
       <!-- 가이드 상세보기 버튼 -->
       <button
         class="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-_green-500 text-white rounded-lg hover:bg-_green-600 transition-colors"
-        @click="$emit('show-guide')"
+        @click="router.push('/dang-guide')"
       >
         <Pencil class="w-5 h-5" />
         가이드 상세보기
