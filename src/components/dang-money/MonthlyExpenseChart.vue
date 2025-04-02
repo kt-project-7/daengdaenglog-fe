@@ -6,7 +6,7 @@
       <h3 class="text-xl text-dang-primary font-bold">월별 지출 내역</h3>
       <div class="flex gap-2">
         <button
-          @click="store.changeChartPeriod('month')"
+          @click="changeChartPeriod('month')"
           :class="[
             'py-2 px-4 rounded-full text-sm transition-all duration-200',
             store.chartPeriod === 'month'
@@ -17,7 +17,7 @@
           월별
         </button>
         <button
-          @click="store.changeChartPeriod('year')"
+          @click="changeChartPeriod('year')"
           :class="[
             'py-2 px-4 rounded-full text-sm transition-all duration-200',
             store.chartPeriod === 'year'
@@ -43,6 +43,11 @@ import Chart from 'chart.js/auto'
 const store = useDangMoneyStore()
 const monthlyExpenseChart = ref<HTMLCanvasElement | null>(null)
 let chart: Chart | null = null
+
+// 차트 기간 변경
+function changeChartPeriod(period: string) {
+  store.chartPeriod = period
+}
 
 // 차트 초기화
 const initChart = () => {

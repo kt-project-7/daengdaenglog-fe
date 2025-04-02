@@ -1,17 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed, watch } from 'vue'
-import axios from 'axios'
-
-type Claim = {
-  id: number | null
-  date: string
-  hospital: string
-  description: string
-  medicalFee: number
-  claimAmount: number
-  refundAmount: number
-  status: string
-}
+import { loadClaims } from '@/apis/dangMoney'
+import type { Claim } from '@/types/claim'
 
 export const useDangMoneyStore = defineStore('dangMoney', () => {
   // 총 지출
@@ -119,38 +109,6 @@ export const useDangMoneyStore = defineStore('dangMoney', () => {
   const showClaimDetailModal = ref(false)
   const selectedClaim = ref<any>(null)
 
-  // 서버에서 데이터 가져오기
-  const fetchClaims = async () => {
-    try {
-      const response = await axios.get(
-        'https://dangdanglog.com/pet/insurance/1',
-        {
-          headers: {
-            accept: '*/*',
-            Authorization:
-              'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3NDM1NTIyODMsImV4cCI6MTc0MzU4ODI4MywiaXNzIjoiY2xvdmVyIiwic3ViIjoiMSIsInJvbGUiOiJBRE1JTiJ9.Kft4oQkEZ1oXBRnqBq1OcigpyG7bUlXD1ikzvForBjHeG-lkIGJQJALHh6amvMRlIV7mwHnGiAQ-h_tyo0OrRA',
-          },
-        },
-      ) // API 엔드포인트 수정 필요
-      claims.value = response.data.results.petInsuranceList.map(
-        (item: any) => ({
-          id: item.id || null,
-          date: item.date,
-          hospital: item.hospitalName,
-          description: item.description,
-          medicalFee: item.medicalFee,
-          claimAmount: item.claimAmount,
-          refundAmount: item.refundAmount,
-          status: item.ProgressType.toLowerCase(),
-        }),
-      )
-
-      updatePaginatedClaims()
-    } catch (error) {
-      console.error('Failed to fetch claims:', error)
-    }
-  }
-
   // 필터링된 청구 내역
   const filteredClaims = computed<Claim[]>(() => {
     let filtered: Claim[] = [...claims.value]
@@ -237,21 +195,6 @@ export const useDangMoneyStore = defineStore('dangMoney', () => {
     return Math.round((claim.refundAmount / claim.claimAmount) * 100)
   }
 
-  // 청구 내역 함수
-  function prevPage() {
-    if (currentPage.value > 1) {
-      currentPage.value--
-      updatePaginatedClaims()
-    }
-  }
-
-  function nextPage() {
-    if (currentPage.value < totalPages.value) {
-      currentPage.value++
-      updatePaginatedClaims()
-    }
-  }
-
   const updatePaginatedClaims = () => {
     const start = (currentPage.value - 1) * itemsPerPage
     const end = start + itemsPerPage
@@ -265,19 +208,9 @@ export const useDangMoneyStore = defineStore('dangMoney', () => {
     currentPage.value = 1
   }
 
-  function viewClaimDetail(claim: any) {
-    selectedClaim.value = claim
-    showClaimDetailModal.value = true
-  }
-
-  function closeClaimDetailModal() {
-    showClaimDetailModal.value = false
-    selectedClaim.value = null
-  }
-
-  // 차트 기간 변경
-  function changeChartPeriod(period: string) {
-    chartPeriod.value = period
+  const fetchClaims = async () => {
+    claims.value = await loadClaims()
+    updatePaginatedClaims()
   }
 
   return {
@@ -297,17 +230,13 @@ export const useDangMoneyStore = defineStore('dangMoney', () => {
     filteredClaims,
     totalPages,
     paginatedClaims,
+    updatePaginatedClaims,
     fetchClaims,
     formatCurrency,
     formatDate,
     getStatusText,
     getStatusClass,
     calculateRefundRate,
-    prevPage,
-    nextPage,
     resetFilters,
-    viewClaimDetail,
-    closeClaimDetailModal,
-    changeChartPeriod,
   }
 })

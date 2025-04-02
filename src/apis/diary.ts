@@ -1,73 +1,71 @@
 import api from './axios'
-import type {
-  MemoryImage,
-  Diary,
-  TodayDiaryCheck,
-  PetDiaryGroup,
-  RawDiary,
-} from '@/types/diary'
+import { Diary, CreateDiaryRequest } from '@/types/diary'
 
-// 전체 다이어리 리스트 조회
-export const fetchAllDiaries = async (): Promise<Diary[]> => {
-  const response = await api.get('/diary')
-  return response.data.results.diaryList.flatMap((pet: PetDiaryGroup) => {
-    return pet.diaryList.map((diary: RawDiary) => ({
-      id: diary.diaryId.toString(),
-      date: diary.createdDate,
-      content: diary.content,
-      mood: diary.emotionType,
-      weather: diary.weatherType,
-      walkTime: diary.walkTime,
-      mealTime: diary.mealTime,
-      imageUrl: diary.imageUrl,
-      memory: diary.memory,
-    }))
-  })
+// 1. 전체 다이어리 목록 조회 (GET /diary)
+export const fetchAllDiaries = async (): Promise<any> => {
+  const res = await api.get('/diary')
+  return res.data.results.diaryList
 }
 
-// 다이어리 상세조회
-export const getDiary = async (diaryId: number): Promise<Diary> => {
-  const response = await api.get(`/diary/${diaryId}`)
-  return response.data.results
+// 2. 단일 다이어리 조회 (GET /diary/{diaryId})
+export const fetchDiaryDetail = async (diaryId: number): Promise<Diary> => {
+  const res = await api.get(`/diary/${diaryId}`)
+  return res.data.results
 }
 
-// 다이어리 생성
-export const createDiary = async (formData: FormData) => {
-  const response = await api.post('/diary', formData, {
+// 3. 다이어리 생성 (POST /diary)
+export const createDiary = async (
+  data: CreateDiaryRequest,
+  file?: File,
+): Promise<void> => {
+  const formData = new FormData()
+
+  formData.append('createDiaryRequest', JSON.stringify(data))
+
+  if (file) {
+    formData.append('file', file)
+  }
+
+  await api.post('/diary', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
   })
-  return response.data.results
 }
 
-// 다이어리 수정
-export const updateDiary = async (diaryId: number, formData: FormData) => {
-  const response = await api.put(`/diary/${diaryId}`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  })
-  return response.data.results || { diaryId }
+// 4. 다이어리 수정 (PUT /diary/{diaryId})
+export const updateDiary = async (
+  diaryId: number,
+  data: CreateDiaryRequest,
+  file?: File,
+): Promise<void> => {
+  const formData = new FormData()
+
+  formData.append('updateDiaryRequest', JSON.stringify(data))
+
+  if (file) {
+    formData.append('file', file)
+  }
+
+  try {
+    await api.put(`/diary/${diaryId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+  } catch (error) {
+    console.error('다이어리 수정 실패:', error)
+    throw error
+  }
 }
 
-// 다이어리 삭제
+// 5. 다이어리 삭제 (DELETE /diary/{diaryId})
 export const deleteDiary = async (diaryId: number): Promise<void> => {
   await api.delete(`/diary/${diaryId}`)
 }
 
-// 오늘 다이어리 작성 여부 확인
-export const checkTodayDiary = async (
-  petId: number,
-): Promise<TodayDiaryCheck> => {
-  const response = await api.get(`/diary/today?petId=${petId}`)
-  return response.data.results
-}
-
-// 추억 그림 생성 (GET 메서드 기반)
-export const createDiaryMemoryImage = async (
-  diaryId: number,
-): Promise<MemoryImage> => {
-  const response = await api.get(`/diary/${diaryId}/image`)
-  return response.data.results
+// 6. 추억 그림 생성 (GET /diary/{diaryId}/image)
+export const generateDiaryImage = async (diaryId: number): Promise<string> => {
+  const res = await api.get(`/diary/${diaryId}/image`)
+  return res.data.results.generatedImageUri
 }
