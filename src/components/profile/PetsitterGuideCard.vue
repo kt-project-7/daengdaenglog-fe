@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { Pencil } from 'lucide-vue-next'
 import type { Profile } from '@/types/profile'
 import { useGuideStore } from '@/stores/guideStore'
-import { useRouter } from 'vue-router'
+import Swal from 'sweetalert2'
 
 const props = defineProps<{
   profile: Profile | null
@@ -43,17 +43,19 @@ const handleGenerateGuide = async () => {
   try {
     await guideStore.generateGuide(props.profile.id, guideType, description)
 
-    // 확인을 누르면 가이드 페이지로 이동하도록 설정
-    if (
-      confirm(
-        '가이드가 성공적으로 생성되었습니다. 가이드 페이지로 이동하시겠습니까?',
-      )
-    ) {
-      // 'dang-guide' 라우트로 직접 이동
-      router.push('/dang-guide')
-    }
+    Swal.fire({
+      icon: 'success',
+      title: '성공!',
+      text: '가이드가 성공적으로 생성되었습니다.',
+      confirmButtonText: '확인',
+    })
   } catch (error) {
-    alert('가이드 생성에 실패했습니다.')
+    Swal.fire({
+      icon: 'error',
+      title: '실패',
+      text: '가이드 생성에 실패했습니다.',
+      confirmButtonText: '닫기',
+    })
   }
 }
 </script>
