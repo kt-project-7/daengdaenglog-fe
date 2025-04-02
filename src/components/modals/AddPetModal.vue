@@ -16,13 +16,13 @@ const emit = defineEmits<{
 const newPet = ref<Profile>({
   id: 0,
   name: '',
-  breed: '',
+  petType: '',
   age: 0,
   gender: 'male',
   weight: 0,
   neutered: false,
   imageUrl: defaultProfileImage,
-  dbtiResult: null,
+  pbti: null,
   petsitterGuide: null,
 })
 
@@ -66,7 +66,7 @@ const handleSubmit = () => {
             >품종</label
           >
           <input
-            v-model="newPet.breed"
+            v-model="newPet.petType"
             type="text"
             class="w-full px-3 py-2 border border-_gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             required

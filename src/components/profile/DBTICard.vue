@@ -15,7 +15,10 @@ defineEmits<{
 <template>
   <div class="flex flex-col gap-4">
     <!-- profile이 존재하고 dbtiResult가 있는 경우 -->
-    <div v-if="profile?.dbtiResult" class="bg-white rounded-lg p-6 shadow-dang-sm border border-_gray-100">
+    <div
+      v-if="profile?.pbti"
+      class="bg-white rounded-lg p-6 shadow-dang-sm border border-_gray-100"
+    >
       <div class="flex items-center gap-3 mb-4">
         <Brain class="w-6 h-6 text-_blue-500" />
         <h3 class="text-xl font-bold text-_gray-800">DBTI 분석 결과</h3>
@@ -23,10 +26,10 @@ defineEmits<{
       <div class="space-y-4">
         <div>
           <h4 class="text-lg font-semibold text-_blue-500 mb-2">
-            {{ profile.dbtiResult.type }}
+            {{ profile.pbti }}
           </h4>
           <p class="text-_gray-600 leading-relaxed line-clamp-2">
-            {{ profile.dbtiResult.description }}
+            {{ profile.petsitterGuide }}
           </p>
         </div>
       </div>

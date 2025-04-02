@@ -99,8 +99,7 @@ const analyzeDogPersonality = async () => {
   try {
     await profileStore.analyzeDogPersonality()
     // 현재 반려동물 정보 업데이트
-    pets.value[currentPetIndex.value].dbtiResult =
-      profileStore.profile.dbtiResult
+    pets.value[currentPetIndex.value].pbti = profileStore.profile.pbti
   } catch (error) {
     console.error('DBTI 분석 실패:', error)
   }
@@ -158,10 +157,8 @@ const handleShareKakao = () => {
     ? 'DBTI 분석 결과'
     : '펫시터 가이드'
   const resultDescription = showDBTIResultModal.value
-    ? pets.value[currentPetIndex.value].dbtiResult?.description ||
-      'DBTI 분석 결과'
-    : pets.value[currentPetIndex.value].petsitterGuide?.generalInfo ||
-      '펫시터 가이드'
+    ? pets.value[currentPetIndex.value].pbti || 'DBTI 분석 결과'
+    : pets.value[currentPetIndex.value].petsitterGuide || '펫시터 가이드'
 
   // 카카오 공유하기 API 호출
   window.Kakao.Share.sendDefault({
@@ -332,7 +329,7 @@ const handleCopyLink = () => {
     >
       <div
         class="space-y-6"
-        v-if="pets.length > 0 && pets[currentPetIndex].dbtiResult"
+        v-if="pets.length > 0 && pets[currentPetIndex].pbti"
       >
         <div class="text-center mb-6">
           <div
@@ -341,7 +338,7 @@ const handleCopyLink = () => {
             <Brain class="w-12 h-12 text-chart-category2" />
           </div>
           <h3 class="text-2xl font-bold text-chart-category2">
-            {{ pets[currentPetIndex].dbtiResult?.type }}
+            {{ pets[currentPetIndex].pbti }}
           </h3>
           <p class="text-lg text-_gray-500 mt-2">
             {{ pets[currentPetIndex].name }}의 DBTI 결과
@@ -353,7 +350,7 @@ const handleCopyLink = () => {
         >
           <h4 class="text-xl font-bold text-chart-category2 mb-4">성격 분석</h4>
           <p class="text-_gray-700 leading-relaxed text-lg">
-            {{ pets[currentPetIndex].dbtiResult?.description }}
+            {{ pets[currentPetIndex].pbti }}
           </p>
         </div>
 
@@ -445,11 +442,11 @@ const handleCopyLink = () => {
         >
           <h4 class="text-xl font-bold text-chart-category3 mb-4">기본 정보</h4>
           <p class="text-_gray-700 leading-relaxed text-lg">
-            {{ pets[currentPetIndex].petsitterGuide?.generalInfo }}
+            {{ pets[currentPetIndex].petsitterGuide }}
           </p>
         </div>
 
-        <div
+        <!-- <div
           class="bg-dang-light rounded-xl p-6 border border-chart-category4 border-opacity-30"
         >
           <h4 class="text-xl font-bold text-chart-category4 mb-4">일상 생활</h4>
@@ -501,7 +498,7 @@ const handleCopyLink = () => {
               {{ note }}
             </li>
           </ul>
-        </div>
+        </div> -->
       </div>
     </ResultModal>
   </div>

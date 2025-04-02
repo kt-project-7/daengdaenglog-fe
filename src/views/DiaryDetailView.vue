@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, computed } from 'vue'
+import { onMounted, computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDiaryStore } from '@/stores/diaryStore'
 import { useProfileStore } from '@/stores/profileStore'
@@ -10,6 +10,7 @@ const route = useRoute()
 const router = useRouter()
 const diaryStore = useDiaryStore()
 const profileStore = useProfileStore()
+const diaryDetailRef = ref<InstanceType<typeof DiaryDetail> | null>(null)
 
 // 라우터 파라미터에서 일기 ID 가져오기
 const diaryId = computed(() => route.params.id as string)
@@ -26,13 +27,6 @@ const currentDiary = computed(() => diaryStore.currentDiary)
 // 반려견 이름
 const petName = computed(() => profileStore.profile.name)
 
-// 추억 생성
-// const generateMemory = () => {
-//   if (currentDiary.value) {
-//     diaryStore.generateMemory(currentDiary.value.id)
-//   }
-// }
-
 // 일기가 업데이트되었을 때
 const handleDiaryUpdated = () => {
   // 현재 일기 다시 불러오기
@@ -45,6 +39,10 @@ const handleDiaryUpdated = () => {
 const handleDiaryDeleted = () => {
   // 일기 목록 페이지로 이동
   router.push('/diary-list')
+}
+
+const generateMemory = () => {
+  diaryDetailRef.value?.generateMemory()
 }
 </script>
 
@@ -72,9 +70,9 @@ const handleDiaryDeleted = () => {
         </div>
 
         <DiaryDetail
+          ref="diaryDetailRef"
           :diary="currentDiary"
           :pet-name="petName"
-          @generate-memory="generateMemory"
           @diary-updated="handleDiaryUpdated"
           @diary-deleted="handleDiaryDeleted"
         />
