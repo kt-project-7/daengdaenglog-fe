@@ -7,6 +7,7 @@ import type { Diary, EmotionType, WeatherType } from '@/types/diary'
 import type { CreateDiaryRequest } from '@/types/diary'
 import EditDiaryModal from '@/components/diary/EditDiaryModal.vue'
 import { Edit, Trash2, MoreVertical } from 'lucide-vue-next'
+import LogoSvg from '@/assets/svgs/logo.svg'
 
 const router = useRouter()
 const diaryStore = useDiaryStore()
@@ -269,6 +270,109 @@ onUnmounted(() => {
           </button>
         </div>
 
+        <!-- 필터 및 정렬 옵션 -->
+        <div
+          class="bg-dang-background p-5 rounded-lg shadow-dang-sm mb-6 border border-dang-light"
+        >
+          <!-- 날짜별 검색 -->
+          <div class="mb-4">
+            <h3 class="text-sm font-medium text-dang-secondary mb-2">
+              날짜별 검색
+            </h3>
+            <div class="flex flex-wrap gap-3">
+              <div class="flex items-center">
+                <label class="text-sm text-dang-secondary mr-2">시작일:</label>
+                <input
+                  type="date"
+                  v-model="dateFilter.start"
+                  @change="handleStartDateChange"
+                  class="border border-dang-light rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-dang-primary"
+                />
+              </div>
+              <div class="flex items-center">
+                <label class="text-sm text-dang-secondary mr-2">종료일:</label>
+                <input
+                  type="date"
+                  v-model="dateFilter.end"
+                  :min="dateFilter.start || undefined"
+                  class="border border-dang-light rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-dang-primary"
+                />
+              </div>
+              <button
+                @click="applyDateFilter"
+                class="bg-dang-primary bg-opacity-10 text-dang-secondary px-3 py-1 rounded-md text-sm hover:bg-opacity-20"
+              >
+                적용
+              </button>
+              <button
+                @click="resetDateFilter"
+                class="bg-dang-light text-dang-secondary px-3 py-1 rounded-md text-sm hover:bg-dang-pending"
+              >
+                초기화
+              </button>
+            </div>
+            <p
+              v-if="dateFilterError"
+              class="mt-2 text-dang-rejected-text text-xs"
+            >
+              {{ dateFilterError }}
+            </p>
+          </div>
+
+          <div
+            class="flex flex-col md:flex-row md:justify-between md:items-center gap-4"
+          >
+            <!-- 기분별 필터 -->
+            <div>
+              <h3 class="text-sm font-medium text-dang-secondary mb-2">
+                기분별 필터
+              </h3>
+              <div class="flex flex-wrap gap-2">
+                <button
+                  @click="changeMoodFilter('all')"
+                  class="px-3 py-1 rounded-full text-sm font-medium"
+                  :class="
+                    selectedMood === 'all'
+                      ? 'bg-dang-primary text-white'
+                      : 'bg-dang-primary bg-opacity-10 text-dang-secondary hover:bg-opacity-20'
+                  "
+                >
+                  전체
+                </button>
+                <button
+                  v-for="mood in moodOptions"
+                  :key="mood"
+                  @click="changeMoodFilter(mood)"
+                  class="px-3 py-1 rounded-full text-sm font-medium flex items-center"
+                  :class="
+                    selectedMood === mood
+                      ? 'bg-dang-primary text-white'
+                      : 'bg-dang-light text-dang-secondary hover:bg-dang-pending'
+                  "
+                >
+                  <span class="mr-1">{{
+                    getMoodEmoji(mood).split(' ')[0]
+                  }}</span>
+                  {{ getMoodEmoji(mood).split(' ')[1] }}
+                </button>
+              </div>
+            </div>
+
+            <!-- 정렬 옵션 -->
+            <div class="flex items-center">
+              <span class="text-sm text-dang-secondary mr-2">정렬:</span>
+              <select
+                @change="changeSortOption"
+                v-model="sortOption"
+                class="bg-dang-light border-0 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-dang-primary"
+              >
+                <option value="newest">최신순</option>
+                <option value="oldest">오래된순</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
         <!-- 일기가 없을 경우 표시 -->
         <div
           v-if="filteredDiaries.length === 0"
@@ -287,35 +391,54 @@ onUnmounted(() => {
         </div>
 
         <div v-else>
-          <!-- 일기가 있을 경우 보여주는 목록 -->
+          <!-- 매거진 스타일 그리드 -->
           <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+            <!-- 첫 번째 일기 (큰 카드) -->
             <div
-              v-for="diary in visibleDiaries"
-              :key="diary.diaryId"
-              class="md:col-span-4 bg-dang-background rounded-xl shadow-dang-md overflow-hidden hover:shadow-dang-lg transition-duration-300 group border border-dang-light relative"
+              v-if="visibleDiaries.length > 0"
+              class="md:col-span-8 bg-dang-background rounded-xl shadow-dang-md overflow-hidden hover:shadow-dang-lg transition-duration-300 group border border-dang-light relative"
             >
               <div class="relative h-80">
                 <img
-                  :src="
-                    diary.generatedImageUri ||
-                    'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?q=80&w=2376&auto=format&fit=crop'
-                  "
-                  :alt="`${formatDate(diary.createdDate)} 일기 이미지`"
-                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  :src="visibleDiaries[0].generatedImageUri || LogoSvg"
+                  :alt="`${formatDate(visibleDiaries[0].createdDate)} 일기 이미지`"
+                  class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                 />
                 <div
                   class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"
                 ></div>
                 <div class="absolute bottom-0 left-0 p-6 text-white">
+                  <div class="flex gap-2 mb-2">
+                    <span
+                      class="px-3 py-1 bg-dang-primary/80 rounded-full text-sm backdrop-blur-sm"
+                    >
+                      <span class="mr-1">{{
+                        getMoodEmoji(visibleDiaries[0].emotionType).split(
+                          ' ',
+                        )[0]
+                      }}</span>
+                      {{
+                        getMoodEmoji(visibleDiaries[0].emotionType).split(
+                          ' ',
+                        )[1]
+                      }}
+                    </span>
+                    <span
+                      class="px-3 py-1 bg-chart-category3/80 rounded-full text-sm backdrop-blur-sm"
+                    >
+                      {{ getWeatherEmoji(visibleDiaries[0].weatherType) }}
+                    </span>
+                  </div>
                   <h2 class="text-2xl font-bold mb-1">
-                    {{ formatDate(diary.createdDate) }}
+                    {{ formatDate(visibleDiaries[0].createdDate) }}
                   </h2>
                   <p class="line-clamp-2 text-_gray-100">
-                    {{ diary.content }}
+                    {{ visibleDiaries[0].content }}
                   </p>
                 </div>
+
                 <div
-                  v-if="diary.memoryUri"
+                  v-if="visibleDiaries[0].memoryUri"
                   class="absolute top-4 right-4 bg-dang-primary/90 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm flex items-center"
                 >
                   <span class="mr-1">✨</span>
@@ -325,25 +448,25 @@ onUnmounted(() => {
                 <!-- 수정/삭제 드롭다운 -->
                 <div class="absolute top-4 left-4 z-20">
                   <button
-                    @click="toggleDropdown(diary.diaryId, $event)"
+                    @click="toggleDropdown(visibleDiaries[0].diaryId, $event)"
                     class="p-2 bg-white/80 hover:bg-white rounded-full text-dang-secondary hover:text-dang-primary transition-colors backdrop-blur-sm dropdown-trigger"
                   >
                     <MoreVertical class="w-5 h-5" />
                   </button>
 
                   <div
-                    v-if="openDropdownId === diary.diaryId"
+                    v-if="openDropdownId === visibleDiaries[0].diaryId"
                     class="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-dang-md py-1 w-32 dropdown-menu"
                   >
                     <button
-                      @click.stop="openEditModal(diary)"
+                      @click.stop="openEditModal(visibleDiaries[0])"
                       class="w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-dang-light text-dang-secondary hover:text-dang-primary transition-colors"
                     >
                       <Edit class="w-4 h-4" />
                       <span>수정</span>
                     </button>
                     <button
-                      @click.stop="confirmDelete(diary.diaryId)"
+                      @click.stop="confirmDelete(visibleDiaries[0].diaryId)"
                       class="w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-red-500/10 text-red-500 transition-colors"
                     >
                       <Trash2 class="w-4 h-4" />
@@ -355,40 +478,268 @@ onUnmounted(() => {
                 <!-- 클릭 영역 -->
                 <div
                   class="absolute inset-0 cursor-pointer z-10"
-                  @click="viewDiary(diary.diaryId)"
+                  @click="viewDiary(visibleDiaries[0].diaryId)"
                 ></div>
               </div>
             </div>
+
+            <!-- 두 번째 일기 (중간 카드) -->
+            <div
+              v-if="visibleDiaries.length > 1"
+              class="md:col-span-4 bg-dang-background rounded-xl shadow-dang-md overflow-hidden hover:shadow-dang-lg transition-duration-300 group border border-dang-light relative"
+            >
+              <div class="relative h-80">
+                <img
+                  :src="visibleDiaries[1].generatedImageUri || LogoSvg"
+                  :alt="`${formatDate(visibleDiaries[1].createdDate)} 일기 이미지`"
+                  class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                />
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"
+                ></div>
+                <div class="absolute bottom-0 left-0 p-4 text-white">
+                  <div class="flex gap-2 mb-2">
+                    <span
+                      class="px-2 py-1 bg-dang-primary/80 rounded-full text-xs backdrop-blur-sm"
+                    >
+                      <span class="mr-1">{{
+                        getMoodEmoji(visibleDiaries[1].emotionType).split(
+                          ' ',
+                        )[0]
+                      }}</span>
+                      {{
+                        getMoodEmoji(visibleDiaries[1].emotionType).split(
+                          ' ',
+                        )[1]
+                      }}
+                    </span>
+                    <span
+                      class="px-2 py-1 bg-chart-category3/80 rounded-full text-xs backdrop-blur-sm"
+                    >
+                      {{ getWeatherEmoji(visibleDiaries[1].weatherType) }}
+                    </span>
+                  </div>
+                  <h2 class="text-xl font-bold mb-1">
+                    {{ formatDate(visibleDiaries[1].createdDate) }}
+                  </h2>
+                  <p class="line-clamp-2 text-sm text-_gray-100">
+                    {{ visibleDiaries[1].content }}
+                  </p>
+                </div>
+
+                <div
+                  v-if="visibleDiaries[1].memoryUri"
+                  class="absolute top-4 right-4 bg-dang-primary/90 text-white px-2 py-1 rounded-full text-xs backdrop-blur-sm flex items-center"
+                >
+                  <span class="mr-1">✨</span>
+                  <span>추억</span>
+                </div>
+
+                <!-- 수정/삭제 드롭다운 -->
+                <div class="absolute top-4 left-4 z-20">
+                  <button
+                    @click="toggleDropdown(visibleDiaries[1].diaryId, $event)"
+                    class="p-2 bg-white/80 hover:bg-white rounded-full text-dang-secondary hover:text-dang-primary transition-colors backdrop-blur-sm dropdown-trigger"
+                  >
+                    <MoreVertical class="w-5 h-5" />
+                  </button>
+
+                  <div
+                    v-if="openDropdownId === visibleDiaries[1].diaryId"
+                    class="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-dang-md py-1 w-32 dropdown-menu"
+                  >
+                    <button
+                      @click.stop="openEditModal(visibleDiaries[1])"
+                      class="w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-dang-light text-dang-secondary hover:text-dang-primary transition-colors"
+                    >
+                      <Edit class="w-4 h-4" />
+                      <span>수정</span>
+                    </button>
+                    <button
+                      @click.stop="confirmDelete(visibleDiaries[1].diaryId)"
+                      class="w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-red-500/10 text-red-500 transition-colors"
+                    >
+                      <Trash2 class="w-4 h-4" />
+                      <span>삭제</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- 클릭 영역 -->
+                <div
+                  class="absolute inset-0 cursor-pointer z-10"
+                  @click="viewDiary(visibleDiaries[1].diaryId)"
+                ></div>
+              </div>
+            </div>
+
+            <!-- 나머지 일기들 (작은 카드) -->
+            <div
+              v-for="diary in visibleDiaries.slice(2)"
+              :key="diary.diaryId"
+              class="md:col-span-4 bg-dang-background rounded-xl shadow-dang-md overflow-hidden hover:shadow-dang-lg transition-duration-300 border border-dang-light relative"
+            >
+              <div class="flex flex-col h-full">
+                <div class="h-48 overflow-hidden relative">
+                  <img
+                    :src="diary.generatedImageUri || LogoSvg"
+                    :alt="`${formatDate(diary.createdDate)} 일기 이미지`"
+                    class="w-full h-full object-contain hover:scale-105 transition-transform duration-500"
+                  />
+
+                  <!-- 수정/삭제 드롭다운 -->
+                  <div class="absolute top-4 left-4 z-20">
+                    <button
+                      @click="toggleDropdown(diary.diaryId, $event)"
+                      class="p-2 bg-white/80 hover:bg-white rounded-full text-dang-secondary hover:text-dang-primary transition-colors backdrop-blur-sm dropdown-trigger"
+                    >
+                      <MoreVertical class="w-5 h-5" />
+                    </button>
+
+                    <div
+                      v-if="openDropdownId === diary.diaryId"
+                      class="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-dang-md py-1 w-32 dropdown-menu"
+                    >
+                      <button
+                        @click.stop="openEditModal(diary)"
+                        class="w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-dang-light text-dang-secondary hover:text-dang-primary transition-colors"
+                      >
+                        <Edit class="w-4 h-4" />
+                        <span>수정</span>
+                      </button>
+                      <button
+                        @click.stop="confirmDelete(diary.diaryId)"
+                        class="w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-red-500/10 text-red-500 transition-colors"
+                      >
+                        <Trash2 class="w-4 h-4" />
+                        <span>삭제</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="p-5 flex-grow flex flex-col relative">
+                  <div class="flex justify-between items-start mb-3">
+                    <h3 class="font-bold text-lg text-dang-primary">
+                      {{ formatDate(diary.createdDate) }}
+                    </h3>
+                    <div
+                      v-if="diary.memoryUri"
+                      class="bg-dang-primary bg-opacity-10 text-dang-primary px-2 py-1 rounded-full text-xs flex items-center"
+                    >
+                      <span class="mr-1">✨</span>
+                      <span>추억</span>
+                    </div>
+                  </div>
+
+                  <div class="flex flex-wrap gap-2 mb-3">
+                    <span
+                      class="text-xs px-2 py-1 bg-dang-primary bg-opacity-10 rounded-full"
+                    >
+                      <span class="mr-1">{{
+                        getMoodEmoji(diary.emotionType).split(' ')[0]
+                      }}</span>
+                      {{ getMoodEmoji(diary.emotionType).split(' ')[1] }}
+                    </span>
+                    <span
+                      class="text-xs px-2 py-1 bg-dang-light rounded-full"
+                      >{{ getWeatherEmoji(diary.weatherType) }}</span
+                    >
+                    <span
+                      v-for="s in (diary.scheduleList || []).filter(
+                        (s) => s?.scheduleType === 'WALK',
+                      )"
+                      :key="s.scheduleId"
+                      class="text-xs px-2 py-1 bg-dang-light rounded-full"
+                    >
+                      산책: {{ s.startTime.substring(0, 5) }} ~
+                      {{ s.endTime.substring(0, 5) }}
+                    </span>
+                  </div>
+
+                  <p class="text-_black line-clamp-3 mb-3 text-sm flex-grow">
+                    {{ diary.content }}
+                  </p>
+
+                  <div
+                    class="flex justify-between items-center mt-auto pt-2 border-t border-dang-light"
+                  >
+                    <span
+                      v-if="
+                        (diary.scheduleList || []).some(
+                          (s) => s?.scheduleType === 'FEED',
+                        )
+                      "
+                      class="text-xs text-dang-secondary"
+                    >
+                      식사:
+                      {{
+                        (diary.scheduleList || [])
+                          .find((s) => s?.scheduleType === 'FEED')
+                          ?.startTime?.substring(0, 5)
+                      }}
+                      ~
+                      {{
+                        (diary.scheduleList || [])
+                          .find((s) => s?.scheduleType === 'FEED')
+                          ?.endTime?.substring(0, 5)
+                      }}
+                    </span>
+                    <button
+                      @click.stop="viewDiary(diary.diaryId)"
+                      class="text-dang-primary text-xs hover:opacity-80"
+                    >
+                      자세히 보기 →
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 클릭 영역 (이미지와 내용 영역만) -->
+              <div
+                class="absolute inset-0 cursor-pointer z-10"
+                @click="viewDiary(diary.diaryId)"
+              ></div>
+            </div>
           </div>
 
-          <!-- 무한 스크롤 로딩 표시기 -->
+          <!-- 무한 스크롤 로딩 표시 -->
           <div
-            v-if="hasMoreData"
             ref="loadingTriggerRef"
-            class="flex justify-center items-center py-8"
+            class="mt-8 text-center py-4"
+            v-if="filteredDiaries.length > visibleDiaries.length || isLoading"
           >
-            <div v-if="isLoading" class="text-dang-primary">
-              <svg
-                class="animate-spin h-6 w-6 mr-2"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  class="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  stroke-width="4"
-                ></circle>
-                <path
-                  class="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
+            <div
+              v-if="isLoading"
+              class="flex justify-center items-center space-x-2"
+            >
+              <div
+                class="w-3 h-3 rounded-full bg-dang-primary animate-bounce"
+              ></div>
+              <div
+                class="w-3 h-3 rounded-full bg-dang-primary animate-bounce"
+                style="animation-delay: 0.2s"
+              ></div>
+              <div
+                class="w-3 h-3 rounded-full bg-dang-primary animate-bounce"
+                style="animation-delay: 0.4s"
+              ></div>
             </div>
+            <p v-else class="text-dang-secondary">
+              스크롤하여 더 불러오는 중...
+            </p>
+          </div>
+
+          <!-- 더 이상 데이터가 없을 때 표시 -->
+          <div
+            v-if="
+              !hasMoreData &&
+              visibleDiaries.length > 0 &&
+              visibleDiaries.length === filteredDiaries.length
+            "
+            class="mt-8 text-center py-4 border-t border-dang-light"
+          >
+            <p class="text-dang-secondary">더 이상 표시할 일기가 없습니다.</p>
           </div>
         </div>
       </div>
