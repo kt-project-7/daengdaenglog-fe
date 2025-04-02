@@ -2,15 +2,18 @@
 import { ref, onMounted, computed, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDiaryStore } from '@/stores/diaryStore'
+import { usePetStore } from '@/stores/petStore'
 import { formatDate, getMoodEmoji, getWeatherEmoji } from '@/utils/formatters'
 import type { Diary, EmotionType, WeatherType } from '@/types/diary'
 import type { CreateDiaryRequest } from '@/types/diary'
 import EditDiaryModal from '@/components/diary/EditDiaryModal.vue'
+import PetSelector from '@/components/profile/PetSelector.vue'
 import { Edit, Trash2, MoreVertical } from 'lucide-vue-next'
 import LogoSvg from '@/assets/svgs/logo.svg'
 
 const router = useRouter()
 const diaryStore = useDiaryStore()
+const petStore = usePetStore()
 
 // 날짜 필터 입력값
 const dateFilter = ref({ start: '', end: '' })
@@ -18,6 +21,9 @@ const appliedDateFilter = ref({ start: '', end: '' })
 const dateFilterError = ref('')
 const selectedMood = ref<EmotionType | 'all'>('all')
 const sortOption = ref<'newest' | 'oldest'>('newest')
+
+// Pet selection
+const selectedPetIndex = ref(0)
 
 const itemsPerPage = 5
 const currentPage = ref(1)
@@ -45,6 +51,14 @@ const moodOptions: EmotionType[] = [
 
 const filteredDiaries = computed(() => {
   let result = [...diaryStore.diaries]
+
+  // Filter by selected pet
+  if (petStore.pets.length > 0) {
+    const selectedPetId = petStore.pets[selectedPetIndex.value]?.id
+    if (selectedPetId) {
+      result = result.filter((diary) => diary.petId === selectedPetId)
+    }
+  }
 
   if (appliedDateFilter.value.start) {
     const startDate = new Date(appliedDateFilter.value.start)
@@ -218,8 +232,14 @@ const handleOutsideClick = (e: MouseEvent) => {
   }
 }
 
-onMounted(() => {
-  loadDiaryData()
+const handlePetSwitch = (index: number) => {
+  selectedPetIndex.value = index
+  currentPage.value = 1 // Reset to first page when changing pets
+}
+
+onMounted(async () => {
+  await petStore.fetchPets()
+  await loadDiaryData()
   document.addEventListener('click', handleOutsideClick)
 })
 
@@ -268,6 +288,21 @@ onUnmounted(() => {
           >
             <span class="mr-1">+</span> 새 일기
           </button>
+        </div>
+
+        <!-- Pet Selector -->
+        <div
+          v-if="petStore.pets.length > 0"
+          class="mb-6 bg-dang-background p-4 rounded-lg shadow-dang-sm border border-dang-light"
+        >
+          <h3 class="text-sm font-medium text-dang-secondary mb-2">
+            반려견 선택
+          </h3>
+          <PetSelector
+            :pets="petStore.pets"
+            :current-pet-index="selectedPetIndex"
+            @switch="handlePetSwitch"
+          />
         </div>
 
         <!-- 필터 및 정렬 옵션 -->

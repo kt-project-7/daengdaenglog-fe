@@ -137,10 +137,10 @@ const handleSubmit = async () => {
 <template>
   <div
     v-if="props.show"
-    class="fixed inset-0 z-50 flex items-center justify-center modal-overlay bg-black bg-opacity-50"
+    class="fixed inset-0 z-50 flex items-center justify-center modal-overlay bg-black bg-opacity-50 overflow-hidden"
   >
     <div
-      class="bg-white rounded-lg shadow-lg w-full max-w-3xl p-6 relative"
+      class="bg-white rounded-lg shadow-lg w-full max-w-3xl p-6 relative max-h-[90vh] overflow-y-auto"
       @click.stop
     >
       <form @submit.prevent="handleSubmit">
