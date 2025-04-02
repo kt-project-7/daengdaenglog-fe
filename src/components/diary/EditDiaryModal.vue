@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, watch, defineProps, defineEmits, onMounted } from 'vue'
+import { ref, reactive, watch, onMounted } from 'vue'
 import { useDiaryStore } from '@/stores/diaryStore'
 import { Camera, X, Plus } from 'lucide-vue-next'
 import type {

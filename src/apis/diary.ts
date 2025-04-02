@@ -67,5 +67,5 @@ export const deleteDiary = async (diaryId: number): Promise<void> => {
 // 6. 추억 그림 생성 (GET /diary/{diaryId}/image)
 export const generateDiaryImage = async (diaryId: number): Promise<string> => {
   const res = await api.get(`/diary/${diaryId}/image`)
-  return res.data.results.memoryUri || res.data.results.generatedImageUri
+  return res.data.results.generatedImageUri
 }

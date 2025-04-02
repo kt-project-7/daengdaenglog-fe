@@ -31,9 +31,7 @@ const handleGenerateMemory = async () => {
     console.log('이미지 생성 완료:', imageUrl)
 
     // 필요시 다시 다이어리 상세 정보를 로드해 최신 상태로 갱신
-    if (!diary.value.generatedImageUri) {
-      await diaryStore.loadDiaryDetail(diary.value.diaryId)
-    }
+    await diaryStore.loadDiaryDetail(diary.value.diaryId)
   } catch (e) {
     console.error('이미지 생성 실패:', e)
     alert('이미지 생성에 실패했습니다. 다시 시도해주세요.')
@@ -58,13 +56,20 @@ const deleteDiary = async () => {
 
 <template>
   <div v-if="diary" class="bg-white rounded-lg shadow-md overflow-hidden">
-    <div
-      v-if="diary.memoryUri || diary.generatedImageUri"
-      class="w-full h-64 md:h-80"
-    >
+    <!-- 사용자 업로드 이미지 표시 -->
+    <div v-if="diary.memoryUri" class="w-full h-64 md:h-80">
       <img
-        :src="diary.memoryUri || diary.generatedImageUri || ''"
-        :alt="`${formatDate(diary.createdDate)} 일기 이미지`"
+        :src="diary.memoryUri"
+        :alt="`${formatDate(diary.createdDate)} 사용자 업로드 이미지`"
+        class="w-full h-full object-cover"
+      />
+    </div>
+
+    <!-- 메인 이미지가 없을 때 AI 생성 이미지 표시 -->
+    <div v-else-if="diary.generatedImageUri" class="w-full h-64 md:h-80">
+      <img
+        :src="diary.generatedImageUri"
+        :alt="`${formatDate(diary.createdDate)} AI 생성 이미지`"
         class="w-full h-full object-cover"
       />
     </div>
@@ -126,7 +131,7 @@ const deleteDiary = async () => {
 
       <div class="mt-6">
         <MemorySection
-          :memory-image="diary.memoryUri || undefined"
+          :memory-image="diary.generatedImageUri || undefined"
           :pet-name="''"
           :diary-id="diary.diaryId"
           :is-loading="isGenerating"
