@@ -2,14 +2,14 @@
 import { onMounted, computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDiaryStore } from '@/stores/diaryStore'
-import { useProfileStore } from '@/stores/profileStore'
+import { usePetStore } from '@/stores/petStore'
 import { formatDate } from '@/utils/formatters'
 import DiaryDetail from '@/components/diary/DiaryDetail.vue'
 
 const route = useRoute()
 const router = useRouter()
 const diaryStore = useDiaryStore()
-const profileStore = useProfileStore()
+const petStore = usePetStore()
 const diaryDetailRef = ref<InstanceType<typeof DiaryDetail> | null>(null)
 
 // 라우터 파라미터에서 일기 ID 가져오기
@@ -25,7 +25,7 @@ onMounted(() => {
 const currentDiary = computed(() => diaryStore.currentDiary)
 
 // 반려견 이름
-const petName = computed(() => profileStore.profile.name)
+const petName = computed(() => petStore.currentPet.name)
 
 // 일기가 업데이트되었을 때
 const handleDiaryUpdated = () => {
