@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { Pencil } from 'lucide-vue-next'
 import type { Profile } from '@/types/profile'
 import { useGuideStore } from '@/stores/guideStore'
+import Swal from 'sweetalert2'
 
 const props = defineProps<{
   profile: Profile | null
@@ -40,9 +41,20 @@ const handleGenerateGuide = async () => {
 
   try {
     await guideStore.generateGuide(props.profile.id, guideType, description)
-    alert('가이드가 성공적으로 생성되었습니다.')
+
+    Swal.fire({
+      icon: 'success',
+      title: '성공!',
+      text: '가이드가 성공적으로 생성되었습니다.',
+      confirmButtonText: '확인',
+    })
   } catch (error) {
-    alert('가이드 생성에 실패했습니다.')
+    Swal.fire({
+      icon: 'error',
+      title: '실패',
+      text: '가이드 생성에 실패했습니다.',
+      confirmButtonText: '닫기',
+    })
   }
 }
 </script>
