@@ -1,13 +1,4 @@
-<script setup lang="ts">
-import type { Profile } from '@/types/profile'
-import { Brain } from 'lucide-vue-next'
-
-defineProps<{
-  pet: Profile
-}>()
-
-// PBTI 유형별 성격 정보 데이터 (배열 기반으로 변경)
-const pbtiDetails: Record<
+export const pbtiDetails: Record<
   string,
   { 성격특징: string[]; 행동패턴: string[]; 양육팁: string[] }
 > = {
@@ -199,66 +190,3 @@ const pbtiDetails: Record<
     ],
   },
 }
-</script>
-
-<template>
-  <div class="space-y-6" v-if="pet?.pbti">
-    <div class="text-center mb-6">
-      <div
-        class="inline-block p-4 bg-chart-category2 bg-opacity-20 rounded-full mb-4"
-      >
-        <Brain class="w-12 h-12 text-chart-category2" />
-      </div>
-      <h3 class="text-2xl font-bold text-chart-category2">{{ pet.pbti }}</h3>
-      <p class="text-lg text-_gray-500 mt-2">{{ pet.name }}의 DBTI 결과</p>
-    </div>
-
-    <!-- 성격 특징 -->
-    <div
-      class="bg-chart-category2 bg-opacity-10 rounded-xl p-6 border border-chart-category2 border-opacity-20"
-    >
-      <h4 class="text-xl font-bold text-chart-category2 mb-4">성격 특징</h4>
-      <ul class="list-disc list-inside space-y-1 text-_gray-700 text-lg">
-        <li
-          v-for="(item, index) in pbtiDetails[pet.pbti]?.성격특징"
-          :key="index"
-        >
-          {{ item }}
-        </li>
-      </ul>
-    </div>
-
-    <!-- 행동 패턴 + 양육 팁 -->
-    <div class="grid grid-cols-2 gap-4">
-      <!-- 행동 패턴 -->
-      <div
-        class="bg-dang-light rounded-xl p-5 border border-chart-category2 border-opacity-20"
-      >
-        <h4 class="text-lg font-bold text-chart-category2 mb-2">행동 패턴</h4>
-        <ul class="list-disc list-inside space-y-1 text-_gray-700 text-base">
-          <li
-            v-for="(item, index) in pbtiDetails[pet.pbti]?.행동패턴"
-            :key="index"
-          >
-            {{ item }}
-          </li>
-        </ul>
-      </div>
-
-      <!-- 양육 팁 -->
-      <div
-        class="bg-dang-light rounded-xl p-5 border border-chart-category2 border-opacity-20"
-      >
-        <h4 class="text-lg font-bold text-chart-category2 mb-2">양육 팁</h4>
-        <ul class="list-disc list-inside space-y-1 text-_gray-700 text-base">
-          <li
-            v-for="(item, index) in pbtiDetails[pet.pbti]?.양육팁"
-            :key="index"
-          >
-            {{ item }}
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</template>
