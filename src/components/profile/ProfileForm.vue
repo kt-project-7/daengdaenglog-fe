@@ -27,18 +27,24 @@ const genderDisplay = computed(() => {
       <!-- 왼쪽 열 -->
       <div>
         <div class="mb-4">
-          <label class="block text-sm font-medium text-_gray-400 mb-1">이름</label>
+          <label class="block text-sm font-medium text-_gray-400 mb-1"
+            >이름</label
+          >
           <!-- profile이 null이 아니면 name을 표시, null이면 '정보 없음' 표시 -->
           <p class="text-_black">{{ profile?.name || '정보 없음' }}</p>
         </div>
 
         <div class="mb-4">
-          <label class="block text-sm font-medium text-_gray-400 mb-1">품종</label>
-          <p class="text-_black">{{ profile?.breed || '정보 없음' }}</p>
+          <label class="block text-sm font-medium text-_gray-400 mb-1"
+            >품종</label
+          >
+          <p class="text-_black">{{ profile?.petType || '정보 없음' }}</p>
         </div>
 
         <div class="mb-4">
-          <label class="block text-sm font-medium text-_gray-400 mb-1">나이</label>
+          <label class="block text-sm font-medium text-_gray-400 mb-1"
+            >나이</label
+          >
           <p class="text-_black">{{ profile?.age }}세</p>
         </div>
       </div>
@@ -46,17 +52,23 @@ const genderDisplay = computed(() => {
       <!-- 오른쪽 열 -->
       <div>
         <div class="mb-4">
-          <label class="block text-sm font-medium text-_gray-400 mb-1">성별</label>
+          <label class="block text-sm font-medium text-_gray-400 mb-1"
+            >성별</label
+          >
           <p class="text-_black">{{ genderDisplay }}</p>
         </div>
 
         <div class="mb-4">
-          <label class="block text-sm font-medium text-_gray-400 mb-1">체중</label>
+          <label class="block text-sm font-medium text-_gray-400 mb-1"
+            >체중</label
+          >
           <p class="text-_black">{{ profile?.weight }}kg</p>
         </div>
 
         <div class="mb-4">
-          <label class="block text-sm font-medium text-_gray-400 mb-1">중성화 여부</label>
+          <label class="block text-sm font-medium text-_gray-400 mb-1"
+            >중성화 여부</label
+          >
           <p class="text-_black">{{ profile?.neutered ? '완료' : '미완료' }}</p>
         </div>
       </div>

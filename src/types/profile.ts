@@ -3,24 +3,12 @@ export type Gender = 'male' | 'female'
 export interface Profile {
   id: number
   name: string
-  breed: string
+  petType: string
   age: number
   weight: number
   gender: Gender
   neutered: boolean
   imageUrl: string | null
   pbti: string | null
-  petType: String
-  dbtiResult: {
-    type: string
-    description: string
-  } | null
-  petsitterGuide: {
-    generalInfo: string
-    routineInfo: string
-    feedingInfo: string
-    healthInfo: string
-    specialNotes: string[]
-    emergencyTips: string[]
-  } | null
+  petsitterGuide: string | null
 }

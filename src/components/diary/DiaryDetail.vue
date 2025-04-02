@@ -96,6 +96,10 @@ const generateMemoryImage = async () => {
     isGenerating.value = false
   }
 }
+
+defineExpose({
+  generateMemory: generateMemoryImage,
+})
 </script>
 
 <template>
