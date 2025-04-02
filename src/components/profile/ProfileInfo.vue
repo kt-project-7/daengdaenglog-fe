@@ -5,11 +5,13 @@ import type { Profile } from '@/types/profile'
 import defaultProfileImage from '@/assets/svgs/profile.svg'
 import ProfileImageSection from './ProfileImageSection.vue'
 import ProfileForm from './ProfileForm.vue'
+import { usePetStore } from '@/stores/petStore'
 
 const props = defineProps<{
   profile: Profile
 }>()
 
+const petStore = usePetStore()
 const emit = defineEmits<{
   (e: 'update:profile', profile: Profile): void
 }>()
@@ -30,6 +32,15 @@ const toggleEditMode = () => {
 
 const updateProfileImage = (imageUrl: string) => {
   editedProfile.value.imageUrl = imageUrl
+  // petStore를 통해 이미지 업데이트
+  petStore.updatePetImage(imageUrl)
+}
+
+const removeProfileImage = () => {
+  // 프로필 이미지 제거
+  editedProfile.value.imageUrl = null
+  // petStore를 통해 이미지 제거
+  petStore.removePetImage()
 }
 
 const handleFormUpdate = (updates: Partial<Profile>) => {
@@ -49,7 +60,9 @@ const saveChanges = () => {
     <ProfileImageSection
       :image-url="profile?.imageUrl || defaultProfileImage"
       :default-image="defaultProfileImage"
+      :pet-id="profile.id"
       @update:image="updateProfileImage"
+      @remove:image="removeProfileImage"
     />
 
     <!-- 프로필 폼 -->
