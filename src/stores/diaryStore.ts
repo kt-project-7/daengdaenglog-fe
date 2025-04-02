@@ -79,17 +79,22 @@ export const useDiaryStore = defineStore('diary', {
 
         // diaries 배열에서 해당 일기 업데이트
         const target = this.diaries.find((d) => d.diaryId === diaryId)
-        if (target) {
+        if (target?.memoryUri) {
           target.memoryUri = imageUrl
+        } else if (target?.generatedImageUri) {
+          target.generatedImageUri = imageUrl
         }
 
         // selectedDiary가 있고 현재 보고 있는 일기와 같은 id인 경우 업데이트
         if (this.selectedDiary && this.selectedDiary.diaryId === diaryId) {
           // 새 객체를 만들어 할당하여 반응형 트리거
-          this.selectedDiary = {
-            ...this.selectedDiary,
-            memoryUri: imageUrl,
+          const updatedDiary = { ...this.selectedDiary }
+          if (updatedDiary.memoryUri) {
+            updatedDiary.memoryUri = imageUrl
+          } else if (updatedDiary.generatedImageUri) {
+            updatedDiary.generatedImageUri = imageUrl
           }
+          this.selectedDiary = updatedDiary
         }
 
         return imageUrl

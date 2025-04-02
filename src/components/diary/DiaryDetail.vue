@@ -31,7 +31,7 @@ const handleGenerateMemory = async () => {
     console.log('이미지 생성 완료:', imageUrl)
 
     // 필요시 다시 다이어리 상세 정보를 로드해 최신 상태로 갱신
-    if (!diary.value.memoryUri) {
+    if (!diary.value.generatedImageUri) {
       await diaryStore.loadDiaryDetail(diary.value.diaryId)
     }
   } catch (e) {
