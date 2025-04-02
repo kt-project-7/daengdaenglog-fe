@@ -42,6 +42,7 @@ const menuItems = [
   { path: '/diary-list', label: '🐾일기 목록' },
   { path: '/profile', label: '🐾마이페이지' },
   { path: '/dang-money-chart', label: '🐾댕머니 차트' },
+  { path: '/dang-guide', label: '🐾댕가이드' },
 ]
 
 const handleNavigation = (path: string) => {
