@@ -476,14 +476,6 @@ onUnmounted(() => {
                   </p>
                 </div>
 
-                <div
-                  v-if="visibleDiaries[0].memoryUri"
-                  class="absolute top-4 right-4 bg-dang-primary/90 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm flex items-center"
-                >
-                  <span class="mr-1">✨</span>
-                  <span>추억</span>
-                </div>
-
                 <!-- 수정/삭제 드롭다운 -->
                 <div class="absolute top-4 right-4 z-20">
                   <button
