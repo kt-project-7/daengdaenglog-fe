@@ -14,6 +14,9 @@ defineEmits<{
 
 // 선택된 가이드 대상 ('펫시터', '수의사', '유치원')
 const selectedTarget = ref('기본') // 기본값 설정
+
+// 가이드 입력값
+const profileInput = ref('')
 </script>
 
 <template>
@@ -55,9 +58,7 @@ const selectedTarget = ref('기본') // 기본값 설정
 
     <!-- profile이 없거나 petsitterGuide가 없을 경우 -->
     <div v-else class="text-center py-8">
-      <p class="text-_gray-600 mb-4">
-        아직 가이드가 생성되지 않았습니다.
-      </p>
+      <p class="text-_gray-600 mb-4">아직 가이드가 생성되지 않았습니다.</p>
 
       <!-- 라디오 버튼으로 가이드 대상 선택 -->
       <div class="flex justify-center gap-4 mb-6 flex-wrap">
@@ -82,7 +83,14 @@ const selectedTarget = ref('기본') // 기본값 설정
           <span class="text-sm font-medium text-_gray-700">{{ option }}</span>
         </label>
       </div>
-
+      <div class="mb-6">
+        <input
+          type="text"
+          v-model="profileInput"
+          placeholder="추가로 입력하고 싶은 정보를 입력하세요"
+          class="w-full px-4 py-2 border border-_gray-200 rounded-lg text-_gray-700 focus:ring-2 focus:ring-dang-primary focus:outline-none shadow-sm"
+        />
+      </div>
       <button
         class="inline-flex items-center gap-2 px-6 py-3 bg-_green-500 text-white rounded-lg hover:bg-_green-600 transition-colors"
         @click="$emit('generate')"
