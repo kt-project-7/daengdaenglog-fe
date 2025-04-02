@@ -1,57 +1,42 @@
 <script setup lang="ts">
-import { formatDate, getMoodEmoji, getWeatherEmoji } from '@/utils/formatters'
-import type { Diary, Mood, Weather } from '@/types/diary'
-import { useRouter } from 'vue-router'
+import { computed } from 'vue'
+import type { Diary } from '@/types/diary'
+import { getMoodEmoji, getWeatherEmoji, formatDate } from '@/utils/formatters'
 
-const router = useRouter()
-
-defineProps<{
+const props = defineProps<{
   diary: Diary
 }>()
 
-const handleClick = (id: string) => {
-  router.push(`/diary/${id}`)
-}
+const emotionDisplay = computed(() => getMoodEmoji(props.diary.emotionType))
+const weatherDisplay = computed(() => getWeatherEmoji(props.diary.weatherType))
+const formattedDate = computed(() => formatDate(props.diary.createdDate))
 </script>
 
 <template>
-  <div
-    class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-    @click="handleClick(diary.id)"
-  >
-    <div v-if="diary.imageUrl" class="h-48 overflow-hidden">
+  <div class="border rounded-lg shadow p-4 bg-white hover:shadow-lg transition">
+    <div class="flex justify-between items-center mb-2">
+      <h3 class="text-lg font-bold text-dang-primary truncate">
+        {{ diary.title }}
+      </h3>
+      <span class="text-sm text-dang-secondary">{{ formattedDate }}</span>
+    </div>
+
+    <div class="flex items-center gap-2 mb-2">
+      <span class="text-sm">{{ emotionDisplay }}</span>
+      <span class="text-sm">|</span>
+      <span class="text-sm">{{ weatherDisplay }}</span>
+    </div>
+
+    <div v-if="diary.generatedImageUri" class="rounded overflow-hidden mt-2">
       <img
-        :src="diary.imageUrl"
-        :alt="`${formatDate(diary.date)} 일기 이미지`"
-        class="w-full h-full object-cover"
+        :src="diary.generatedImageUri"
+        alt="Generated"
+        class="w-full h-40 object-cover rounded"
       />
     </div>
 
-    <div class="p-4">
-      <h3 class="title-2 mb-3">{{ formatDate(diary.date) }}</h3>
-
-      <div class="flex flex-wrap gap-2 mb-3">
-        <span class="text-sm px-2 py-1 bg-primary bg-opacity-10 rounded-full">{{
-          getMoodEmoji(diary.mood)
-        }}</span>
-        <span class="text-sm px-2 py-1 bg-blue-100 rounded-full">{{
-          getWeatherEmoji(diary.weather)
-        }}</span>
-      </div>
-
-      <p class="body-text text-_black line-clamp-3">{{ diary.content }}</p>
-
-      <div class="mt-3 flex justify-between text-sm text-_gray-300">
-        <span v-if="diary.walkTime">산책: {{ diary.walkTime }}분</span>
-        <span v-if="diary.mealTime">식사: {{ diary.mealTime }}</span>
-      </div>
-
-      <div v-if="diary.memory" class="mt-2 text-primary text-sm">
-        <span class="flex items-center">
-          <span class="mr-1">✨</span>
-          추억이 생성되었어요
-        </span>
-      </div>
-    </div>
+    <p class="mt-3 text-dang-secondary text-sm line-clamp-3">
+      {{ diary.content }}
+    </p>
   </div>
 </template>

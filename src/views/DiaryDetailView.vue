@@ -13,36 +13,38 @@ const petStore = usePetStore()
 const diaryDetailRef = ref<InstanceType<typeof DiaryDetail> | null>(null)
 
 // 라우터 파라미터에서 일기 ID 가져오기
-const diaryId = computed(() => route.params.id as string)
+const diaryId = computed(() => Number(route.params.id))
 
-onMounted(() => {
-  if (diaryId.value) {
-    diaryStore.setCurrentDiaryId(diaryId.value)
+onMounted(async () => {
+  if (diaryId.value && !isNaN(diaryId.value)) {
+    await diaryStore.loadDiaryDetail(diaryId.value)
   }
 })
 
 // 현재 일기
-const currentDiary = computed(() => diaryStore.currentDiary)
+const currentDiary = computed(() => diaryStore.selectedDiary)
 
 // 반려견 이름
-const petName = computed(() => petStore.currentPet.name)
+const petName = computed(() => petStore.currentPet?.name || '')
 
 // 일기가 업데이트되었을 때
-const handleDiaryUpdated = () => {
-  // 현재 일기 다시 불러오기
-  if (diaryId.value) {
-    diaryStore.setCurrentDiaryId(diaryId.value)
+const handleDiaryUpdated = async () => {
+  if (diaryId.value && !isNaN(diaryId.value)) {
+    await diaryStore.loadDiaryDetail(diaryId.value)
   }
 }
 
 // 일기가 삭제되었을 때
 const handleDiaryDeleted = () => {
-  // 일기 목록 페이지로 이동
   router.push('/diary-list')
 }
 
+// 추억 생성 함수 (DiaryDetail에서 defineExpose로 노출된 메서드)
 const generateMemory = () => {
-  diaryDetailRef.value?.generateMemory()
+  const instance = diaryDetailRef.value as unknown as {
+    generateMemory: () => void
+  }
+  instance?.generateMemory()
 }
 </script>
 
@@ -57,7 +59,7 @@ const generateMemory = () => {
       >
         <div class="flex justify-between items-center mb-6">
           <h1 class="text-3xl font-bold text-dang-primary">
-            {{ formatDate(currentDiary.date) }}
+            {{ formatDate(currentDiary.createdDate) }}
           </h1>
           <div class="flex space-x-2">
             <router-link

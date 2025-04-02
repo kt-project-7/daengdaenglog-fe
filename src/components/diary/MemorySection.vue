@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 
 const props = defineProps<{
   memoryImage?: string
@@ -11,6 +11,14 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'generate', diaryId: number): void
 }>()
+
+// memoryImage prop을 감시하여 콘솔에 기록
+watch(
+  () => props.memoryImage,
+  (newImage) => {
+    console.log('MemorySection - memoryImage 변경됨:', newImage)
+  },
+)
 
 const hasMemory = computed(() => !!props.memoryImage)
 const generateMemory = () => emit('generate', props.diaryId)
@@ -30,6 +38,7 @@ const generateMemory = () => emit('generate', props.diaryId)
         <h3 class="body-text font-medium mb-2 text-primary">그림 추억</h3>
         <img
           :src="memoryImage"
+          :key="memoryImage"
           alt="AI가 생성한 추억 이미지"
           class="w-full max-h-80 object-contain rounded-lg shadow-md"
         />
