@@ -1,167 +1,106 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
-import type { Diary, NewDiary, Mood, Weather } from '@/types/diary'
 import {
   fetchAllDiaries,
-  getDiary,
-  createDiary as createDiaryAPI,
-  updateDiary as updateDiaryAPI,
-  deleteDiary as deleteDiaryAPI,
-  checkTodayDiary,
+  fetchDiaryDetail,
+  createDiary,
+  updateDiary,
+  deleteDiary,
+  generateDiaryImage,
 } from '@/apis/diary'
+import type { Diary, CreateDiaryRequest } from '@/types/diary'
 
-export const useDiaryStore = defineStore('diary', () => {
-  const diaries = ref<Diary[]>([])
-  const currentDiary = ref<Diary | null>(null)
-  const selectedImageFile = ref<File | null>(null)
-  const selectedPetId = ref<number>(1)
-  const selectedDiaryId = ref<number>(0)
+export const useDiaryStore = defineStore('diary', {
+  state: () => ({
+    diaries: [] as Diary[],
+    selectedDiary: null as Diary | null,
+    isLoading: false,
+    error: null as string | null,
+  }),
 
-  const today = computed(() => {
-    const now = new Date()
-    return now.toISOString().split('T')[0]
-  })
-
-  const getInitialNewDiary = (): NewDiary => ({
-    date: today.value,
-    mood: '',
-    weather: '',
-    content: '',
-    walkTime: null,
-    mealTime: '',
-    imageUrl: null,
-  })
-
-  const newDiary = ref<NewDiary>(getInitialNewDiary())
-
-  const setImageFile = (file: File | null) => {
-    selectedImageFile.value = file
-  }
-
-  const fetchDiaries = async () => {
-    diaries.value = await fetchAllDiaries()
-  }
-
-  const fetchDiaryById = async (id: string) => {
-    const diary = await getDiary(Number(id))
-    currentDiary.value = diary
-  }
-
-  const setCurrentDiaryId = async (id: string) => {
-    await fetchDiaryById(id)
-  }
-
-  const createDiary = async () => {
-    const createDiaryRequest = {
-      petId: selectedPetId.value,
-      emotionType: newDiary.value.mood.toUpperCase(),
-      weatherType: newDiary.value.weather.toUpperCase(),
-      title: 'create',
-      content: newDiary.value.content,
-      diaryScheduleRequestList: [],
-    }
-
-    const formData = new FormData()
-    formData.append(
-      'createDiaryRequest',
-      new Blob([JSON.stringify(createDiaryRequest)], {
-        type: 'application/json',
-      }),
-    )
-
-    if (selectedImageFile.value) {
-      formData.append('file', selectedImageFile.value)
-    } else {
-      formData.append('file', new Blob())
-    }
-
-    await createDiaryAPI(formData)
-    await fetchDiaries()
-  }
-
-  const updateDiary = async (diaryId: number) => {
-    const updateDiaryRequest = {
-      petId: selectedPetId.value,
-      emotionType: newDiary.value.mood.toUpperCase(),
-      weatherType: newDiary.value.weather.toUpperCase(),
-      title: '수정된 일기',
-      content: newDiary.value.content,
-      walkTime: newDiary.value.walkTime || 0,
-      mealTime: newDiary.value.mealTime || '',
-      diaryScheduleRequestList: [],
-    }
-
-    const formData = new FormData()
-    formData.append(
-      'updateDiaryRequest',
-      new Blob([JSON.stringify(updateDiaryRequest)], {
-        type: 'application/json',
-      }),
-    )
-
-    if (selectedImageFile.value) {
-      formData.append('file', selectedImageFile.value)
-    } else {
-      formData.append('file', new Blob())
-    }
-
-    return await updateDiaryAPI(diaryId, formData)
-  }
-
-  const deleteDiary = async (diaryId: number) => {
-    await deleteDiaryAPI(diaryId)
-    await fetchDiaries()
-  }
-
-  const checkAndLoadTodayDiary = async (petId: number) => {
-    const { isWrite, diaryId } = await checkTodayDiary(petId)
-    if (isWrite && diaryId) {
-      const diary = await getDiary(diaryId)
-      currentDiary.value = diary
-
-      newDiary.value = {
-        date: diary.date,
-        mood: diary.mood as Mood,
-        weather: diary.weather as Weather,
-        content: diary.content,
-        walkTime: diary.walkTime ?? null,
-        mealTime: diary.mealTime ?? '',
-        imageUrl: diary.imageUrl ?? null,
+  actions: {
+    async loadDiaries() {
+      this.isLoading = true
+      try {
+        const diaryGroups = await fetchAllDiaries()
+        const flat = diaryGroups.flatMap((pet: any) => pet.diaryList)
+        this.diaries = flat.sort((a: any, b: any) =>
+          b.createdDate.localeCompare(a.createdDate),
+        )
+      } catch (e) {
+        this.error = '다이어리를 불러오는데 실패했습니다.'
+      } finally {
+        this.isLoading = false
       }
-    } else {
-      currentDiary.value = null
-      newDiary.value = getInitialNewDiary()
-    }
-  }
+    },
 
-  const memoryImages = ref<Record<string, string>>({})
+    async loadDiaryDetail(diaryId: number) {
+      this.isLoading = true
+      try {
+        const diary = await fetchDiaryDetail(diaryId)
+        this.selectedDiary = diary
+      } catch (e) {
+        this.error = '다이어리 상세 정보를 불러오지 못했습니다.'
+      } finally {
+        this.isLoading = false
+      }
+    },
 
-  const setMemoryImage = (diaryId: string, imageUrl: string) => {
-    memoryImages.value[diaryId] = imageUrl
-  }
+    async addDiary(payload: CreateDiaryRequest) {
+      try {
+        const newDiaryId = await createDiary(payload)
+        await this.loadDiaries()
+        return newDiaryId
+      } catch (e) {
+        this.error = '다이어리를 저장하는 데 실패했습니다.'
+      }
+    },
 
-  const getMemoryImage = (diaryId: string) => {
-    return memoryImages.value[diaryId]
-  }
+    async editDiary(diaryId: number, payload: CreateDiaryRequest) {
+      try {
+        await updateDiary(diaryId, payload)
+        await this.loadDiaries()
+      } catch (e) {
+        this.error = '다이어리를 수정하는 데 실패했습니다.'
+      }
+    },
 
-  return {
-    diaries,
-    currentDiary,
-    newDiary,
-    today,
-    selectedImageFile,
-    setImageFile,
-    setCurrentDiaryId,
-    getInitialNewDiary,
-    fetchDiaries,
-    fetchDiaryById,
-    createDiary,
-    updateDiary,
-    deleteDiary,
-    checkAndLoadTodayDiary,
-    selectedPetId,
-    memoryImages,
-    setMemoryImage,
-    getMemoryImage,
-  }
+    async removeDiary(diaryId: number) {
+      try {
+        await deleteDiary(diaryId)
+        this.diaries = this.diaries.filter((d) => d.diaryId !== diaryId)
+      } catch (e) {
+        this.error = '다이어리를 삭제하지 못했습니다.'
+      }
+    },
+
+    async generateImage(diaryId: number) {
+      try {
+        const imageUrl = await generateDiaryImage(diaryId)
+
+        // diaries 배열에서 해당 일기 업데이트
+        const target = this.diaries.find((d) => d.diaryId === diaryId)
+        if (target) {
+          target.generatedImageUri = imageUrl
+        }
+
+        // selectedDiary가 있고 현재 보고 있는 일기와 같은 id인 경우 업데이트
+        if (this.selectedDiary && this.selectedDiary.diaryId === diaryId) {
+          // 새 객체를 만들어 할당하여 반응형 트리거
+          this.selectedDiary = {
+            ...this.selectedDiary,
+            generatedImageUri: imageUrl,
+          }
+        }
+
+        return imageUrl
+      } catch (e) {
+        this.error = '이미지 생성에 실패했습니다.'
+        throw e
+      }
+    },
+
+    clearSelected() {
+      this.selectedDiary = null
+    },
+  },
 })

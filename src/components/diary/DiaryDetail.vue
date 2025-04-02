@@ -1,119 +1,73 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
-import { computed, onMounted, ref, defineEmits } from 'vue'
+import { computed, ref } from 'vue'
 import { useDiaryStore } from '@/stores/diaryStore'
-import { createDiaryMemoryImage } from '@/apis/diary'
-import { formatDate, getMoodEmoji, getWeatherEmoji } from '@/utils/formatters'
-import type { Diary, Mood, Weather } from '@/types/diary'
-import MemorySection from './MemorySection.vue'
-import DiaryEditModal from './DiaryEditModal.vue'
+import { getMoodEmoji, getWeatherEmoji, formatDate } from '@/utils/formatters'
 import { Edit, Trash2 } from 'lucide-vue-next'
+import EditDiaryModal from './EditDiaryModal.vue'
+import MemorySection from './MemorySection.vue'
 
-const props = defineProps<{
-  diary: Diary
-  petName: string
-}>()
-
-const emit = defineEmits<{
-  (e: 'generate-memory'): void
-  (e: 'diary-updated'): void
-  (e: 'diary-deleted'): void
-}>()
-
-const route = useRoute()
-const diaryId = computed(() => Number(route.params.id))
 const diaryStore = useDiaryStore()
-
+const diary = computed(() => diaryStore.selectedDiary)
 const showEditModal = ref(false)
 const isDeleting = ref(false)
 const isGenerating = ref(false)
 
-// 다이어리 데이터 불러오기
-onMounted(async () => {
-  if (diaryId.value && !isNaN(diaryId.value)) {
-    await diaryStore.setCurrentDiaryId(diaryId.value.toString())
-  }
-})
-
-// 수정 모달 열기
 const openEditModal = () => {
   showEditModal.value = true
 }
 
-// 수정 모달 닫기
 const closeEditModal = () => {
   showEditModal.value = false
 }
 
-// 일기 수정 저장
-const saveDiary = async (updatedDiary: Diary) => {
-  try {
-    await diaryStore.updateDiary(diaryId.value)
-    closeEditModal()
-    emit('diary-updated')
-  } catch (error) {
-    console.error('일기 수정 중 오류가 발생했습니다:', error)
-  }
-}
-
-// 일기 삭제
-const deleteDiary = async () => {
-  if (!confirm('정말로 이 일기를 삭제하시겠습니까?')) return
-
-  try {
-    isDeleting.value = true
-    await diaryStore.deleteDiary(diaryId.value)
-    emit('diary-deleted')
-  } catch (error) {
-    console.error('일기 삭제 중 오류가 발생했습니다:', error)
-  } finally {
-    isDeleting.value = false
-  }
-}
-
-const diary = computed(() => diaryStore.currentDiary)
-const memoryImage = computed(() =>
-  diaryId.value ? diaryStore.getMemoryImage(diaryId.value.toString()) : '',
-)
-
-// 추억 생성 함수
-const generateMemoryImage = async () => {
-  if (!diaryId.value || isNaN(diaryId.value)) {
-    console.warn('유효하지 않은 diaryId:', diaryId.value)
-    return
-  }
-
+const handleGenerateMemory = async () => {
+  if (!diary.value) return
   try {
     isGenerating.value = true
-    const result = await createDiaryMemoryImage(diaryId.value)
-    diaryStore.setMemoryImage(
-      diaryId.value.toString(),
-      typeof result === 'string' ? result : result.imageUrl,
-    )
+    // 이미지 생성이 완료될 때까지 대기
+    const imageUrl = await diaryStore.generateImage(diary.value.diaryId)
+
+    // 이미지 생성 완료 확인
+    console.log('이미지 생성 완료:', imageUrl)
+
+    // 필요시 다시 다이어리 상세 정보를 로드해 최신 상태로 갱신
+    if (!diary.value.generatedImageUri) {
+      await diaryStore.loadDiaryDetail(diary.value.diaryId)
+    }
   } catch (e) {
-    console.error('추억 이미지 생성 실패:', e)
+    console.error('이미지 생성 실패:', e)
+    alert('이미지 생성에 실패했습니다. 다시 시도해주세요.')
   } finally {
     isGenerating.value = false
   }
 }
 
-defineExpose({
-  generateMemory: generateMemoryImage,
-})
+const deleteDiary = async () => {
+  if (!diary.value) return
+  if (!confirm('정말로 이 일기를 삭제하시겠습니까?')) return
+  try {
+    isDeleting.value = true
+    await diaryStore.removeDiary(diary.value.diaryId)
+  } catch (e) {
+    console.error('삭제 실패:', e)
+  } finally {
+    isDeleting.value = false
+  }
+}
 </script>
 
 <template>
   <div v-if="diary" class="bg-white rounded-lg shadow-md overflow-hidden">
-    <div v-if="diary.imageUrl" class="w-full h-64 md:h-80">
+    <div v-if="diary.generatedImageUri" class="w-full h-64 md:h-80">
       <img
-        :src="diary.imageUrl"
-        :alt="`${formatDate(diary.date)} 일기 이미지`"
+        :src="diary.generatedImageUri"
+        :alt="`${formatDate(diary.createdDate)} 일기 이미지`"
         class="w-full h-full object-cover"
       />
     </div>
 
     <div class="p-6">
-      <!-- 수정/삭제 버튼 추가 -->
+      <!-- 수정/삭제 버튼 -->
       <div class="flex justify-end mb-4 gap-2">
         <button
           @click="openEditModal"
@@ -136,22 +90,28 @@ defineExpose({
         <span
           class="px-3 py-1 bg-primary bg-opacity-10 text-primary rounded-full"
         >
-          {{ getMoodEmoji(diary.mood as Mood) }}
+          {{ getMoodEmoji(diary.emotionType) }}
         </span>
         <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full">
-          {{ getWeatherEmoji(diary.weather as Weather) }}
+          {{ getWeatherEmoji(diary.weatherType) }}
         </span>
         <span
-          v-if="diary.walkTime"
+          v-for="s in diary.scheduleList.filter(
+            (s) => s.scheduleType === 'WALK',
+          )"
+          :key="s.scheduleId"
           class="px-3 py-1 bg-green-100 text-green-800 rounded-full"
         >
-          산책: {{ diary.walkTime }}분
+          산책: {{ s.startTime }} ~ {{ s.endTime }}
         </span>
         <span
-          v-if="diary.mealTime"
+          v-for="s in diary.scheduleList.filter(
+            (s) => s.scheduleType === 'FEED',
+          )"
+          :key="s.scheduleId"
           class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full"
         >
-          식사: {{ diary.mealTime }}
+          식사: {{ s.startTime }} ~ {{ s.endTime }}
         </span>
       </div>
 
@@ -161,21 +121,22 @@ defineExpose({
         </p>
       </div>
 
-      <MemorySection
-        :memory-image="memoryImage"
-        :pet-name="''"
-        :diary-id="diaryId"
-        :is-loading="isGenerating"
-        @generate="generateMemoryImage"
-      />
+      <div class="mt-6">
+        <MemorySection
+          :memory-image="diary.generatedImageUri ?? ''"
+          :pet-name="''"
+          :diary-id="diary.diaryId"
+          :is-loading="isGenerating"
+          @generate="handleGenerateMemory"
+        />
+      </div>
     </div>
 
-    <!-- 수정 모달 -->
-    <DiaryEditModal
+    <EditDiaryModal
       :show="showEditModal"
       :diary="diary"
       @close="closeEditModal"
-      @save="saveDiary"
+      @save="closeEditModal"
     />
   </div>
 </template>

@@ -2,16 +2,17 @@
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { useDiaryStore } from '@/stores/diaryStore'
-import DiaryForm from '@/components/diary/DiaryForm.vue'
-
+import { usePetStore } from '@/stores/petStore'
+import AddDiary from '@/components/diary/AddDiary.vue'
+import type { CreateDiaryRequest } from '@/types/diary'
 const router = useRouter()
 const authStore = useAuthStore()
 const diaryStore = useDiaryStore()
-
+const petStore = usePetStore()
 // 일기 저장
-const saveDiary = async () => {
+const saveDiary = async (payload: CreateDiaryRequest) => {
   try {
-    const result = await diaryStore.createDiary()
+    const result = await diaryStore.addDiary(payload)
     console.log('일기 저장 성공:', result)
     router.push('/diary-list')
   } catch (error) {
@@ -58,8 +59,8 @@ const handleCancel = () => {
         </p>
       </div>
 
-      <DiaryForm
-        v-if="authStore.isAuthenticated"
+      <AddDiary
+        :pet-id="petStore.currentPet.id"
         @submit="saveDiary"
         @cancel="handleCancel"
       />
