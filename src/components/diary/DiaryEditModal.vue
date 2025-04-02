@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, reactive } from 'vue'
 import { useDiaryStore } from '@/stores/diaryStore'
-import { Camera, X } from 'lucide-vue-next'
+import { Camera, X, Plus } from 'lucide-vue-next'
 import type { Diary, Mood, Weather } from '@/types/diary'
 
 const props = defineProps<{
@@ -23,6 +23,85 @@ const editedDiary = ref<Diary | null>(null)
 const imageInput = ref<HTMLInputElement | null>(null)
 const imagePreview = ref<string | null>(null)
 
+// 활동 관련 (산책/식사)
+interface Activity {
+  type: 'walk' | 'meal'
+  startTime: string
+  endTime: string
+}
+
+const activities = ref<Activity[]>([])
+
+// 활동 데이터 초기화
+const initializeActivities = (diary: Diary) => {
+  activities.value = []
+  
+  // 산책 시간 파싱
+  if (diary.walkTime) {
+    const walkTimeStr = diary.walkTime.toString()
+    if (walkTimeStr.includes('~')) {
+      // 새 형식 (12:00 ~ 1:00)
+      const walkTimes = walkTimeStr.split(', ')
+      walkTimes.forEach(timeRange => {
+        const [start, end] = timeRange.split(' ~ ')
+        activities.value.push({
+          type: 'walk',
+          startTime: start || '',
+          endTime: end || ''
+        })
+      })
+    } else {
+      // 기존 형식 (분)
+      activities.value.push({
+        type: 'walk',
+        startTime: '',
+        endTime: ''
+      })
+    }
+  }
+  
+  // 식사 시간 파싱
+  if (diary.mealTime) {
+    const mealTimes = diary.mealTime.split(', ')
+    mealTimes.forEach(timeRange => {
+      if (timeRange.includes('~')) {
+        const [start, end] = timeRange.split(' ~ ')
+        activities.value.push({
+          type: 'meal',
+          startTime: start || '',
+          endTime: end || ''
+        })
+      } else {
+        // 기존 형식
+        activities.value.push({
+          type: 'meal',
+          startTime: '',
+          endTime: ''
+        })
+      }
+    })
+  }
+  
+  // 활동이 없으면 기본 활동 추가
+  if (activities.value.length === 0) {
+    activities.value.push({
+      type: 'walk',
+      startTime: '',
+      endTime: ''
+    })
+  }
+}
+
+// 새 활동 추가
+const addActivity = () => {
+  activities.value.push({ type: 'walk', startTime: '', endTime: '' })
+}
+
+// 활동 제거
+const removeActivity = (index: number) => {
+  activities.value.splice(index, 1)
+}
+
 // props.diary가 변경될 때 editedDiary 업데이트
 watch(
   () => props.diary,
@@ -31,6 +110,7 @@ watch(
       // 깊은 복사를 통해 원본 데이터 변경 방지
       editedDiary.value = JSON.parse(JSON.stringify(newDiary))
       imagePreview.value = newDiary.imageUrl || null
+      initializeActivities(newDiary)
     }
   },
   { immediate: true },
@@ -78,13 +158,29 @@ const openImageSelector = () => {
 const saveDiary = async () => {
   if (editedDiary.value) {
     try {
+      // 활동 데이터 처리
+      const walkTimes: string[] = []
+      const mealTimes: string[] = []
+      
+      activities.value.forEach(activity => {
+        if (activity.startTime && activity.endTime) {
+          const timeString = `${activity.startTime} ~ ${activity.endTime}`
+          if (activity.type === 'walk') {
+            walkTimes.push(timeString)
+          } else {
+            mealTimes.push(timeString)
+          }
+        }
+      })
+      
       diaryStore.newDiary = {
+        title: editedDiary.value.title || '',
         date: editedDiary.value.date,
         mood: editedDiary.value.mood as Mood,
         weather: editedDiary.value.weather as Weather,
         content: editedDiary.value.content,
-        walkTime: editedDiary.value.walkTime || null,
-        mealTime: editedDiary.value.mealTime || '',
+        walkTime: walkTimes.length > 0 ? walkTimes.join(', ') : null,
+        mealTime: mealTimes.length > 0 ? mealTimes.join(', ') : '',
         imageUrl: editedDiary.value.imageUrl || null,
       }
 
@@ -155,6 +251,18 @@ watch(
       </div>
 
       <form @submit.prevent="saveDiary" class="space-y-5">
+        <!-- 제목 필드 추가 -->
+        <div>
+          <label class="block text-dang-primary font-medium mb-2">제목</label>
+          <input
+            type="text"
+            v-model="editedDiary.title"
+            class="w-full px-3 py-2 border border-dang-light rounded-md focus:outline-none focus:ring-2 focus:ring-dang-primary bg-white"
+            placeholder="일기 제목을 입력하세요"
+            required
+          />
+        </div>
+        
         <div>
           <label class="block text-dang-primary font-medium mb-2">날짜</label>
           <input
@@ -208,6 +316,61 @@ watch(
           </div>
         </div>
 
+        <!-- 산책/식사 시간 필드 수정 -->
+        <div>
+          <div class="flex justify-between items-center mb-2">
+            <label class="block text-dang-primary font-medium">오늘의 활동</label>
+            <button 
+              type="button" 
+              @click="addActivity"
+              class="flex items-center text-dang-primary hover:text-dang-secondary transition-colors"
+            >
+              <Plus class="w-5 h-5 mr-1" />
+              <span>활동 추가</span>
+            </button>
+          </div>
+          
+          <div 
+            v-for="(activity, index) in activities" 
+            :key="index"
+            class="flex items-center gap-3 mb-3 p-3 border border-dang-light rounded-md bg-white"
+          >
+            <div class="flex-shrink-0">
+              <select
+                v-model="activity.type"
+                class="px-3 py-2 border border-dang-light rounded-md focus:outline-none focus:ring-2 focus:ring-dang-primary bg-white"
+              >
+                <option value="walk">산책</option>
+                <option value="meal">식사</option>
+              </select>
+            </div>
+            
+            <div class="flex-grow grid grid-cols-2 gap-2">
+              <input
+                type="time"
+                v-model="activity.startTime"
+                class="px-3 py-2 border border-dang-light rounded-md focus:outline-none focus:ring-2 focus:ring-dang-primary bg-white"
+                placeholder="시작 시간"
+              />
+              <input
+                type="time"
+                v-model="activity.endTime"
+                class="px-3 py-2 border border-dang-light rounded-md focus:outline-none focus:ring-2 focus:ring-dang-primary bg-white"
+                placeholder="종료 시간"
+              />
+            </div>
+            
+            <button 
+              v-if="activities.length > 1"
+              type="button" 
+              @click="removeActivity(index)"
+              class="flex-shrink-0 text-dang-rejected hover:text-opacity-80 transition-colors"
+            >
+              <X class="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
         <div>
           <label class="block text-dang-primary font-medium mb-2"
             >관찰 내용</label
@@ -219,33 +382,6 @@ watch(
             placeholder="오늘 댕댕이는 어땠나요? 특별한 행동이나 변화가 있었나요?"
             required
           ></textarea>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div>
-            <label class="block text-dang-primary font-medium mb-2"
-              >오늘의 산책 시간 (분)</label
-            >
-            <input
-              type="number"
-              v-model="editedDiary.walkTime"
-              min="0"
-              class="w-full px-3 py-2 border border-dang-light rounded-md focus:outline-none focus:ring-2 focus:ring-dang-primary bg-white"
-              placeholder="예: 30"
-            />
-          </div>
-
-          <div>
-            <label class="block text-dang-primary font-medium mb-2"
-              >오늘의 식사 시간</label
-            >
-            <input
-              type="text"
-              v-model="editedDiary.mealTime"
-              class="w-full px-3 py-2 border border-dang-light rounded-md focus:outline-none focus:ring-2 focus:ring-dang-primary bg-white"
-              placeholder="예: 아침 8시, 저녁 6시"
-            />
-          </div>
         </div>
 
         <div>

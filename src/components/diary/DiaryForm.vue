@@ -1,16 +1,38 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 import { useDiaryStore } from '@/stores/diaryStore'
-import { Camera, X } from 'lucide-vue-next'
+import { Camera, X, Plus } from 'lucide-vue-next'
 
 const diaryStore = useDiaryStore()
 
-defineEmits(['submit', 'cancel'])
+// defineEmits는 한 번만 선언
+const emit = defineEmits(['submit', 'cancel'])
 
 // 이미지 업로드 관련
 const imageInput = ref<HTMLInputElement | null>(null)
 const imagePreview = ref<string | null>(diaryStore.newDiary.imageUrl ?? null)
 let selectedImageFile: File | null = null
+
+// 활동 관련 (산책/식사)
+interface Activity {
+  type: 'walk' | 'meal'
+  startTime: string
+  endTime: string
+}
+
+const activities = ref<Activity[]>([
+  { type: 'walk', startTime: '', endTime: '' },
+])
+
+// 새 활동 추가
+const addActivity = () => {
+  activities.value.push({ type: 'walk', startTime: '', endTime: '' })
+}
+
+// 활동 제거
+const removeActivity = (index: number) => {
+  activities.value.splice(index, 1)
+}
 
 // 이미지 선택 처리
 const handleImageSelect = (event: Event) => {
@@ -49,13 +71,47 @@ const openImageSelector = () => {
     imageInput.value.click()
   }
 }
+
+// 폼 제출 전 활동 데이터 처리
+const handleSubmit = () => {
+  // 활동 데이터를 diaryStore에 저장
+  const walkTimes: string[] = []
+  const mealTimes: string[] = []
+
+  activities.value.forEach((activity) => {
+    const timeString = `${activity.startTime} ~ ${activity.endTime}`
+    if (activity.type === 'walk') {
+      walkTimes.push(timeString)
+    } else {
+      mealTimes.push(timeString)
+    }
+  })
+
+  diaryStore.newDiary.walkTime = walkTimes.join(', ')
+  diaryStore.newDiary.mealTime = mealTimes.join(', ')
+
+  // 폼 제출 이벤트 발생
+  emit('submit')
+}
 </script>
 
 <template>
   <form
-    @submit.prevent="$emit('submit')"
+    @submit.prevent="handleSubmit"
     class="bg-dang-background rounded-xl shadow-dang-md p-8 border border-dang-light"
   >
+    <!-- 제목 필드 추가 -->
+    <div class="mb-5">
+      <label class="block text-dang-primary font-medium mb-2">제목</label>
+      <input
+        type="text"
+        v-model="diaryStore.newDiary.title"
+        class="w-full px-3 py-2 border border-dang-light rounded-md focus:outline-none focus:ring-2 focus:ring-dang-primary bg-white"
+        placeholder="일기 제목을 입력하세요"
+        required
+      />
+    </div>
+
     <div class="mb-5">
       <label class="block text-dang-primary font-medium mb-2">날짜</label>
       <input
@@ -109,32 +165,58 @@ const openImageSelector = () => {
       </div>
     </div>
 
-    <!-- 산책 시간과 식사 시간 필드 추가 -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-      <div>
-        <label class="block text-dang-primary font-medium mb-2"
-          >오늘의 산책 시간 (분)</label
+    <!-- 산책/식사 시간 필드 수정 -->
+    <div class="mb-5">
+      <div class="flex justify-between items-center mb-2">
+        <label class="block text-dang-primary font-medium">오늘의 활동</label>
+        <button
+          type="button"
+          @click="addActivity"
+          class="flex items-center text-dang-primary hover:text-dang-secondary transition-colors"
         >
-        <input
-          type="number"
-          v-model="diaryStore.newDiary.walkTime"
-          min="0"
-          max="300"
-          class="w-full px-3 py-2 border border-dang-light rounded-md focus:outline-none focus:ring-2 focus:ring-dang-primary bg-white"
-          placeholder="예: 30"
-        />
+          <Plus class="w-5 h-5 mr-1" />
+          <span>활동 추가</span>
+        </button>
       </div>
 
-      <div>
-        <label class="block text-dang-primary font-medium mb-2"
-          >오늘의 식사 시간</label
+      <div
+        v-for="(activity, index) in activities"
+        :key="index"
+        class="flex items-center gap-3 mb-3 p-3 border border-dang-light rounded-md bg-white"
+      >
+        <div class="flex-shrink-0">
+          <select
+            v-model="activity.type"
+            class="px-3 py-2 border border-dang-light rounded-md focus:outline-none focus:ring-2 focus:ring-dang-primary bg-white"
+          >
+            <option value="walk">산책</option>
+            <option value="meal">식사</option>
+          </select>
+        </div>
+
+        <div class="flex-grow grid grid-cols-2 gap-2">
+          <input
+            type="time"
+            v-model="activity.startTime"
+            class="px-3 py-2 border border-dang-light rounded-md focus:outline-none focus:ring-2 focus:ring-dang-primary bg-white"
+            placeholder="시작 시간"
+          />
+          <input
+            type="time"
+            v-model="activity.endTime"
+            class="px-3 py-2 border border-dang-light rounded-md focus:outline-none focus:ring-2 focus:ring-dang-primary bg-white"
+            placeholder="종료 시간"
+          />
+        </div>
+
+        <button
+          v-if="activities.length > 1"
+          type="button"
+          @click="removeActivity(index)"
+          class="flex-shrink-0 text-dang-rejected hover:text-opacity-80 transition-colors"
         >
-        <input
-          type="text"
-          v-model="diaryStore.newDiary.mealTime"
-          class="w-full px-3 py-2 border border-dang-light rounded-md focus:outline-none focus:ring-2 focus:ring-dang-primary bg-white"
-          placeholder="예: 08:00, 12:00, 18:00"
-        />
+          <X class="w-5 h-5" />
+        </button>
       </div>
     </div>
 

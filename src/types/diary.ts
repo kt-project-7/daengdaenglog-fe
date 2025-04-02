@@ -20,11 +20,12 @@ export type Weather =
 
 export interface Diary {
   id: string
+  title: string
   date: string
   content: string
   mood: Mood
   weather: Weather
-  walkTime?: number
+  walkTime?: string
   mealTime?: string
   imageUrl?: string
   memory?: MemoryImage
@@ -32,11 +33,12 @@ export interface Diary {
 
 export interface NewDiary {
   date: string
+  title: string
   mood: Mood | ''
   weather: Weather | ''
   content: string
-  walkTime: number | null
-  mealTime: string
+  walkTime: string | null
+  mealTime: string | null
   imageUrl: string | null
 }
 
@@ -46,8 +48,8 @@ export interface RawDiary {
   content: string
   emotionType: string
   weatherType: string
-  walkTime?: number
-  mealTime?: string
+  walkTime?: string | null
+  mealTime?: string | null
   imageUrl?: string
   memory?: MemoryImage
 }
