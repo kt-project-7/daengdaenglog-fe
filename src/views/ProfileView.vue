@@ -128,7 +128,7 @@ const handleShareKakao = () => {
 
               <FeatureCard
                 :icon="Pencil"
-                title="펫시터 가이드"
+                title="반려동물 가이드"
                 color="chart-category3"
               >
                 <PetsitterGuideCard
@@ -176,7 +176,7 @@ const handleShareKakao = () => {
 
     <ResultModal
       :show="showPetsitterGuideModal"
-      title="펫시터 가이드"
+      title="반려동물 가이드"
       @close="showPetsitterGuideModal = false"
       @save-pdf="handleSavePdf"
       @share-kakao="handleShareKakao"

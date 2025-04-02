@@ -28,9 +28,9 @@ defineEmits<{
           <h4 class="text-lg font-semibold text-_blue-500 mb-2">
             {{ profile.pbti }}
           </h4>
-          <p class="text-_gray-600 leading-relaxed line-clamp-2">
+          <!-- <p class="text-_gray-600 leading-relaxed line-clamp-2">
             {{ profile.petsitterGuide }}
-          </p>
+          </p> -->
         </div>
       </div>
 
