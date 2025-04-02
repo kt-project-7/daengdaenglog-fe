@@ -4,6 +4,7 @@ import { Pencil } from 'lucide-vue-next'
 import type { Profile } from '@/types/profile'
 import { useGuideStore } from '@/stores/guideStore'
 import Swal from 'sweetalert2'
+import { useRouter } from 'vue-router'
 
 const props = defineProps<{
   profile: Profile | null
@@ -48,6 +49,10 @@ const handleGenerateGuide = async () => {
       title: '성공!',
       text: '가이드가 성공적으로 생성되었습니다.',
       confirmButtonText: '확인',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        router.push('/dang-guide')
+      }
     })
   } catch (error) {
     Swal.fire({
