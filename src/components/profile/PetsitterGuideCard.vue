@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { Pencil } from 'lucide-vue-next'
 import type { Profile } from '@/types/profile'
+import { useGuideStore } from '@/stores/guideStore'
 
 const props = defineProps<{
   profile: Profile | null
@@ -12,11 +13,38 @@ defineEmits<{
   'show-guide': []
 }>()
 
-// 선택된 가이드 대상 ('펫시터', '수의사', '유치원')
 const selectedTarget = ref('기본') // 기본값 설정
-
-// 가이드 입력값
 const profileInput = ref('')
+const guideStore = useGuideStore()
+
+// 가이드 타입 매핑
+const guideTypeMap: Record<
+  string,
+  'HOSPITAL' | 'SITTER' | 'KINDERGARTEN' | 'NONE'
+> = {
+  펫시터: 'SITTER',
+  수의사: 'HOSPITAL',
+  유치원: 'KINDERGARTEN',
+  기본: 'NONE',
+}
+
+// 가이드 생성 요청
+const handleGenerateGuide = async () => {
+  if (!props.profile?.id) {
+    alert('프로필 정보가 없습니다.')
+    return
+  }
+
+  const guideType = guideTypeMap[selectedTarget.value]
+  const description = profileInput.value
+
+  try {
+    await guideStore.generateGuide(props.profile.id, guideType, description)
+    alert('가이드가 성공적으로 생성되었습니다.')
+  } catch (error) {
+    alert('가이드 생성에 실패했습니다.')
+  }
+}
 </script>
 
 <template>
@@ -93,7 +121,7 @@ const profileInput = ref('')
       </div>
       <button
         class="inline-flex items-center gap-2 px-6 py-3 bg-_green-500 text-white rounded-lg hover:bg-_green-600 transition-colors"
-        @click="$emit('generate')"
+        @click="handleGenerateGuide"
       >
         <Pencil class="w-5 h-5" />
         {{ selectedTarget }} 가이드 생성하기
