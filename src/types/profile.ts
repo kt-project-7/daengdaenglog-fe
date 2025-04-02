@@ -4,6 +4,7 @@ export interface Profile {
   id: number
   name: string
   petType: string
+  breed: string
   age: number
   weight: number
   gender: Gender

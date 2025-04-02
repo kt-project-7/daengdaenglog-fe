@@ -7,7 +7,6 @@ import { saveAsPdf, copyCurrentUrl, shareToKakao } from '@/utils/shareUtils'
 import ProfileInfo from '@/components/profile/ProfileInfo.vue'
 import DBTICard from '@/components/profile/DBTICard.vue'
 import PetsitterGuideCard from '@/components/profile/PetsitterGuideCard.vue'
-import AddPetModal from '@/components/modals/AddPetModal.vue'
 import ResultModal from '@/components/modals/ResultModal.vue'
 import PetSelector from '@/components/profile/PetSelector.vue'
 import FeatureCard from '@/components/profile/FeatureCard.vue'
@@ -16,7 +15,6 @@ import PetsitterGuideContent from '@/components/profile/PetsitterGuideContent.vu
 
 const petStore = usePetStore()
 
-const showAddPetModal = ref(false)
 const showDBTIResultModal = ref(false)
 const showPetsitterGuideModal = ref(false)
 
@@ -88,12 +86,6 @@ const handleShareKakao = () => {
           <div class="text-_gray-500 text-lg mb-4">
             등록된 반려동물이 없습니다.
           </div>
-          <button
-            @click="showAddPetModal = true"
-            class="px-4 py-2 bg-dang-primary text-white rounded-lg hover:bg-dang-primary-dark transition-colors"
-          >
-            반려동물 추가하기
-          </button>
         </div>
 
         <div v-else class="flex flex-col gap-8">
@@ -101,7 +93,6 @@ const handleShareKakao = () => {
             :pets="petStore.pets"
             :current-pet-index="petStore.currentPetIndex"
             @switch="petStore.switchPet"
-            @add="showAddPetModal = true"
           />
 
           <div class="overflow-x-auto">
@@ -155,13 +146,6 @@ const handleShareKakao = () => {
         ></div>
       </div>
     </div>
-
-    <AddPetModal
-      v-if="showAddPetModal"
-      :show="showAddPetModal"
-      @close="showAddPetModal = false"
-      @add="petStore.addPet"
-    />
 
     <ResultModal
       :show="showDBTIResultModal"

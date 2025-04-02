@@ -17,7 +17,7 @@ const genderOptions = [
 ]
 
 const genderDisplay = computed(() => {
-  return props.profile?.gender === 'male' ? '여아' : '남아'
+  return props.profile?.gender === 'male' ? '남아' : '여아'
 })
 </script>
 
@@ -38,7 +38,9 @@ const genderDisplay = computed(() => {
           <label class="block text-sm font-medium text-_gray-400 mb-1"
             >품종</label
           >
-          <p class="text-_black">{{ profile?.petType || '정보 없음' }}</p>
+          <p class="text-_black">
+            {{ profile?.breed || profile?.petType || '정보 없음' }}
+          </p>
         </div>
 
         <div class="mb-4">

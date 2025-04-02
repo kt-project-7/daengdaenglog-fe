@@ -105,7 +105,7 @@ export const usePetStore = defineStore('pet', () => {
 
   const generatePetsitterGuide = async () => {
     const pet = pets.value[currentPetIndex.value]
-    pet.petsitterGuide = `${pet.name}는 ${pet.petType} 품종으로, ${pet.age}세 ${pet.gender === 'male' ? '수컷' : '암컷'}입니다. 체중은 ${pet.weight}kg이며, ${pet.neutered ? '중성화가 되어있습니다.' : '중성화가 되어있지 않습니다.'}`
+    pet.petsitterGuide = `${pet.name}는 ${pet.breed} 품종으로, ${pet.age}세 ${pet.gender === 'male' ? '수컷' : '암컷'}입니다. 체중은 ${pet.weight}kg이며, ${pet.neutered ? '중성화가 되어있습니다.' : '중성화가 되어있지 않습니다.'}`
   }
 
   // 펫이 삭제될 때 이미지도 함께 삭제

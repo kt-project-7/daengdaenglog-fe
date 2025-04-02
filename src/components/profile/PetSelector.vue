@@ -27,10 +27,7 @@ defineEmits<{
         ]"
         @click="$emit('switch', index)"
       >
-        <Dog
-          v-if="pet.petType.toLowerCase().includes('리트리버')"
-          class="w-5 h-5"
-        />
+        <Dog v-if="pet.petType === 'DOG'" class="w-5 h-5" />
         <Cat v-else class="w-5 h-5" />
         {{ pet.name }}
       </button>
