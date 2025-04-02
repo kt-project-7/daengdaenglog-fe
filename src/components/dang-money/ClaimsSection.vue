@@ -21,13 +21,13 @@
         <ClaimsFilter />
         <ClaimsTable
           :claims="store.paginatedClaims"
-          @view-detail="store.viewClaimDetail"
+          @view-detail="viewClaimDetail"
         />
         <ClaimsPagination
           :current-page="store.currentPage"
           :total-pages="store.totalPages"
-          @prev="store.prevPage"
-          @next="store.nextPage"
+          @prev="prevPage"
+          @next="nextPage"
         />
       </div>
     </div>
@@ -35,7 +35,7 @@
     <ClaimDetailModal
       v-if="store.showClaimDetailModal"
       :claim="store.selectedClaim"
-      @close="store.closeClaimDetailModal"
+      @close="closeClaimDetailModal"
     />
   </section>
 </template>
@@ -49,6 +49,31 @@ import ClaimsPagination from './ClaimsPagination.vue'
 import ClaimDetailModal from './ClaimDetailModal.vue'
 
 const store = useDangMoneyStore()
+
+function viewClaimDetail(claim: any) {
+  store.selectedClaim = claim
+  store.showClaimDetailModal.value = true
+}
+
+function closeClaimDetailModal() {
+  store.showClaimDetailModal = false
+  store.selectedClaim = null
+}
+
+// 청구 내역 함수
+function prevPage() {
+  if (store.currentPage > 1) {
+    store.currentPage--
+    store.updatePaginatedClaims()
+  }
+}
+
+function nextPage() {
+  if (store.currentPage < store.totalPages) {
+    store.currentPage++
+    store.updatePaginatedClaims()
+  }
+}
 
 onMounted(() => {
   store.fetchClaims()
