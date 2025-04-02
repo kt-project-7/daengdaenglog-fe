@@ -52,7 +52,7 @@ const store = useDangMoneyStore()
 
 function viewClaimDetail(claim: any) {
   store.selectedClaim = claim
-  store.showClaimDetailModal.value = true
+  store.showClaimDetailModal = true
 }
 
 function closeClaimDetailModal() {
