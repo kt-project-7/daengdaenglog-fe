@@ -67,6 +67,7 @@ export default {
         'bounce-delay-2': 'bounce 1s ease 0.4s infinite',
         'bounce-delay-3': 'bounce 1s ease 0.6s infinite',
         'bounce-delay-4': 'bounce 1s ease 0.8s infinite',
+        'spin-slow': 'spin 2s linear infinite',
       },
       keyframes: {
         bounce: {
