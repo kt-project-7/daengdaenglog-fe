@@ -8,7 +8,10 @@ const props = defineProps<{ petId: number }>()
 
 const diaryStore = useDiaryStore()
 
-const emit = defineEmits(['submit', 'cancel'])
+const emit = defineEmits<{
+  (e: 'submit', payload: any, file?: File): void
+  (e: 'cancel'): void
+}>()
 
 const imageInput = ref<HTMLInputElement | null>(null)
 const imagePreview = ref<string | null>(null)
@@ -76,7 +79,7 @@ const handleSubmit = async () => {
     diaryScheduleRequestList,
   }
 
-  emit('submit', payload)
+  emit('submit', payload, imageFile.value || undefined)
 }
 </script>
 
@@ -181,7 +184,9 @@ const handleSubmit = async () => {
 
     <div class="mb-6">
       <label class="block text-dang-primary font-medium mb-2">이미지</label>
-      <div class="border-2 border-dashed border-gray-200 p-4 text-center rounded-lg">
+      <div
+        class="border-2 border-dashed border-gray-200 p-4 text-center rounded-lg"
+      >
         <input
           type="file"
           ref="imageInput"

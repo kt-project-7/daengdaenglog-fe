@@ -60,8 +60,9 @@ watch(
       activities.value = [{ type: 'walk', startTime: '', endTime: '' }]
     }
 
-    // 이미지 초기화
-    imagePreview.value = newDiary.generatedImageUri || null
+    // 이미지 초기화 - memoryUri를 우선적으로 사용
+    imagePreview.value =
+      newDiary.memoryUri || newDiary.generatedImageUri || null
   },
   { immediate: true },
 )
@@ -125,7 +126,11 @@ const handleSubmit = async () => {
   }
 
   try {
-    await diaryStore.editDiary(props.diary.diaryId, payload)
+    await diaryStore.editDiary(
+      props.diary.diaryId,
+      payload,
+      imageFile.value || undefined,
+    )
     emit('save', payload)
   } catch (err) {
     console.error('수정 실패:', err)

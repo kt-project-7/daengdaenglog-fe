@@ -51,9 +51,9 @@ const handlePetSwitch = (index: number) => {
 }
 
 // 일기 저장
-const saveDiary = async (payload: CreateDiaryRequest) => {
+const saveDiary = async (payload: CreateDiaryRequest, file?: File) => {
   try {
-    const result = await diaryStore.addDiary(payload)
+    const result = await diaryStore.addDiary(payload, file)
     console.log('일기 저장 성공:', result)
     router.push('/diary-list')
   } catch (error) {

@@ -435,7 +435,11 @@ onUnmounted(() => {
             >
               <div class="relative h-80">
                 <img
-                  :src="visibleDiaries[0].generatedImageUri || LogoSvg"
+                  :src="
+                    visibleDiaries[0].memoryUri ||
+                    visibleDiaries[0].generatedImageUri ||
+                    LogoSvg
+                  "
                   :alt="`${formatDate(visibleDiaries[0].createdDate)} 일기 이미지`"
                   class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                 />
@@ -525,7 +529,11 @@ onUnmounted(() => {
             >
               <div class="relative h-80">
                 <img
-                  :src="visibleDiaries[1].generatedImageUri || LogoSvg"
+                  :src="
+                    visibleDiaries[1].memoryUri ||
+                    visibleDiaries[1].generatedImageUri ||
+                    LogoSvg
+                  "
                   :alt="`${formatDate(visibleDiaries[1].createdDate)} 일기 이미지`"
                   class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                 />
@@ -617,7 +625,7 @@ onUnmounted(() => {
               <div class="flex flex-col h-full">
                 <div class="h-48 overflow-hidden relative">
                   <img
-                    :src="diary.generatedImageUri || LogoSvg"
+                    :src="diary.memoryUri || diary.generatedImageUri || LogoSvg"
                     :alt="`${formatDate(diary.createdDate)} 일기 이미지`"
                     class="w-full h-full object-contain hover:scale-105 transition-transform duration-500"
                   />

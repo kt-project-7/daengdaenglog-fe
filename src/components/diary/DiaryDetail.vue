@@ -31,7 +31,7 @@ const handleGenerateMemory = async () => {
     console.log('이미지 생성 완료:', imageUrl)
 
     // 필요시 다시 다이어리 상세 정보를 로드해 최신 상태로 갱신
-    if (!diary.value.generatedImageUri) {
+    if (!diary.value.memoryUri) {
       await diaryStore.loadDiaryDetail(diary.value.diaryId)
     }
   } catch (e) {
@@ -58,9 +58,12 @@ const deleteDiary = async () => {
 
 <template>
   <div v-if="diary" class="bg-white rounded-lg shadow-md overflow-hidden">
-    <div v-if="diary.generatedImageUri" class="w-full h-64 md:h-80">
+    <div
+      v-if="diary.memoryUri || diary.generatedImageUri"
+      class="w-full h-64 md:h-80"
+    >
       <img
-        :src="diary.generatedImageUri"
+        :src="diary.memoryUri || diary.generatedImageUri || ''"
         :alt="`${formatDate(diary.createdDate)} 일기 이미지`"
         class="w-full h-full object-cover"
       />
@@ -123,7 +126,7 @@ const deleteDiary = async () => {
 
       <div class="mt-6">
         <MemorySection
-          :memory-image="diary.generatedImageUri ?? ''"
+          :memory-image="diary.memoryUri || undefined"
           :pet-name="''"
           :diary-id="diary.diaryId"
           :is-loading="isGenerating"

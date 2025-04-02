@@ -45,9 +45,9 @@ export const useDiaryStore = defineStore('diary', {
       }
     },
 
-    async addDiary(payload: CreateDiaryRequest) {
+    async addDiary(payload: CreateDiaryRequest, file?: File) {
       try {
-        const newDiaryId = await createDiary(payload)
+        const newDiaryId = await createDiary(payload, file)
         await this.loadDiaries()
         return newDiaryId
       } catch (e) {
@@ -55,9 +55,9 @@ export const useDiaryStore = defineStore('diary', {
       }
     },
 
-    async editDiary(diaryId: number, payload: CreateDiaryRequest) {
+    async editDiary(diaryId: number, payload: CreateDiaryRequest, file?: File) {
       try {
-        await updateDiary(diaryId, payload)
+        await updateDiary(diaryId, payload, file)
         await this.loadDiaries()
       } catch (e) {
         this.error = '다이어리를 수정하는 데 실패했습니다.'
@@ -80,7 +80,7 @@ export const useDiaryStore = defineStore('diary', {
         // diaries 배열에서 해당 일기 업데이트
         const target = this.diaries.find((d) => d.diaryId === diaryId)
         if (target) {
-          target.generatedImageUri = imageUrl
+          target.memoryUri = imageUrl
         }
 
         // selectedDiary가 있고 현재 보고 있는 일기와 같은 id인 경우 업데이트
@@ -88,7 +88,7 @@ export const useDiaryStore = defineStore('diary', {
           // 새 객체를 만들어 할당하여 반응형 트리거
           this.selectedDiary = {
             ...this.selectedDiary,
-            generatedImageUri: imageUrl,
+            memoryUri: imageUrl,
           }
         }
 
