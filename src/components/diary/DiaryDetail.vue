@@ -5,6 +5,7 @@ import { getMoodEmoji, getWeatherEmoji, formatDate } from '@/utils/formatters'
 import { Edit, Trash2 } from 'lucide-vue-next'
 import EditDiaryModal from './EditDiaryModal.vue'
 import MemorySection from './MemorySection.vue'
+import Swal from 'sweetalert2'
 
 const diaryStore = useDiaryStore()
 const diary = computed(() => diaryStore.selectedDiary)
@@ -34,7 +35,12 @@ const handleGenerateMemory = async () => {
     await diaryStore.loadDiaryDetail(diary.value.diaryId)
   } catch (e) {
     console.error('이미지 생성 실패:', e)
-    alert('이미지 생성에 실패했습니다. 다시 시도해주세요.')
+    Swal.fire({
+      icon: 'error',
+      title: '이미지 생성 실패',
+      text: '이미지 생성에 실패했습니다. 다시 시도해주세요.',
+      confirmButtonText: '확인',
+    })
   } finally {
     isGenerating.value = false
   }
@@ -42,7 +48,19 @@ const handleGenerateMemory = async () => {
 
 const deleteDiary = async () => {
   if (!diary.value) return
-  if (!confirm('정말로 이 일기를 삭제하시겠습니까?')) return
+
+  const result = await Swal.fire({
+    icon: 'warning',
+    title: '일기 삭제',
+    text: '정말로 이 일기를 삭제하시겠습니까?',
+    showCancelButton: true,
+    confirmButtonText: '삭제',
+    cancelButtonText: '취소',
+    confirmButtonColor: '#d33',
+  })
+
+  if (!result.isConfirmed) return
+
   try {
     isDeleting.value = true
     await diaryStore.removeDiary(diary.value.diaryId)

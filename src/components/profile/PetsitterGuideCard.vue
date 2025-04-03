@@ -34,7 +34,12 @@ const guideTypeMap: Record<
 // 가이드 생성 요청
 const handleGenerateGuide = async () => {
   if (!props.profile?.id) {
-    alert('프로필 정보가 없습니다.')
+    Swal.fire({
+      icon: 'error',
+      title: '오류',
+      text: '프로필 정보가 없습니다.',
+      confirmButtonText: '확인',
+    })
     return
   }
 

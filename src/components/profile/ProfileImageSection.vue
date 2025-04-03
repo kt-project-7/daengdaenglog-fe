@@ -2,6 +2,7 @@
 import { ref, onMounted, watch } from 'vue'
 import { Camera, Trash2 } from 'lucide-vue-next'
 import { usePetStore } from '@/stores/petStore'
+import Swal from 'sweetalert2'
 
 const props = defineProps<{
   imageUrl: string | null
@@ -60,7 +61,12 @@ const handleImageSelect = (event: Event) => {
 
     // 최대 이미지 크기 제한 (2MB)
     if (input.files[0].size > 2 * 1024 * 1024) {
-      alert('이미지 크기가 2MB를 초과합니다. 더 작은 이미지를 선택해주세요.')
+      Swal.fire({
+        icon: 'warning',
+        title: '파일 크기 초과',
+        text: '이미지 크기가 2MB를 초과합니다. 더 작은 이미지를 선택해주세요.',
+        confirmButtonText: '확인',
+      })
       input.value = '' // 입력 초기화
       return
     }
