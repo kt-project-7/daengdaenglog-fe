@@ -110,8 +110,8 @@ const guideTypeMap: Record<string, string> = {
 </script>
 
 <template>
-  <div class="bg-dang-pending min-h-screen">
-    <div class="bg-white rounded-xl shadow-dang-md p-6 max-w-4xl mx-auto">
+  <div class="bg-dang-pending min-h-screen py-12">
+    <div class="bg-white rounded-xl shadow-dang-md p-6 max-w-4xl mx-auto my-6">
       <!-- Loading state -->
       <div v-if="isLoading" class="text-center py-8">
         <p class="text-_gray-500">가이드를 불러오는 중입니다...</p>
@@ -255,7 +255,7 @@ const guideTypeMap: Record<string, string> = {
           <h2 class="text-2xl font-bold text-_gray-800">가이드 상세보기</h2>
         </div>
 
-        <div v-if="selectedGuide" class="space-y-8">
+        <div v-if="selectedGuide" class="space-y-8 mb-4">
           <!-- Guide header -->
           <div class="text-center mb-6">
             <div
@@ -286,18 +286,20 @@ const guideTypeMap: Record<string, string> = {
           </div>
         </div>
       </div>
+
+      <!-- Decorative paw prints -->
       <div
-      class="absolute bottom-5 left-5 w-[3.75rem] h-[3.75rem] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-30 -rotate-15 animate-bounce-custom"
-    ></div>
-    <div
-      class="absolute bottom-5 right-5 w-[3.75rem] h-[3.75rem] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-30 rotate-15 animate-bounce-delay-2"
-    ></div>
-    <div
-      class="absolute top-10 right-10 w-[2.5rem] h-[2.5rem] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-20 rotate-45 animate-bounce-delay-3"
-    ></div>
-    <div
-      class="absolute top-20 left-20 w-[2rem] h-[2rem] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-20 -rotate-30 animate-bounce-delay-4"
-    ></div>
+        class="absolute bottom-5 left-5 w-[3.75rem] h-[3.75rem] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-30 -rotate-15 animate-bounce-custom"
+      ></div>
+      <div
+        class="absolute bottom-5 right-5 w-[3.75rem] h-[3.75rem] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-30 rotate-15 animate-bounce-delay-2"
+      ></div>
+      <div
+        class="absolute top-10 right-10 w-[2.5rem] h-[2.5rem] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-20 rotate-45 animate-bounce-delay-3"
+      ></div>
+      <div
+        class="absolute top-20 left-20 w-[2rem] h-[2rem] bg-[url('@/assets/svgs/paw1.svg')] bg-contain bg-no-repeat opacity-20 -rotate-30 animate-bounce-delay-4"
+      ></div>
     </div>
   </div>
 </template>
