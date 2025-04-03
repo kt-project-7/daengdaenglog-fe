@@ -48,6 +48,27 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
+  scrollBehavior(to, from, savedPosition) {
+    // 브라우저의 뒤로/앞으로 버튼을 사용한 경우 이전 위치로 이동
+    if (savedPosition) {
+      return savedPosition
+    }
+
+    // hash가 있으면 해당 요소로 스크롤
+    if (to.hash) {
+      return {
+        el: to.hash,
+        behavior: 'smooth',
+        top: 60, // 헤더가 있는 경우 헤더 높이만큼 여유 공간
+      }
+    }
+
+    // 그 외에는 페이지 상단으로 스크롤
+    return {
+      top: 0,
+      behavior: 'smooth',
+    }
+  },
 })
 
 // 보호된 라우트에 대한 네비게이션 가드
