@@ -41,6 +41,11 @@
   }
 }
 
+/* SweetAlert2 스타일 오버라이드 */
+.sweet-alert-container {
+  z-index: 11000 !important; /* 로그인 모달의 z-index(10000)보다 높게 설정 */
+}
+
 /* 자주 쓰는 텍스트 스타일 */
 @layer components {
   .title-1 {

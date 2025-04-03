@@ -8,6 +8,7 @@ import type {
   EmotionType,
   WeatherType,
 } from '@/types/diary'
+import Swal from 'sweetalert2'
 
 const props = defineProps<{
   show: boolean
@@ -112,7 +113,12 @@ const handleSubmit = async () => {
   })
 
   if (!props.diary || typeof props.diary.petId !== 'number') {
-    alert('반려동물 정보를 불러올 수 없습니다.')
+    Swal.fire({
+      icon: 'error',
+      title: '정보 오류',
+      text: '반려동물 정보를 불러올 수 없습니다.',
+      confirmButtonText: '확인',
+    })
     return
   }
 
@@ -134,7 +140,12 @@ const handleSubmit = async () => {
     emit('save', payload)
   } catch (err) {
     console.error('수정 실패:', err)
-    alert('일기 수정에 실패했습니다.')
+    Swal.fire({
+      icon: 'error',
+      title: '수정 실패',
+      text: '일기 수정에 실패했습니다.',
+      confirmButtonText: '확인',
+    })
   }
 }
 </script>

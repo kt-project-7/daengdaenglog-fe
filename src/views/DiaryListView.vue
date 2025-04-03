@@ -487,7 +487,7 @@ onUnmounted(() => {
 
                   <div
                     v-if="openDropdownId === visibleDiaries[0].diaryId"
-                    class="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-dang-md py-1 w-32 dropdown-menu"
+                    class="absolute top-full right-0 mt-1 bg-white rounded-lg shadow-dang-md py-1 w-24 dropdown-menu"
                   >
                     <button
                       @click.stop="openEditModal(visibleDiaries[0])"
@@ -581,7 +581,7 @@ onUnmounted(() => {
 
                   <div
                     v-if="openDropdownId === visibleDiaries[1].diaryId"
-                    class="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-dang-md py-1 w-32 dropdown-menu"
+                    class="absolute top-full right-0 mt-1 bg-white rounded-lg shadow-dang-md py-1 w-24 dropdown-menu"
                   >
                     <button
                       @click.stop="openEditModal(visibleDiaries[1])"
@@ -633,7 +633,7 @@ onUnmounted(() => {
 
                     <div
                       v-if="openDropdownId === diary.diaryId"
-                      class="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-dang-md py-1 w-32 dropdown-menu"
+                      class="absolute top-full right-0 mt-1 bg-white rounded-lg shadow-dang-md py-1 w-24 dropdown-menu"
                     >
                       <button
                         @click.stop="openEditModal(diary)"

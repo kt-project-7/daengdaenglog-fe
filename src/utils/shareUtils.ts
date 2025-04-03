@@ -1,4 +1,5 @@
 import html2pdf from 'html2pdf.js'
+import Swal from 'sweetalert2'
 
 export const saveAsPdf = (elementId: string, filename = '결과.pdf') => {
   const el = document.getElementById(elementId)
@@ -19,11 +20,22 @@ export const copyCurrentUrl = () => {
   navigator.clipboard
     .writeText(window.location.href)
     .then(() => {
-      alert('URL이 클립보드에 복사되었습니다.')
+      Swal.fire({
+        icon: 'success',
+        title: '복사 완료',
+        text: 'URL이 클립보드에 복사되었습니다.',
+        timer: 1500,
+        showConfirmButton: false,
+      })
     })
     .catch((err) => {
       console.error('URL 복사 실패:', err)
-      alert('URL 복사에 실패했습니다.')
+      Swal.fire({
+        icon: 'error',
+        title: '복사 실패',
+        text: 'URL 복사에 실패했습니다.',
+        confirmButtonText: '확인',
+      })
     })
 }
 
@@ -33,7 +45,12 @@ export const shareToKakao = (
   imageUrl: string,
 ) => {
   if (!window.Kakao) {
-    alert('카카오톡 SDK가 로드되지 않았습니다. 잠시 후 다시 시도해주세요.')
+    Swal.fire({
+      icon: 'error',
+      title: '공유 실패',
+      text: '카카오톡 SDK가 로드되지 않았습니다. 잠시 후 다시 시도해주세요.',
+      confirmButtonText: '확인',
+    })
     return
   }
 

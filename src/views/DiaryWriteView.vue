@@ -7,6 +7,7 @@ import { usePetStore } from '@/stores/petStore'
 import AddDiary from '@/components/diary/AddDiary.vue'
 import PetSelector from '@/components/profile/PetSelector.vue'
 import type { CreateDiaryRequest } from '@/types/diary'
+import Swal from 'sweetalert2'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -58,7 +59,12 @@ const saveDiary = async (payload: CreateDiaryRequest, file?: File) => {
     router.push('/diary-list')
   } catch (error) {
     console.error('일기 저장 실패:', error)
-    alert('일기를 저장하는 중 오류가 발생했습니다. 다시 시도해주세요.')
+    Swal.fire({
+      icon: 'error',
+      title: '저장 실패',
+      text: '일기를 저장하는 중 오류가 발생했습니다. 다시 시도해주세요.',
+      confirmButtonText: '확인',
+    })
   }
 }
 
