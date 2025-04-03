@@ -1,13 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import {
-  fetchGuides,
-  getGuideById,
-  createGuide,
-  GuideRequest,
-  Guide,
-  GuideDetail,
-} from '@/apis/guide'
+import { fetchGuides, getGuideById, createGuide } from '@/apis/guide'
+import { Guide, GuideDetail, GuideRequest } from '@/types/guide'
 
 export const useGuideStore = defineStore('guideStore', () => {
   const guides = ref<Guide[]>([])
