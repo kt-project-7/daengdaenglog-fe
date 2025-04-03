@@ -15,7 +15,7 @@ interface PetInsuranceItem {
 // 서버에서 데이터 가져오기
 export const loadClaims = async (): Promise<Claim[]> => {
   try {
-    const response = await api.get(`/pet/insurance/1`) // API 엔드포인트 수정 필요
+    const response = await api.get(`/pet/insurance/6`) // API 엔드포인트 수정 필요
     return response.data.results.petInsuranceList.map(
       (item: PetInsuranceItem) => ({
         id: item.id || null,
