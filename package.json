@@ -14,6 +14,7 @@
     "html2pdf.js": "^0.10.3",
     "kakao-js-sdk": "^1.2.3",
     "lucide-vue-next": "^0.484.0",
+    "markdown-it": "^14.1.0",
     "pinia": "^3.0.1",
     "sweetalert2": "^11.17.2",
     "vue": "^3.5.13",
@@ -21,6 +22,7 @@
   },
   "devDependencies": {
     "@types/chart.js": "^2.9.41",
+    "@types/markdown-it": "^14.1.2",
     "@types/node": "^22.13.13",
     "@types/vue": "^2.0.0",
     "@typescript-eslint/eslint-plugin": "^8.28.0",

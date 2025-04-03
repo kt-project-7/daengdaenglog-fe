@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Pencil, ChevronRight } from 'lucide-vue-next'
 import { GuideDetail } from '@/types/guide'
+import MarkdownIt from 'markdown-it'
+import { computed } from 'vue'
 
 const props = defineProps<{
   selectedGuide: GuideDetail | null
@@ -22,6 +24,20 @@ const formatDate = (dateString: string) => {
 const backToList = () => {
   emit('back-to-list')
 }
+
+// 마크다운 파서 인스턴스 생성
+const md = new MarkdownIt({
+  html: false, // HTML 태그 비활성화 (보안)
+  breaks: true, // 줄바꿈 활성화
+  linkify: true, // URL을 링크로 변환
+  typographer: true, // 특수문자 변환
+})
+
+// 마크다운 렌더링 함수
+const renderedContent = computed(() => {
+  if (!props.selectedGuide || !props.selectedGuide.content) return ''
+  return md.render(props.selectedGuide.content)
+})
 </script>
 
 <template>
@@ -52,15 +68,95 @@ const backToList = () => {
         </p>
       </div>
 
-      <!-- Guide content -->
+      <!-- Guide content with markdown rendering -->
       <div
         class="bg-chart-category3 bg-opacity-10 rounded-xl p-6 border border-chart-category3 border-opacity-20"
       >
         <h4 class="text-xl font-bold text-chart-category3 mb-4">가이드 내용</h4>
-        <p class="text-_gray-700 leading-relaxed text-lg whitespace-pre-line">
-          {{ selectedGuide.content }}
-        </p>
+        <div
+          class="markdown-content text-_gray-700 leading-relaxed text-lg"
+          v-html="renderedContent"
+        ></div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.markdown-content :deep(h1) {
+  font-size: 1.8em;
+  font-weight: bold;
+  margin: 0.8em 0;
+  color: #333;
+}
+
+.markdown-content :deep(h2) {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin: 0.7em 0;
+  color: #444;
+}
+
+.markdown-content :deep(h3) {
+  font-size: 1.3em;
+  font-weight: bold;
+  margin: 0.6em 0;
+  color: #555;
+}
+
+.markdown-content :deep(h4) {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin: 0.5em 0;
+  color: #666;
+}
+
+.markdown-content :deep(p) {
+  margin: 0.8em 0;
+  line-height: 1.6;
+}
+
+.markdown-content :deep(strong) {
+  font-weight: bold;
+}
+
+.markdown-content :deep(em) {
+  font-style: italic;
+}
+
+.markdown-content :deep(blockquote) {
+  border-left: 4px solid #ddd;
+  padding-left: 1em;
+  margin-left: 0;
+  color: #666;
+}
+
+.markdown-content :deep(ul),
+.markdown-content :deep(ol) {
+  padding-left: 2em;
+  margin: 0.5em 0;
+}
+
+.markdown-content :deep(li) {
+  margin: 0.3em 0;
+}
+
+.markdown-content :deep(a) {
+  color: #3498db;
+  text-decoration: underline;
+}
+
+.markdown-content :deep(hr) {
+  border: 0;
+  border-top: 1px solid #eee;
+  margin: 1.5em 0;
+}
+
+.markdown-content :deep(code) {
+  background-color: #f8f8f8;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+</style>
